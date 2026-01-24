@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+.DS_Store
+
+.gitconfig
+.bash_profile
+.bashrc
+.gitmodules
+.idea
+.mcp.json
+.profile
+.ripgreprc
+.zprofile
+,zshrc

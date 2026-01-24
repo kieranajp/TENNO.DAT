@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: warframe
+      POSTGRES_PASSWORD: emarfraw
+      POSTGRES_DB: warframe
+    ports:
+      - "5432:5432"
+    volumes:
+      - warframe_data:/var/lib/postgresql/data
+
+volumes:
+  warframe_data:
