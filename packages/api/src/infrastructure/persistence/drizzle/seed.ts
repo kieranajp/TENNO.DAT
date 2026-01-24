@@ -1,4 +1,5 @@
 import Items from '@wfcd/items'
+import { sql } from 'drizzle-orm'
 import { db, schema } from './connection'
 
 const MASTERABLE_CATEGORIES = [
@@ -29,16 +30,35 @@ async function seed() {
     return 30
   }
 
-  const itemsToInsert = masterableItems.map((item: any) => ({
-    uniqueName: item.uniqueName,
-    name: item.name,
-    category: item.category,
-    isPrime: item.isPrime ?? false,
-    masteryReq: item.masteryReq ?? 0,
-    maxRank: getMaxRank(item),
-    imageName: item.imageName ?? null,
-    vaulted: item.vaulted ?? null,
-  }))
+  const getMasteryReq = (item: any): number => {
+    const mr = item.masteryReq
+    if (typeof mr === 'number') return mr
+    if (typeof mr === 'object' && mr !== null) return Number(mr.value ?? mr.mr ?? 0)
+    return 0
+  }
+
+  const itemsToInsert = masterableItems.map((item: any) => {
+    const mapped = {
+      uniqueName: String(item.uniqueName ?? ''),
+      name: String(item.name ?? ''),
+      category: String(item.category ?? ''),
+      isPrime: Boolean(item.isPrime ?? false),
+      masteryReq: getMasteryReq(item),
+      maxRank: getMaxRank(item),
+      imageName: item.imageName ? String(item.imageName) : null,
+      vaulted: item.vaulted != null ? Boolean(item.vaulted) : null,
+    }
+    // Validate all integer fields
+    if (typeof mapped.masteryReq !== 'number' || isNaN(mapped.masteryReq)) {
+      console.error('Invalid masteryReq for', item.name, ':', item.masteryReq)
+      mapped.masteryReq = 0
+    }
+    if (typeof mapped.maxRank !== 'number' || isNaN(mapped.maxRank)) {
+      console.error('Invalid maxRank for', item.name, ':', item.maxRank)
+      mapped.maxRank = 30
+    }
+    return mapped
+  })
 
   console.log('Inserting items into database...')
 
@@ -48,13 +68,13 @@ async function seed() {
     await db.insert(schema.items).values(batch).onConflictDoUpdate({
       target: schema.items.uniqueName,
       set: {
-        name: schema.items.name,
-        category: schema.items.category,
-        isPrime: schema.items.isPrime,
-        masteryReq: schema.items.masteryReq,
-        maxRank: schema.items.maxRank,
-        imageName: schema.items.imageName,
-        vaulted: schema.items.vaulted,
+        name: sql`excluded.name`,
+        category: sql`excluded.category`,
+        isPrime: sql`excluded.is_prime`,
+        masteryReq: sql`excluded.mastery_req`,
+        maxRank: sql`excluded.max_rank`,
+        imageName: sql`excluded.image_name`,
+        vaulted: sql`excluded.vaulted`,
       },
     })
     console.log(`Inserted ${Math.min(i + BATCH_SIZE, itemsToInsert.length)}/${itemsToInsert.length}`)

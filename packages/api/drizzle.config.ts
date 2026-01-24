@@ -5,6 +5,6 @@ export default defineConfig({
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? 'postgres://warframe:emarfraw@localhost:5432/warframe',
+    url: process.env.DATABASE_URL ?? 'postgres://warframe:emarfraw@localhost:5433/warframe',
   },
 })

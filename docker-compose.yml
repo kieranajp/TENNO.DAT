@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: emarfraw
       POSTGRES_DB: warframe
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - warframe_data:/var/lib/postgresql/data
 
