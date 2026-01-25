@@ -189,6 +189,11 @@ export function getImageUrl(imageName: string | null): string | null {
 	return `https://cdn.warframestat.us/img/${imageName}`;
 }
 
+export function getMasteryRankIconUrl(rank: number): string {
+	// Wiki uses IconRank0-IconRank40+ for MR0-L10+
+	return `https://wiki.warframe.com/images/IconRank${rank}.png`;
+}
+
 export async function getItemDetails(id: number): Promise<ItemDetails> {
 	const res = await fetch(`${API_BASE}/items/${id}`);
 	if (!res.ok) {
