@@ -35,3 +35,14 @@ export const playerMastery = pgTable('player_mastery', {
   playerItemIdx: index('player_item_idx').on(table.playerId, table.itemId),
   playerItemUnique: unique('player_item_unique').on(table.playerId, table.itemId),
 }))
+
+export const playerLoadout = pgTable('player_loadout', {
+  id: serial('id').primaryKey(),
+  playerId: varchar('player_id', { length: 50 }).notNull().unique(),
+  warframeId: integer('warframe_id').references(() => items.id),
+  primaryId: integer('primary_id').references(() => items.id),
+  secondaryId: integer('secondary_id').references(() => items.id),
+  meleeId: integer('melee_id').references(() => items.id),
+  focusSchool: varchar('focus_school', { length: 50 }),
+  syncedAt: timestamp('synced_at').defaultNow().notNull(),
+})

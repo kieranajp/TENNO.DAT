@@ -12,7 +12,10 @@ export function masteryRoutes(container: Container) {
       return c.json({ error: 'No player configured' }, 400)
     }
 
-    const categories = await container.masteryRepo.getSummary(settings.playerId)
+    const [categories, loadout] = await Promise.all([
+      container.masteryRepo.getSummary(settings.playerId),
+      container.loadoutRepo.getWithItems(settings.playerId),
+    ])
 
     const totals = categories.reduce(
       (acc, cat) => ({
@@ -25,6 +28,7 @@ export function masteryRoutes(container: Container) {
     return c.json({
       categories,
       totals,
+      loadout,
       lastSyncAt: settings.lastSyncAt,
       displayName: settings.displayName,
     })

@@ -1,5 +1,20 @@
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
+export interface LoadoutItem {
+	id: number;
+	name: string;
+	imageName: string | null;
+	category: string;
+}
+
+export interface Loadout {
+	warframe: LoadoutItem | null;
+	primary: LoadoutItem | null;
+	secondary: LoadoutItem | null;
+	melee: LoadoutItem | null;
+	focusSchool: string | null;
+}
+
 export interface MasterySummary {
 	categories: Array<{
 		category: string;
@@ -7,6 +22,7 @@ export interface MasterySummary {
 		mastered: number;
 	}>;
 	totals: { total: number; mastered: number };
+	loadout: Loadout | null;
 	lastSyncAt: string | null;
 	displayName: string | null;
 }

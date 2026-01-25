@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getMasterySummary, syncProfile, type MasterySummary } from '$lib/api';
+	import { getMasterySummary, syncProfile, getImageUrl, type MasterySummary } from '$lib/api';
+	import { sortByCategory } from '$lib/categories';
 
 	let summary: MasterySummary | null = $state(null);
+	let sortedCategories = $derived(summary ? sortByCategory(summary.categories) : []);
 	let syncing = $state(false);
 	let error: string | null = $state(null);
 
@@ -58,6 +60,45 @@
 {/if}
 
 {#if summary}
+	{#if summary.loadout}
+		<div class="card mb-4">
+			<div class="card-body">
+				<h5 class="card-title mb-3">Current Loadout</h5>
+				<div class="d-flex flex-wrap gap-4 align-items-start">
+					{#each [
+						{ label: 'Warframe', item: summary.loadout.warframe },
+						{ label: 'Primary', item: summary.loadout.primary },
+						{ label: 'Secondary', item: summary.loadout.secondary },
+						{ label: 'Melee', item: summary.loadout.melee }
+					] as slot}
+						<div class="loadout-slot text-center">
+							{#if slot.item}
+								{@const imgUrl = getImageUrl(slot.item.imageName)}
+								{#if imgUrl}
+									<img src={imgUrl} alt={slot.item.name} class="loadout-image mb-2" />
+								{:else}
+									<div class="loadout-placeholder mb-2"></div>
+								{/if}
+								<div class="fw-medium">{slot.item.name}</div>
+							{:else}
+								<div class="loadout-placeholder mb-2"></div>
+								<div class="text-muted">No {slot.label}</div>
+							{/if}
+							<small class="text-muted">{slot.label}</small>
+						</div>
+					{/each}
+					{#if summary.loadout.focusSchool}
+						<div class="loadout-slot text-center">
+							<div class="focus-badge mb-2">{summary.loadout.focusSchool.charAt(0)}</div>
+							<div class="fw-medium">{summary.loadout.focusSchool}</div>
+							<small class="text-muted">Focus School</small>
+						</div>
+					{/if}
+				</div>
+			</div>
+		</div>
+	{/if}
+
 	<div class="card mb-4">
 		<div class="card-body">
 			<h5 class="card-title">Overall Progress</h5>
@@ -80,17 +121,19 @@
 
 	<h5 class="mb-3">By Category</h5>
 	<div class="row g-3">
-		{#each summary.categories as cat}
+		{#each sortedCategories as cat}
 			<div class="col-md-6 col-lg-4">
-				<div class="card h-100">
-					<div class="card-body">
-						<h6 class="card-title">{cat.category}</h6>
-						<div class="progress mb-2">
-							<div class="progress-bar" style="width: {percent(cat.mastered, cat.total)}%"></div>
+				<a href="/mastery?category={encodeURIComponent(cat.category)}" class="text-decoration-none">
+					<div class="card h-100 category-card">
+						<div class="card-body">
+							<h6 class="card-title">{cat.category}</h6>
+							<div class="progress mb-2">
+								<div class="progress-bar" style="width: {percent(cat.mastered, cat.total)}%"></div>
+							</div>
+							<small class="text-muted">{cat.mastered} / {cat.total} ({percent(cat.mastered, cat.total)}%)</small>
 						</div>
-						<small>{cat.mastered} / {cat.total} ({percent(cat.mastered, cat.total)}%)</small>
 					</div>
-				</div>
+				</a>
 			</div>
 		{/each}
 	</div>
@@ -100,3 +143,47 @@
 		<p class="mt-3">Loading...</p>
 	</div>
 {/if}
+
+<style>
+	.category-card {
+		transition: transform 0.15s ease, box-shadow 0.15s ease;
+	}
+	.category-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	}
+
+	.loadout-slot {
+		min-width: 100px;
+	}
+
+	.loadout-image {
+		width: 80px;
+		height: 80px;
+		object-fit: contain;
+		border-radius: 8px;
+		background: var(--bs-secondary-bg);
+		padding: 4px;
+	}
+
+	.loadout-placeholder {
+		width: 80px;
+		height: 80px;
+		border-radius: 8px;
+		background: var(--bs-secondary-bg);
+		border: 2px dashed var(--bs-border-color);
+	}
+
+	.focus-badge {
+		width: 80px;
+		height: 80px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+		font-size: 2rem;
+		font-weight: bold;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+</style>

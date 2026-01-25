@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { getMasteryItems, getImageUrl, type MasteryItem } from '$lib/api';
+	import { CATEGORY_ORDER } from '$lib/categories';
 
 	let items: MasteryItem[] = $state([]);
 	let loading = $state(true);
@@ -8,19 +11,6 @@
 	let category = $state('');
 	let filter: 'all' | 'mastered' | 'unmastered' = $state('all');
 	let search = $state('');
-
-	const categories = [
-		'Warframes',
-		'Primary',
-		'Secondary',
-		'Melee',
-		'Pets',
-		'Sentinels',
-		'SentinelWeapons',
-		'Archwing',
-		'ArchGun',
-		'ArchMelee'
-	];
 
 	async function loadItems() {
 		loading = true;
@@ -35,7 +25,25 @@
 		}
 	}
 
-	onMount(loadItems);
+	// Update URL when category changes (for bookmarkability)
+	function updateUrl() {
+		const url = new URL(window.location.href);
+		if (category) {
+			url.searchParams.set('category', category);
+		} else {
+			url.searchParams.delete('category');
+		}
+		goto(url.toString(), { replaceState: true, noScroll: true });
+	}
+
+	onMount(() => {
+		// Read initial category from URL
+		const urlCategory = $page.url.searchParams.get('category');
+		if (urlCategory && CATEGORY_ORDER.includes(urlCategory as any)) {
+			category = urlCategory;
+		}
+		loadItems();
+	});
 
 	let filteredItems = $derived(
 		items.filter((item) => !search || item.name.toLowerCase().includes(search.toLowerCase()))
@@ -46,9 +54,9 @@
 
 <div class="row g-3 mb-4">
 	<div class="col-md-4">
-		<select class="form-select" bind:value={category} onchange={loadItems}>
+		<select class="form-select" bind:value={category} onchange={() => { updateUrl(); loadItems(); }}>
 			<option value="">All Categories</option>
-			{#each categories as cat}
+			{#each CATEGORY_ORDER as cat}
 				<option value={cat}>{cat}</option>
 			{/each}
 		</select>

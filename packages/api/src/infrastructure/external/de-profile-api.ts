@@ -1,29 +1,46 @@
 import { writeFileSync } from 'node:fs'
 import type { Platform } from '../../domain/entities/player'
-import type { ProfileApi, ProfileData } from '../../domain/ports/profile-api'
+import type { ProfileApi, ProfileData, Loadout } from '../../domain/ports/profile-api'
+import { createLogger } from '../logger'
 
+const log = createLogger('DeProfileApi')
+
+// PC redirects to api.warframe.com/cdn, others still use content-*.warframe.com/dynamic
 const PLATFORM_URLS: Record<Platform, string> = {
-  pc: 'https://content.warframe.com',
-  ps: 'https://content-ps4.warframe.com',
-  xbox: 'https://content-xb1.warframe.com',
-  switch: 'https://content-swi.warframe.com',
+  pc: 'https://api.warframe.com/cdn',
+  ps: 'https://content-ps4.warframe.com/dynamic',
+  xbox: 'https://content-xb1.warframe.com/dynamic',
+  switch: 'https://content-swi.warframe.com/dynamic',
+}
+
+const FOCUS_SCHOOLS: Record<string, string> = {
+  'AP_ATTACK': 'Madurai',
+  'AP_DEFENSE': 'Vazarin',
+  'AP_TACTIC': 'Naramon',
+  'AP_POWER': 'Zenurik',
+  'AP_WARD': 'Unairu',
 }
 
 export class DeProfileApi implements ProfileApi {
   async fetch(playerId: string, platform: Platform): Promise<ProfileData> {
     const baseUrl = PLATFORM_URLS[platform]
-    const url = `${baseUrl}/dynamic/getProfileViewingData.php?playerId=${playerId}`
+    const url = `${baseUrl}/getProfileViewingData.php?playerId=${playerId}`
 
-    console.log(`[DE API] Fetching: ${url}`)
+    log.info('Fetching profile', { playerId, platform, url })
 
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'WarframeMasteryTracker/1.0' },
-    })
-
-    console.log(`[DE API] Response status: ${response.status}`)
+    const response = await fetch(url)
 
     if (!response.ok) {
-      throw new Error(`Profile API error: ${response.status}`)
+      const body = await response.text()
+      log.error('Profile fetch failed', { status: response.status, body })
+
+      if (response.status === 403) {
+        throw new Error('Access denied - you may be rate limited. Try again in a few minutes.')
+      }
+      if (response.status === 409) {
+        throw new Error('Profile is private. Enable public profile in Warframe settings.')
+      }
+      throw new Error(`Profile API error: ${response.status}${body ? ` - ${body}` : ''}`)
     }
 
     const data = await response.json()
@@ -31,15 +48,22 @@ export class DeProfileApi implements ProfileApi {
     // Dump full response to file for debugging
     const dumpPath = '/tmp/claude/de-profile-response.json'
     writeFileSync(dumpPath, JSON.stringify(data, null, 2))
-    console.log(`[DE API] Full response dumped to: ${dumpPath}`)
-
-    if (data.XpComponents?.length > 0) {
-      console.log(`[DE API] Sample XpComponent:`, JSON.stringify(data.XpComponents[0]))
-    }
+    log.debug('Response dumped', { path: dumpPath })
 
     // XP data is in Results[0].LoadOutInventory.XPInfo, NOT top-level XpComponents
     const xpInfo = data.Results?.[0]?.LoadOutInventory?.XPInfo ?? []
-    console.log(`[DE API] Found ${xpInfo.length} items in XPInfo`)
+
+    // Extract loadout from LoadOutInventory
+    const loadOutInventory = data.Results?.[0]?.LoadOutInventory ?? {}
+    const loadOutPreset = data.Results?.[0]?.LoadOutPreset ?? {}
+    const loadout = this.extractLoadout(loadOutInventory, loadOutPreset)
+
+    log.info('Profile fetched', {
+      displayName: data.Results?.[0]?.DisplayName,
+      playerLevel: data.Results?.[0]?.PlayerLevel,
+      xpItemCount: xpInfo.length,
+      loadout,
+    })
 
     return {
       displayName: data.Results?.[0]?.DisplayName ?? null,
@@ -48,6 +72,19 @@ export class DeProfileApi implements ProfileApi {
         itemType: xp.ItemType,
         xp: xp.XP,
       })),
+      loadout,
+    }
+  }
+
+  private extractLoadout(loadOutInventory: any, loadOutPreset: any): Loadout {
+    const focusSchoolCode = loadOutPreset?.FocusSchool ?? null
+
+    return {
+      warframe: loadOutInventory?.Suits?.[0]?.ItemType ?? null,
+      primary: loadOutInventory?.LongGuns?.[0]?.ItemType ?? null,
+      secondary: loadOutInventory?.Pistols?.[0]?.ItemType ?? null,
+      melee: loadOutInventory?.Melee?.[0]?.ItemType ?? null,
+      focusSchool: focusSchoolCode ? (FOCUS_SCHOOLS[focusSchoolCode] ?? focusSchoolCode) : null,
     }
   }
 }
