@@ -17,13 +17,14 @@
 		Kitgun: { icon: 'tune', subtitle: 'MODULAR SECONDARY' },
 		Zaw: { icon: 'handyman', subtitle: 'MODULAR MELEE' },
 		Amp: { icon: 'electric_bolt', subtitle: 'OPERATOR AMPLIFIERS' },
+		Necramech: { icon: 'smart_toy', subtitle: 'COMBAT MECHS' },
+		Vehicles: { icon: 'skateboarding', subtitle: 'K-DRIVES' },
 		Pets: { icon: 'pets', subtitle: 'KUBROWS, KAVATS' },
 		Sentinels: { icon: 'smart_toy', subtitle: 'FLOATING COMPANIONS' },
 		SentinelWeapons: { icon: 'precision_manufacturing', subtitle: 'SENTINEL ARMS' },
 		Archwing: { icon: 'flight', subtitle: 'SPACE WINGS' },
 		ArchGun: { icon: 'rocket_launch', subtitle: 'HEAVY WEAPONS' },
-		ArchMelee: { icon: 'bolt', subtitle: 'ARCH BLADES' },
-		Misc: { icon: 'skateboarding', subtitle: 'K-DRIVES, MECHS' }
+		ArchMelee: { icon: 'bolt', subtitle: 'ARCH BLADES' }
 	};
 
 	onMount(async () => {

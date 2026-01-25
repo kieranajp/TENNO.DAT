@@ -23,11 +23,23 @@ const MASTERABLE_CATEGORIES = [
  * - Arch-Gun and Arch-Melee use hyphens in the library but we want ArchGun/ArchMelee
  * - SentinelWeapons items have category: "Primary" but we want them as SentinelWeapons
  * - Modular weapons (Zaws, Kitguns, Amps) need special categorization based on uniqueName
+ * - Necramechs separated from Warframes
+ * - K-Drives as Vehicles instead of Misc
  */
 function normalizeCategory(item: any): string {
   // Skip PvP variants
   if (item.uniqueName?.includes('PvPVariant')) {
     return 'PvPVariant' // Will be filtered out
+  }
+
+  // Necramechs (Bonewidow, Voidrig)
+  if (item.name === 'Bonewidow' || item.name === 'Voidrig') {
+    return 'Necramech'
+  }
+
+  // K-Drives (hoverboards) - only the board decks count for mastery
+  if (item.uniqueName?.includes('/Vehicles/Hoverboard/') && item.uniqueName?.includes('Deck')) {
+    return 'Vehicles'
   }
 
   // Zaw strikes (primary parts only - Tip in path means it's the strike)
