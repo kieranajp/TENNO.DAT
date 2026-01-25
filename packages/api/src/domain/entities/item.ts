@@ -14,6 +14,25 @@ export type ItemCategory =
   | 'KDrives'
   | 'Amps'
 
+export interface ItemAcquisitionData {
+  drops: Array<{
+    location: string
+    chance: number
+    rarity: string
+  }>
+  components: Array<{
+    name: string
+    drops: Array<{
+      location: string
+      chance: number
+    }>
+  }>
+  introduced?: {
+    name: string | null
+    date: string | null
+  } | null
+}
+
 export interface Item {
   id: number
   uniqueName: string
@@ -24,4 +43,10 @@ export interface Item {
   maxRank: number
   imageName: string | null
   vaulted: boolean | null
+  // Acquisition data
+  marketCost: number | null
+  bpCost: number | null
+  buildPrice: number | null
+  buildTime: number | null
+  acquisitionData: ItemAcquisitionData | null
 }

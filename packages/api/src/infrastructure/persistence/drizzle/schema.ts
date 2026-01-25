@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, boolean, timestamp, index, unique } from 'drizzle-orm/pg-core'
+import { pgTable, serial, varchar, integer, boolean, timestamp, index, unique, jsonb } from 'drizzle-orm/pg-core'
 
 export const items = pgTable('items', {
   id: serial('id').primaryKey(),
@@ -10,6 +10,12 @@ export const items = pgTable('items', {
   maxRank: integer('max_rank').default(30).notNull(),
   imageName: varchar('image_name', { length: 255 }),
   vaulted: boolean('vaulted'),
+  // Acquisition data
+  marketCost: integer('market_cost'),
+  bpCost: integer('bp_cost'),
+  buildPrice: integer('build_price'),
+  buildTime: integer('build_time'),
+  acquisitionData: jsonb('acquisition_data'),
 }, (table) => ({
   categoryIdx: index('category_idx').on(table.category),
   isPrimeIdx: index('is_prime_idx').on(table.isPrime),

@@ -1,0 +1,335 @@
+<script lang="ts">
+	import { getImageUrl, formatBuildTime, type ItemDetails } from '$lib/api';
+
+	let {
+		item,
+		onClose
+	}: {
+		item: ItemDetails | null;
+		onClose: () => void;
+	} = $props();
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape') {
+			onClose();
+		}
+	}
+
+	function handleOverlayClick(event: MouseEvent) {
+		if (event.target === event.currentTarget) {
+			onClose();
+		}
+	}
+</script>
+
+<svelte:window onkeydown={handleKeydown} />
+
+{#if item}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="modal-overlay" onclick={handleOverlayClick}>
+		<div class="modal-content kim-panel">
+			<div class="panel-header">
+				<h3>{item.name}</h3>
+				<button class="close-btn" onclick={onClose}>
+					<span class="material-icons">close</span>
+				</button>
+			</div>
+
+			<div class="panel-body">
+				<!-- Item Preview -->
+				<div class="item-preview">
+					{#if getImageUrl(item.imageName)}
+						<img src={getImageUrl(item.imageName)} alt={item.name} class="preview-img" />
+					{:else}
+						<div class="preview-placeholder">
+							<span class="material-icons">help_outline</span>
+						</div>
+					{/if}
+					<div class="item-badges">
+						<span class="badge badge-category">{item.category}</span>
+						{#if item.isPrime}
+							<span class="badge badge-prime">PRIME</span>
+						{/if}
+						{#if item.vaulted}
+							<span class="badge badge-vaulted">VAULTED</span>
+						{/if}
+						{#if item.maxRank > 30}
+							<span class="badge badge-rank40">RANK {item.maxRank}</span>
+						{/if}
+					</div>
+				</div>
+
+				<!-- Market Info -->
+				{#if item.marketCost}
+					<div class="acquisition-section">
+						<h4>
+							<span class="material-icons">storefront</span>
+							MARKET
+						</h4>
+						<div class="info-row">
+							<span class="info-label">Price</span>
+							<span class="info-value platinum">{item.marketCost} Platinum</span>
+						</div>
+					</div>
+				{/if}
+
+				<!-- Foundry Info -->
+				{#if item.buildPrice || item.buildTime}
+					<div class="acquisition-section">
+						<h4>
+							<span class="material-icons">precision_manufacturing</span>
+							FOUNDRY
+						</h4>
+						{#if item.buildPrice}
+							<div class="info-row">
+								<span class="info-label">Build Cost</span>
+								<span class="info-value">{item.buildPrice.toLocaleString()} Credits</span>
+							</div>
+						{/if}
+						{#if item.buildTime}
+							<div class="info-row">
+								<span class="info-label">Build Time</span>
+								<span class="info-value">{formatBuildTime(item.buildTime)}</span>
+							</div>
+						{/if}
+						{#if item.bpCost}
+							<div class="info-row">
+								<span class="info-label">Blueprint</span>
+								<span class="info-value">{item.bpCost.toLocaleString()} Credits</span>
+							</div>
+						{/if}
+					</div>
+				{/if}
+
+				<!-- Component Drops -->
+				{#if item.acquisitionData?.components && item.acquisitionData.components.length > 0}
+					<div class="acquisition-section">
+						<h4>
+							<span class="material-icons">layers</span>
+							COMPONENT DROPS
+						</h4>
+						{#each item.acquisitionData.components as comp}
+							{#if comp.drops && comp.drops.length > 0}
+								<div class="component-group">
+									<div class="component-name">{comp.name}</div>
+									<div class="drop-list">
+										{#each comp.drops.slice(0, 3) as drop}
+											<div class="drop-item">
+												<span class="drop-location">{drop.location}</span>
+												<span class="drop-chance">{(drop.chance * 100).toFixed(1)}%</span>
+											</div>
+										{/each}
+									</div>
+								</div>
+							{/if}
+						{/each}
+					</div>
+				{/if}
+
+				<!-- Direct Drops -->
+				{#if item.acquisitionData?.drops && item.acquisitionData.drops.length > 0}
+					<div class="acquisition-section">
+						<h4>
+							<span class="material-icons">place</span>
+							DROP LOCATIONS
+						</h4>
+						<div class="drop-list">
+							{#each item.acquisitionData.drops.slice(0, 5) as drop}
+								<div class="drop-item">
+									<span class="drop-location">{drop.location}</span>
+									<span class="drop-chance">{(drop.chance * 100).toFixed(1)}%</span>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Requirements -->
+				{#if item.masteryReq > 0}
+					<div class="acquisition-section">
+						<h4>
+							<span class="material-icons">military_tech</span>
+							REQUIREMENTS
+						</h4>
+						<div class="info-row">
+							<span class="info-label">Mastery Rank</span>
+							<span class="info-value">MR {item.masteryReq}</span>
+						</div>
+					</div>
+				{/if}
+			</div>
+		</div>
+	</div>
+{/if}
+
+<style lang="sass">
+	.modal-overlay
+		position: fixed
+		inset: 0
+		background: rgba(0, 0, 0, 0.7)
+		display: flex
+		align-items: center
+		justify-content: center
+		z-index: 1000
+		padding: 1rem
+
+	.modal-content
+		width: 100%
+		max-width: 480px
+		max-height: 85vh
+		overflow-y: auto
+
+	.panel-header
+		display: flex
+		justify-content: space-between
+		align-items: center
+
+		h3
+			flex: 1
+			margin: 0
+			white-space: nowrap
+			overflow: hidden
+			text-overflow: ellipsis
+
+	.close-btn
+		background: transparent
+		border: none
+		cursor: pointer
+		padding: 0.25rem
+		color: #5D6D65
+
+		&:hover
+			color: #C0392B
+
+	.item-preview
+		display: flex
+		flex-direction: column
+		align-items: center
+		padding: 1rem
+		background: #1a1a2e
+		border: 2px solid #5D6D65
+		margin-bottom: 1rem
+
+	.preview-img
+		width: 128px
+		height: 128px
+		object-fit: contain
+		image-rendering: pixelated
+
+	.preview-placeholder
+		width: 128px
+		height: 128px
+		display: flex
+		align-items: center
+		justify-content: center
+		background: #374151
+		color: #9ca3af
+
+		.material-icons
+			font-size: 3rem
+
+	.item-badges
+		display: flex
+		flex-wrap: wrap
+		gap: 0.5rem
+		margin-top: 0.75rem
+		justify-content: center
+
+	.badge
+		font-size: 0.7rem
+		padding: 0.125rem 0.5rem
+		font-family: 'Share Tech Mono', monospace
+		text-transform: uppercase
+
+	.badge-category
+		background: #374151
+		color: white
+		border: 1px solid #6b7280
+
+	.badge-prime
+		background: #fef3c7
+		color: #92400e
+		border: 1px solid #f59e0b
+
+	.badge-vaulted
+		background: #fce7f3
+		color: #9d174d
+		border: 1px solid #ec4899
+
+	.badge-rank40
+		background: #ede9fe
+		color: #6b21a8
+		border: 1px solid #a855f7
+
+	.acquisition-section
+		margin-bottom: 1rem
+		padding-bottom: 1rem
+		border-bottom: 1px dashed #d1d5db
+
+		&:last-child
+			border-bottom: none
+			margin-bottom: 0
+
+		h4
+			display: flex
+			align-items: center
+			gap: 0.5rem
+			font-size: 0.875rem
+			font-family: 'Share Tech Mono', monospace
+			color: #C0392B
+			margin: 0 0 0.75rem 0
+			text-transform: uppercase
+
+			.material-icons
+				font-size: 1.1rem
+
+	.info-row
+		display: flex
+		justify-content: space-between
+		align-items: center
+		padding: 0.25rem 0
+		font-size: 0.875rem
+
+	.info-label
+		color: #6b7280
+
+	.info-value
+		font-family: 'Share Tech Mono', monospace
+
+		&.platinum
+			color: #3b82f6
+
+	.component-group
+		margin-bottom: 0.75rem
+
+		&:last-child
+			margin-bottom: 0
+
+	.component-name
+		font-family: 'Share Tech Mono', monospace
+		font-size: 0.875rem
+		color: #5D6D65
+		margin-bottom: 0.25rem
+		text-transform: uppercase
+
+	.drop-list
+		display: flex
+		flex-direction: column
+		gap: 0.25rem
+
+	.drop-item
+		display: flex
+		justify-content: space-between
+		align-items: center
+		font-size: 0.8rem
+		padding: 0.25rem 0.5rem
+		background: #f3f4f6
+
+	.drop-location
+		color: #374151
+
+	.drop-chance
+		font-family: 'Share Tech Mono', monospace
+		color: #22c55e
+</style>

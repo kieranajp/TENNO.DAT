@@ -2,11 +2,14 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getMasteryItems, getImageUrl, type MasteryItem } from '$lib/api';
+	import { getMasteryItems, getItemDetails, getImageUrl, type MasteryItem, type ItemDetails } from '$lib/api';
 	import { CATEGORY_ORDER } from '$lib/categories';
+	import ItemModal from '$lib/components/ItemModal.svelte';
 
 	let items: MasteryItem[] = $state([]);
 	let loading = $state(true);
+	let selectedItem: ItemDetails | null = $state(null);
+	let loadingItem = $state(false);
 
 	let category = $state('');
 	let filter: 'all' | 'mastered' | 'unmastered' = $state('all');
@@ -57,6 +60,21 @@
 	function setFilter(newFilter: 'all' | 'mastered' | 'unmastered') {
 		filter = newFilter;
 		loadItems();
+	}
+
+	async function openItemModal(itemId: number) {
+		loadingItem = true;
+		try {
+			selectedItem = await getItemDetails(itemId);
+		} catch (e) {
+			console.error('Failed to load item details:', e);
+		} finally {
+			loadingItem = false;
+		}
+	}
+
+	function closeItemModal() {
+		selectedItem = null;
 	}
 </script>
 
@@ -131,7 +149,14 @@
 
 	<div class="items-grid">
 		{#each filteredItems as item}
-			<div class="item-card" class:mastered={item.isMastered}>
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div
+				class="item-card"
+				class:mastered={item.masteryState === 'mastered_30'}
+				class:mastered-full={item.masteryState === 'mastered_40'}
+				onclick={() => openItemModal(item.id)}
+			>
 				<div class="item-image-container">
 					{#if getImageUrl(item.imageName)}
 						<img
@@ -153,9 +178,16 @@
 						{#if item.isPrime}
 							<span class="item-prime">PRIME</span>
 						{/if}
+						{#if item.maxRank > 30}
+							<span class="item-rank40">R40</span>
+						{/if}
 					</div>
 				</div>
-				{#if item.isMastered}
+				{#if item.masteryState === 'mastered_40'}
+					<div class="item-mastered item-mastered-full">
+						<span class="material-icons">check_circle</span>
+					</div>
+				{:else if item.masteryState === 'mastered_30'}
 					<div class="item-mastered">
 						<span class="material-icons">check</span>
 					</div>
@@ -170,6 +202,15 @@
 			<p>NO RECORDS MATCH YOUR QUERY</p>
 		</div>
 	{/if}
+{/if}
+
+<!-- Item Detail Modal -->
+<ItemModal item={selectedItem} onClose={closeItemModal} />
+
+{#if loadingItem}
+	<div class="loading-overlay">
+		<div class="spinner"></div>
+	</div>
 {/if}
 
 <style lang="sass">
@@ -279,6 +320,14 @@
 			&:hover
 				opacity: 1
 
+		&.mastered-full
+			opacity: 0.7
+			border-color: #f59e0b
+			background: #fffbeb
+
+			&:hover
+				opacity: 1
+
 	.item-image-container
 		flex-shrink: 0
 
@@ -330,6 +379,13 @@
 		padding: 0 0.25rem
 		border: 1px solid #f59e0b
 
+	.item-rank40
+		font-size: 0.65rem
+		background: #ede9fe
+		color: #6b21a8
+		padding: 0 0.25rem
+		border: 1px solid #a855f7
+
 	.item-mastered
 		flex-shrink: 0
 		width: 24px
@@ -342,6 +398,12 @@
 
 		.material-icons
 			font-size: 1rem
+
+		&.item-mastered-full
+			background: #f59e0b
+
+			.material-icons
+				font-size: 1.1rem
 
 	.loading-state
 		display: flex
@@ -380,4 +442,13 @@
 			font-size: 3rem
 			margin-bottom: 1rem
 			opacity: 0.5
+
+	.loading-overlay
+		position: fixed
+		inset: 0
+		background: rgba(0, 0, 0, 0.5)
+		display: flex
+		align-items: center
+		justify-content: center
+		z-index: 999
 </style>

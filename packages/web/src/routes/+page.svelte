@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getMasterySummary, syncProfile, getImageUrl, type MasterySummary } from '$lib/api';
+	import { getMasterySummary, syncProfile, getImageUrl, getFocusSchoolInfo, type MasterySummary } from '$lib/api';
 	import { sortByCategory } from '$lib/categories';
 
 	let summary: MasterySummary | null = $state(null);
 	let sortedCategories = $derived(summary ? sortByCategory(summary.categories) : []);
+	let focusInfo = $derived(getFocusSchoolInfo(summary?.loadout?.focusSchool ?? null));
 	let syncing = $state(false);
 	let error: string | null = $state(null);
 
@@ -70,8 +71,16 @@
 				</div>
 				<div class="panel-body">
 					<div class="operator-info">
-						<div class="operator-avatar">
-							<span class="material-icons">person</span>
+						<div class="operator-avatar" style={focusInfo ? `border-color: ${focusInfo.color}` : ''}>
+							{#if focusInfo}
+								<img
+									src={getImageUrl(focusInfo.imageName)}
+									alt="{focusInfo.name} Focus"
+									class="focus-lens-icon"
+								/>
+							{:else}
+								<span class="material-icons">person</span>
+							{/if}
 						</div>
 						<div class="mastery-rank">
 							MR {summary.totals.mastered > 0 ? Math.floor(summary.totals.mastered / 30) : '??'}
@@ -231,8 +240,8 @@
 	.operator-avatar
 		width: 96px
 		height: 96px
-		background: #d1d5db
-		border: 2px dashed #6b7280
+		background: #1a1a2e
+		border: 3px solid #6b7280
 		display: flex
 		align-items: center
 		justify-content: center
@@ -241,6 +250,11 @@
 		.material-icons
 			font-size: 3rem
 			color: #6b7280
+
+		.focus-lens-icon
+			width: 72px
+			height: 72px
+			object-fit: contain
 
 	.mastery-rank
 		font-size: 1.5rem

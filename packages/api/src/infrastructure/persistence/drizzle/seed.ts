@@ -2,6 +2,8 @@ import Items from '@wfcd/items'
 import { sql } from 'drizzle-orm'
 import { db, schema } from './connection'
 
+// Categories to fetch from @wfcd/items
+// The library filters by productCategory, not the 'category' field
 const MASTERABLE_CATEGORIES = [
   'Warframes',
   'Primary',
@@ -9,11 +11,29 @@ const MASTERABLE_CATEGORIES = [
   'Melee',
   'Pets',
   'Sentinels',
-  'SentinelWeapons',
+  'SentinelWeapons',  // Library filters by productCategory
   'Archwing',
-  'ArchGun',
-  'ArchMelee',
+  'Arch-Gun',         // Library uses hyphenated name
+  'Arch-Melee',       // Library uses hyphenated name
 ]
+
+/**
+ * Normalize category names from @wfcd/items to our internal format.
+ * - Arch-Gun and Arch-Melee use hyphens in the library but we want ArchGun/ArchMelee
+ * - SentinelWeapons items have category: "Primary" but we want them as SentinelWeapons
+ */
+function normalizeCategory(item: any): string {
+  // SentinelWeapons items have productCategory set correctly but category says "Primary"
+  if (item.productCategory === 'SentinelWeapons') {
+    return 'SentinelWeapons'
+  }
+  // Normalize hyphenated categories to our internal names
+  const categoryMap: Record<string, string> = {
+    'Arch-Gun': 'ArchGun',
+    'Arch-Melee': 'ArchMelee',
+  }
+  return categoryMap[item.category] ?? item.category
+}
 
 async function seed() {
   console.log('Fetching items from @wfcd/items...')
@@ -37,16 +57,51 @@ async function seed() {
     return 0
   }
 
+  /**
+   * Extract acquisition data from an item.
+   * Includes drops, components, and introduction info.
+   */
+  const getAcquisitionData = (item: any) => {
+    const drops = (item.drops ?? []).map((d: any) => ({
+      location: d.location ?? d.place ?? 'Unknown',
+      chance: typeof d.chance === 'number' ? d.chance : 0,
+      rarity: d.rarity ?? 'Common',
+    }))
+
+    const components = (item.components ?? []).map((c: any) => ({
+      name: c.name ?? 'Component',
+      drops: (c.drops ?? []).slice(0, 5).map((d: any) => ({
+        location: d.location ?? d.place ?? 'Unknown',
+        chance: typeof d.chance === 'number' ? d.chance : 0,
+      })),
+    }))
+
+    return {
+      drops: drops.slice(0, 10),  // Limit to prevent huge JSON
+      components: components.slice(0, 10),
+      introduced: item.introduced ? {
+        name: item.introduced.name ?? null,
+        date: item.introduced.date ?? null,
+      } : null,
+    }
+  }
+
   const itemsToInsert = masterableItems.map((item: any) => {
     const mapped = {
       uniqueName: String(item.uniqueName ?? ''),
       name: String(item.name ?? ''),
-      category: String(item.category ?? ''),
+      category: normalizeCategory(item),  // Normalize category names
       isPrime: Boolean(item.isPrime ?? false),
       masteryReq: getMasteryReq(item),
       maxRank: getMaxRank(item),
       imageName: item.imageName ? String(item.imageName) : null,
       vaulted: item.vaulted != null ? Boolean(item.vaulted) : null,
+      // Acquisition data
+      marketCost: typeof item.marketCost === 'number' ? item.marketCost : null,
+      bpCost: typeof item.bpCost === 'number' ? item.bpCost : null,
+      buildPrice: typeof item.buildPrice === 'number' ? item.buildPrice : null,
+      buildTime: typeof item.buildTime === 'number' ? item.buildTime : null,
+      acquisitionData: getAcquisitionData(item),
     }
     // Validate all integer fields
     if (typeof mapped.masteryReq !== 'number' || isNaN(mapped.masteryReq)) {
@@ -75,6 +130,11 @@ async function seed() {
         maxRank: sql`excluded.max_rank`,
         imageName: sql`excluded.image_name`,
         vaulted: sql`excluded.vaulted`,
+        marketCost: sql`excluded.market_cost`,
+        bpCost: sql`excluded.bp_cost`,
+        buildPrice: sql`excluded.build_price`,
+        buildTime: sql`excluded.build_time`,
+        acquisitionData: sql`excluded.acquisition_data`,
       },
     })
     console.log(`Inserted ${Math.min(i + BATCH_SIZE, itemsToInsert.length)}/${itemsToInsert.length}`)

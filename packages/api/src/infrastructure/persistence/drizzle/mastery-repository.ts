@@ -1,7 +1,7 @@
 import { eq, sql, and } from 'drizzle-orm'
 import type { DrizzleDb } from './connection'
 import { playerMastery, items } from './schema'
-import type { MasteryRecord } from '../../../domain/entities/mastery'
+import { getMasteryState, type MasteryRecord } from '../../../domain/entities/mastery'
 import type { MasteryRepository, MasterySummary, MasteryWithItem } from '../../../domain/ports/mastery-repository'
 
 export class DrizzleMasteryRepository implements MasteryRepository {
@@ -85,6 +85,12 @@ export class DrizzleMasteryRepository implements MasteryRepository {
       query = query.where(and(...conditions)) as typeof query
     }
 
-    return query.orderBy(items.name)
+    const results = await query.orderBy(items.name)
+
+    // Compute masteryState for each item
+    return results.map(row => ({
+      ...row,
+      masteryState: getMasteryState(row.xp ?? 0, row.category, row.maxRank),
+    }))
   }
 }

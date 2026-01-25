@@ -1,4 +1,4 @@
-import type { MasteryRecord } from '../entities/mastery'
+import type { MasteryRecord, MasteryState } from '../entities/mastery'
 
 export interface MasteryWithItem {
   id: number
@@ -12,6 +12,7 @@ export interface MasteryWithItem {
   vaulted: boolean | null
   xp: number | null
   isMastered: boolean | null
+  masteryState: MasteryState
 }
 
 export interface MasterySummary {
