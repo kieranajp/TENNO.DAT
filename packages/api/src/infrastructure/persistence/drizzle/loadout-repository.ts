@@ -1,6 +1,7 @@
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql, and } from 'drizzle-orm'
 import type { DrizzleDb } from './connection'
-import { playerLoadout, items } from './schema'
+import { playerLoadout, items, playerMastery } from './schema'
+import { getMasteryStateFromRank } from '../../../domain/entities/mastery'
 import type { LoadoutRepository, LoadoutData, LoadoutWithItems, LoadoutItem } from '../../../domain/ports/loadout-repository'
 
 export class DrizzleLoadoutRepository implements LoadoutRepository {
@@ -59,14 +60,24 @@ export class DrizzleLoadoutRepository implements LoadoutRepository {
       }
     }
 
+    // Fetch items with their mastery data
     const itemRecords = await this.db
       .select({
         id: items.id,
         name: items.name,
         imageName: items.imageName,
         category: items.category,
+        maxRank: items.maxRank,
+        rank: playerMastery.rank,
       })
       .from(items)
+      .leftJoin(
+        playerMastery,
+        and(
+          eq(items.id, playerMastery.itemId),
+          eq(playerMastery.playerId, playerId)
+        )
+      )
       .where(sql`${items.id} IN ${itemIds}`)
 
     const itemsMap = new Map(itemRecords.map(item => [item.id, item]))
@@ -74,7 +85,16 @@ export class DrizzleLoadoutRepository implements LoadoutRepository {
     const getItem = (id: number | null): LoadoutItem | null => {
       if (!id) return null
       const item = itemsMap.get(id)
-      return item ?? null
+      if (!item) return null
+      return {
+        id: item.id,
+        name: item.name,
+        imageName: item.imageName,
+        category: item.category,
+        maxRank: item.maxRank,
+        rank: item.rank,
+        masteryState: getMasteryStateFromRank(item.rank ?? 0, item.maxRank),
+      }
     }
 
     return {

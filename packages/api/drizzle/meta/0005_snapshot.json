@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
+  "id": "e34b6469-2dc1-4c31-b3fc-d5092f872b52",
+=======
   "id": "f8b3c2d1-4e5f-6a7b-8c9d-0e1f2a3b4c5d",
+>>>>>>> origin/main
   "prevId": "ed22c7d6-1d32-4290-9cfd-dd5d4a4ef0d0",
   "version": "6",
   "dialect": "postgresql",
@@ -124,6 +128,63 @@
         }
       }
     },
+<<<<<<< HEAD
+    "public.nodes": {
+      "name": "nodes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "node_key": {
+          "name": "node_key",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "planet": {
+          "name": "planet",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "node_type": {
+          "name": "node_type",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mastery_xp": {
+          "name": "mastery_xp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "nodes_node_key_unique": {
+          "name": "nodes_node_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "node_key"
+          ]
+        }
+      }
+    },
+=======
+>>>>>>> origin/main
     "public.player_loadout": {
       "name": "player_loadout",
       "schema": "",
@@ -272,12 +333,20 @@
           "primaryKey": false,
           "notNull": true
         },
+<<<<<<< HEAD
+        "is_mastered": {
+          "name": "is_mastered",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+=======
         "rank": {
           "name": "rank",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 0
+>>>>>>> origin/main
         },
         "synced_at": {
           "name": "synced_at",
@@ -324,6 +393,82 @@
         }
       }
     },
+<<<<<<< HEAD
+    "public.player_nodes": {
+      "name": "player_nodes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "player_id": {
+          "name": "player_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "node_id": {
+          "name": "node_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "completes": {
+          "name": "completes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "is_steel_path": {
+          "name": "is_steel_path",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "synced_at": {
+          "name": "synced_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "player_nodes_node_id_nodes_id_fk": {
+          "name": "player_nodes_node_id_nodes_id_fk",
+          "tableFrom": "player_nodes",
+          "tableTo": "nodes",
+          "columnsFrom": [
+            "node_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "player_nodes_player_id_node_id_is_steel_path_unique": {
+          "name": "player_nodes_player_id_node_id_is_steel_path_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "player_id",
+            "node_id",
+            "is_steel_path"
+          ]
+        }
+      }
+    },
+=======
+>>>>>>> origin/main
     "public.player_settings": {
       "name": "player_settings",
       "schema": "",
@@ -402,4 +547,8 @@
     "schemas": {},
     "tables": {}
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/main

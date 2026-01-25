@@ -174,9 +174,21 @@
 										{slot.item?.name ?? 'NONE EQUIPPED'}
 									</div>
 									{#if slot.item}
-										<div class="loadout-status">
-											<span class="status-dot"></span>
-											MASTERED
+										<div class="loadout-status" class:mastered={slot.item.masteryState !== 'unmastered'} class:mastered-full={slot.item.masteryState === 'mastered_40'}>
+											{#if slot.item.masteryState === 'mastered_40'}
+												<span class="status-dot status-gold"></span>
+												<span class="rank-display">{slot.item.rank}/{slot.item.maxRank}</span>
+											{:else if slot.item.masteryState === 'mastered_30'}
+												<span class="status-dot"></span>
+												{#if slot.item.maxRank > 30}
+													<span class="rank-display">{slot.item.rank}/{slot.item.maxRank}</span>
+												{:else}
+													MASTERED
+												{/if}
+											{:else}
+												<span class="status-dot status-incomplete"></span>
+												<span class="rank-display rank-incomplete">{slot.item.rank ?? 0}/{slot.item.maxRank}</span>
+											{/if}
 										</div>
 									{/if}
 								</div>

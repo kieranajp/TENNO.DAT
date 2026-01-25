@@ -1,7 +1,7 @@
-import { eq, sql, and } from 'drizzle-orm'
+import { eq, sql, and, gte, lt } from 'drizzle-orm'
 import type { DrizzleDb } from './connection'
 import { playerMastery, items } from './schema'
-import { getMasteryState, getMasteryContribution, type MasteryRecord } from '../../../domain/entities/mastery'
+import { getMasteryStateFromRank, getMasteryContribution, type MasteryRecord } from '../../../domain/entities/mastery'
 import type { MasteryRepository, MasterySummary, MasteryWithItem } from '../../../domain/ports/mastery-repository'
 
 export class DrizzleMasteryRepository implements MasteryRepository {
@@ -16,7 +16,7 @@ export class DrizzleMasteryRepository implements MasteryRepository {
           target: [playerMastery.playerId, playerMastery.itemId],
           set: {
             xp: sql`excluded.xp`,
-            isMastered: sql`excluded.is_mastered`,
+            rank: sql`excluded.rank`,
             syncedAt: new Date(),
           },
         })
@@ -28,7 +28,7 @@ export class DrizzleMasteryRepository implements MasteryRepository {
       .select({
         category: items.category,
         total: sql<number>`count(*)::int`,
-        mastered: sql<number>`count(case when ${playerMastery.isMastered} then 1 end)::int`,
+        mastered: sql<number>`count(case when ${playerMastery.rank} >= 30 then 1 end)::int`,
       })
       .from(items)
       .leftJoin(
@@ -59,7 +59,7 @@ export class DrizzleMasteryRepository implements MasteryRepository {
         imageName: items.imageName,
         vaulted: items.vaulted,
         xp: playerMastery.xp,
-        isMastered: playerMastery.isMastered,
+        rank: playerMastery.rank,
       })
       .from(items)
       .leftJoin(
@@ -75,10 +75,11 @@ export class DrizzleMasteryRepository implements MasteryRepository {
       conditions.push(eq(items.category, filters.category))
     }
     if (filters?.masteredOnly) {
-      conditions.push(eq(playerMastery.isMastered, true))
+      conditions.push(gte(playerMastery.rank, 30))
     }
     if (filters?.unmasteredOnly) {
-      conditions.push(sql`${playerMastery.isMastered} IS NOT TRUE`)
+      // Not mastered = rank is null (no record) or rank < 30
+      conditions.push(sql`(${playerMastery.rank} IS NULL OR ${playerMastery.rank} < 30)`)
     }
 
     if (conditions.length) {
@@ -87,10 +88,10 @@ export class DrizzleMasteryRepository implements MasteryRepository {
 
     const results = await query.orderBy(items.name)
 
-    // Compute masteryState for each item
+    // Derive masteryState from stored rank
     return results.map(row => ({
       ...row,
-      masteryState: getMasteryState(row.xp ?? 0, row.category, row.maxRank),
+      masteryState: getMasteryStateFromRank(row.rank ?? 0, row.maxRank),
     }))
   }
 
