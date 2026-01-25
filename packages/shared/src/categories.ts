@@ -3,6 +3,22 @@
  * This is the single source of truth for all category-related metadata.
  */
 
+/** Pattern matcher for item detection - can be string (exact match), RegExp, or function */
+export type ItemMatcher = string | RegExp | ((item: any) => boolean)
+
+/** Rule for including/excluding items during seeding */
+export interface SeedingRule {
+  matcher: ItemMatcher
+  reason?: string
+}
+
+/** Rule for overriding maxRank values */
+export interface MaxRankOverride {
+  matcher: ItemMatcher
+  maxRank: number
+  reason?: string
+}
+
 export interface CategoryConfig {
   /** Internal category name (used in DB) */
   name: string
@@ -18,6 +34,17 @@ export interface CategoryConfig {
   subtitle: string
   /** Display order (lower = earlier) */
   sortOrder: number
+  /** Seeding configuration (optional) */
+  seeding?: {
+    /** Custom detector function to identify items for this category */
+    detector?: (item: any) => boolean
+    /** Items to explicitly include (for items not automatically detected) */
+    include?: SeedingRule[]
+    /** Items to explicitly exclude from this category */
+    exclude?: SeedingRule[]
+    /** Override maxRank for specific items in this category */
+    maxRankOverrides?: MaxRankOverride[]
+  }
 }
 
 export const CATEGORIES: Record<string, CategoryConfig> = {
@@ -29,6 +56,14 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
     icon: 'accessibility_new',
     subtitle: 'BIOLOGICAL SUITS',
     sortOrder: 1,
+    seeding: {
+      exclude: [
+        {
+          matcher: (item) => item.name === 'Bonewidow' || item.name === 'Voidrig',
+          reason: 'Necramechs are in separate category',
+        },
+      ],
+    },
   },
   Primary: {
     name: 'Primary',
@@ -60,29 +95,67 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
   Kitgun: {
     name: 'Kitgun',
     displayName: 'Kitgun',
-    wfcdCategory: 'Misc', // Special: filtered from Misc in normalizeCategory
+    wfcdCategory: 'Misc',
     isFrameType: false,
     icon: 'tune',
     subtitle: 'MODULAR SECONDARY',
     sortOrder: 5,
+    seeding: {
+      detector: (item) =>
+        (item.uniqueName?.includes('SUModularSecondary') ||
+          item.uniqueName?.includes('SUModularPrimary')) &&
+        item.uniqueName?.includes('/Barrel/'),
+      include: [
+        {
+          matcher: /SUModular(Secondary|Primary).*\/Barrel\//,
+          reason: 'Kitgun chambers (primary parts only)',
+        },
+      ],
+    },
   },
   Zaw: {
     name: 'Zaw',
     displayName: 'Zaw',
-    wfcdCategory: 'Misc', // Special: filtered from Misc in normalizeCategory
+    wfcdCategory: 'Misc',
     isFrameType: false,
     icon: 'handyman',
     subtitle: 'MODULAR MELEE',
     sortOrder: 6,
+    seeding: {
+      detector: (item) =>
+        item.uniqueName?.includes('ModularMelee') && item.uniqueName?.includes('/Tip/'),
+      include: [
+        {
+          matcher: /ModularMelee.*\/Tip\//,
+          reason: 'Zaw strikes (primary parts only)',
+        },
+      ],
+    },
   },
   Amp: {
     name: 'Amp',
     displayName: 'Amp',
-    wfcdCategory: 'Misc', // Special: filtered from Misc in normalizeCategory
+    wfcdCategory: 'Misc',
     isFrameType: false,
     icon: 'electric_bolt',
     subtitle: 'OPERATOR AMPS',
     sortOrder: 7,
+    seeding: {
+      detector: (item) =>
+        (item.uniqueName?.includes('OperatorAmplifiers') &&
+          item.uniqueName?.includes('Barrel')) ||
+        item.uniqueName === '/Lotus/Weapons/Operator/Pistols/DrifterPistol/DrifterPistolPlayerWeapon',
+      include: [
+        {
+          matcher: /OperatorAmplifiers.*Barrel/,
+          reason: 'Amp prisms (primary parts only)',
+        },
+        {
+          matcher: '/Lotus/Weapons/Operator/Pistols/DrifterPistol/DrifterPistolPlayerWeapon',
+          reason: 'Sirocco (Drifter amp)',
+        },
+      ],
+    },
   },
   Pets: {
     name: 'Pets',
@@ -92,6 +165,18 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
     icon: 'pets',
     subtitle: 'KUBROWS, KAVATS',
     sortOrder: 8,
+    seeding: {
+      include: [
+        {
+          matcher: '/Lotus/Powersuits/Khora/Kavat/KhoraKavatPowerSuit',
+          reason: 'Venari (masterable despite library marking)',
+        },
+        {
+          matcher: '/Lotus/Powersuits/Khora/Kavat/KhoraPrimeKavatPowerSuit',
+          reason: 'Venari Prime (masterable despite library marking)',
+        },
+      ],
+    },
   },
   Sentinels: {
     name: 'Sentinels',
@@ -110,6 +195,9 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
     icon: 'precision_manufacturing',
     subtitle: 'SENTINEL ARMS',
     sortOrder: 10,
+    seeding: {
+      detector: (item) => item.productCategory === 'SentinelWeapons',
+    },
   },
   Archwing: {
     name: 'Archwing',
@@ -141,20 +229,41 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
   Necramechs: {
     name: 'Necramechs',
     displayName: 'Necramechs',
-    wfcdCategory: 'Warframes', // Special: filtered from Warframes in normalizeCategory
+    wfcdCategory: 'Warframes',
     isFrameType: true,
     icon: 'smart_toy',
     subtitle: 'COMBAT MECHS',
     sortOrder: 14,
+    seeding: {
+      detector: (item) => item.name === 'Bonewidow' || item.name === 'Voidrig',
+      maxRankOverrides: [
+        {
+          matcher: (item) => item.name === 'Bonewidow' || item.name === 'Voidrig',
+          maxRank: 40,
+          reason: 'Necramechs cap at rank 40',
+        },
+      ],
+    },
   },
   Vehicles: {
     name: 'Vehicles',
     displayName: 'Vehicles',
-    wfcdCategory: 'Misc', // Special: K-Drives filtered from Misc in normalizeCategory
+    wfcdCategory: 'Misc',
     isFrameType: true,
     icon: 'skateboarding',
     subtitle: 'K-DRIVES',
     sortOrder: 15,
+    seeding: {
+      detector: (item) =>
+        item.uniqueName?.includes('/Vehicles/Hoverboard/') &&
+        item.uniqueName?.includes('Deck'),
+      include: [
+        {
+          matcher: /\/Vehicles\/Hoverboard\/.*Deck/,
+          reason: 'K-Drive decks (primary parts only)',
+        },
+      ],
+    },
   },
 }
 
@@ -220,3 +329,39 @@ export function sortByCategory<T extends { category: string }>(items: T[]): T[] 
  * Type for valid category names.
  */
 export type CategoryName = keyof typeof CATEGORIES
+
+/**
+ * Global seeding exclusion rules.
+ * Items matching these patterns will be excluded from seeding.
+ */
+export const GLOBAL_EXCLUSIONS: SeedingRule[] = [
+  {
+    matcher: /PvPVariant/,
+    reason: 'PvP variants are not masterable',
+  },
+  {
+    matcher: (item) =>
+      (item.uniqueName?.includes('ModularMelee') ||
+        item.uniqueName?.includes('OperatorAmplifiers') ||
+        item.uniqueName?.includes('SUModular')) &&
+      !(item.uniqueName?.includes('/Tip/') || // Zaw strikes
+        item.uniqueName?.includes('/Barrel/')), // Kitgun chambers & Amp prisms
+    reason: 'Non-primary modular parts (grips, links, braces)',
+  },
+]
+
+/**
+ * Global maxRank overrides for specific item patterns.
+ */
+export const GLOBAL_MAX_RANK_OVERRIDES: MaxRankOverride[] = [
+  {
+    matcher: /^(Kuva |Tenet )/,
+    maxRank: 40,
+    reason: 'Kuva and Tenet weapons cap at rank 40',
+  },
+  {
+    matcher: 'Paracesis',
+    maxRank: 40,
+    reason: 'Paracesis caps at rank 40',
+  },
+]

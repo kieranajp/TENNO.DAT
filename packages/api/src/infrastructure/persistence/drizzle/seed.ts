@@ -1,114 +1,21 @@
 import Items from '@wfcd/items'
 import { sql } from 'drizzle-orm'
 import { db, schema } from './connection'
-import { WFCD_CATEGORIES } from '@warframe-tracker/shared'
+import { WFCD_CATEGORIES, SeedingRules } from '@warframe-tracker/shared'
 
 // Categories to fetch from @wfcd/items
 // The library filters by productCategory, not the 'category' field
 const MASTERABLE_CATEGORIES = WFCD_CATEGORIES
-
-/**
- * Normalize category names from @wfcd/items to our internal format.
- * - Arch-Gun and Arch-Melee use hyphens in the library but we want ArchGun/ArchMelee
- * - SentinelWeapons items have category: "Primary" but we want them as SentinelWeapons
- * - Modular weapons (Zaws, Kitguns, Amps) need special categorization based on uniqueName
- * - Necramechs separated from Warframes into their own "Necramechs" category
- * - K-Drives as Vehicles instead of Misc
- */
-function normalizeCategory(item: any): string {
-  // Skip PvP variants
-  if (item.uniqueName?.includes('PvPVariant')) {
-    return 'PvPVariant' // Will be filtered out
-  }
-
-  // Necramechs (Bonewidow, Voidrig) - separate from Warframes
-  if (item.name === 'Bonewidow' || item.name === 'Voidrig') {
-    return 'Necramechs'
-  }
-
-  // K-Drives (hoverboards) - only the board decks count for mastery
-  if (item.uniqueName?.includes('/Vehicles/Hoverboard/') && item.uniqueName?.includes('Deck')) {
-    return 'Vehicles'
-  }
-
-  // Zaw strikes (primary parts only - Tip in path means it's the strike)
-  if (item.uniqueName?.includes('ModularMelee') && item.uniqueName?.includes('/Tip/')) {
-    return 'Zaw'
-  }
-
-  // Kitgun chambers (primary parts only - Barrel in path means it's the chamber)
-  if (item.uniqueName?.includes('SUModularSecondary') && item.uniqueName?.includes('/Barrel/')) {
-    return 'Kitgun'
-  }
-  if (item.uniqueName?.includes('SUModularPrimary') && item.uniqueName?.includes('/Barrel/')) {
-    return 'Kitgun'
-  }
-
-  // Amp prisms (primary parts only - Barrel in path means it's the prism)
-  // Includes the Mote Amp (training amp) and Sirocco (Drifter amp)
-  if (item.uniqueName?.includes('OperatorAmplifiers') && item.uniqueName?.includes('Barrel')) {
-    return 'Amp'
-  }
-  if (item.uniqueName === '/Lotus/Weapons/Operator/Pistols/DrifterPistol/DrifterPistolPlayerWeapon') {
-    return 'Amp' // Sirocco (Drifter's amp)
-  }
-
-  // Skip non-primary modular parts (grips, links, braces, loaders, etc)
-  if (item.uniqueName?.includes('ModularMelee') ||
-      item.uniqueName?.includes('OperatorAmplifiers') ||
-      item.uniqueName?.includes('SUModular')) {
-    return 'ModularPart' // Will be filtered out
-  }
-
-  // SentinelWeapons items have productCategory set correctly but category says "Primary"
-  if (item.productCategory === 'SentinelWeapons') {
-    return 'SentinelWeapons'
-  }
-
-  // Normalize hyphenated categories to our internal names
-  const categoryMap: Record<string, string> = {
-    'Arch-Gun': 'ArchGun',
-    'Arch-Melee': 'ArchMelee',
-  }
-  return categoryMap[item.category] ?? item.category
-}
 
 async function seed() {
   console.log('Fetching items from @wfcd/items...')
 
   const allItems = new Items({ category: MASTERABLE_CATEGORIES as any })
 
-  // Include items marked as masterable, plus modular weapon primary parts
-  // (The library incorrectly marks amp/zaw/kitgun parts as non-masterable)
-  // Also include Venari (Khora's companion) which the library marks incorrectly
-  const masterableItems = allItems.filter((item: any) => {
-    const isModularPrimary =
-      (item.uniqueName?.includes('ModularMelee') && item.uniqueName?.includes('/Tip/')) ||
-      (item.uniqueName?.includes('SUModular') && item.uniqueName?.includes('/Barrel/')) ||
-      (item.uniqueName?.includes('OperatorAmplifiers') && item.uniqueName?.includes('Barrel')) ||
-      item.uniqueName === '/Lotus/Weapons/Operator/Pistols/DrifterPistol/DrifterPistolPlayerWeapon' // Sirocco
-
-    // Venari and Venari Prime are masterable despite library marking them as false
-    const isVenari =
-      item.uniqueName === '/Lotus/Powersuits/Khora/Kavat/KhoraKavatPowerSuit' || // Venari
-      item.uniqueName === '/Lotus/Powersuits/Khora/Kavat/KhoraPrimeKavatPowerSuit' // Venari Prime
-
-    return item.masterable !== false || isModularPrimary || isVenari
-  })
+  // Filter to masterable items using declarative rules
+  const masterableItems = allItems.filter((item: any) => SeedingRules.shouldInclude(item))
 
   console.log(`Found ${masterableItems.length} masterable items`)
-
-  const getMaxRank = (item: any): number => {
-    // Use maxLevelCap from @wfcd/items if available (handles Incarnon weapons, etc.)
-    if (item.maxLevelCap && typeof item.maxLevelCap === 'number') {
-      return item.maxLevelCap
-    }
-    // Fallback logic for items without maxLevelCap
-    if (item.name === 'Bonewidow' || item.name === 'Voidrig') return 40
-    if (item.name?.includes('Kuva ') || item.name?.includes('Tenet ')) return 40
-    if (item.name === 'Paracesis') return 40
-    return 30
-  }
 
   const getMasteryReq = (item: any): number => {
     const mr = item.masteryReq
@@ -148,13 +55,21 @@ async function seed() {
 
   const itemsToInsert = masterableItems
     .map((item: any) => {
+      // Detect category using declarative rules
+      const category = SeedingRules.detectCategory(item)
+
+      // Skip items with no valid category
+      if (!category) {
+        return null
+      }
+
       const mapped = {
         uniqueName: String(item.uniqueName ?? ''),
         name: String(item.name ?? ''),
-        category: normalizeCategory(item),  // Normalize category names
+        category,
         isPrime: Boolean(item.isPrime ?? false),
         masteryReq: getMasteryReq(item),
-        maxRank: getMaxRank(item),
+        maxRank: SeedingRules.getMaxRank(item, category),
         imageName: item.imageName ? String(item.imageName) : null,
         vaulted: item.vaulted != null ? Boolean(item.vaulted) : null,
         // Acquisition data
@@ -175,7 +90,7 @@ async function seed() {
       }
       return mapped
     })
-    .filter(item => item.category !== 'ModularPart' && item.category !== 'PvPVariant')  // Exclude non-primary modular parts and PvP variants
+    .filter((item): item is NonNullable<typeof item> => item !== null)
 
   // Add Plexus manually (not in @wfcd/items library)
   // The Plexus is the Railjack mod configuration system introduced in Update 29.10.0
