@@ -32,13 +32,45 @@ export function syncRoutes(container: Container) {
     }
 
     try {
+      console.log(`[Sync] Starting sync for player: ${settings.playerId}, platform: ${settings.platform}`)
+
       const profile = await container.profileApi.fetch(settings.playerId, settings.platform as Platform)
+
+      console.log(`[Sync] Profile fetched:`)
+      console.log(`  - displayName: ${profile.displayName}`)
+      console.log(`  - playerLevel: ${profile.playerLevel}`)
+      console.log(`  - xpComponents count: ${profile.xpComponents.length}`)
+
+      if (profile.xpComponents.length > 0) {
+        console.log(`[Sync] Sample xpComponents (first 5):`)
+        profile.xpComponents.slice(0, 5).forEach(xp => {
+          console.log(`    - ${xp.itemType}: ${xp.xp} XP`)
+        })
+      }
 
       if (profile.displayName) {
         await container.playerRepo.updateDisplayName(settings.playerId, profile.displayName)
       }
 
       const itemsMap = await container.itemRepo.findAllAsMap()
+      console.log(`[Sync] Items in database: ${itemsMap.size}`)
+
+      // Log sample database uniqueNames for comparison
+      const sampleDbItems = Array.from(itemsMap.keys()).slice(0, 3)
+      console.log(`[Sync] Sample DB uniqueNames: ${sampleDbItems.join(', ')}`)
+
+      // Check how many match
+      const matchedCount = profile.xpComponents.filter(xp => itemsMap.has(xp.itemType)).length
+      const unmatchedSample = profile.xpComponents
+        .filter(xp => !itemsMap.has(xp.itemType))
+        .slice(0, 5)
+        .map(xp => xp.itemType)
+
+      console.log(`[Sync] Matched items: ${matchedCount}/${profile.xpComponents.length}`)
+      if (unmatchedSample.length > 0) {
+        console.log(`[Sync] Sample unmatched itemTypes:`)
+        unmatchedSample.forEach(it => console.log(`    - ${it}`))
+      }
 
       const masteryRecords = profile.xpComponents
         .filter(xp => itemsMap.has(xp.itemType))
@@ -52,8 +84,12 @@ export function syncRoutes(container: Container) {
           }
         })
 
+      console.log(`[Sync] Mastery records to upsert: ${masteryRecords.length}`)
+
       await container.masteryRepo.upsertMany(masteryRecords)
       await container.playerRepo.updateLastSync(settings.playerId)
+
+      console.log(`[Sync] Sync complete - synced: ${masteryRecords.length}, mastered: ${masteryRecords.filter(r => r.isMastered).length}`)
 
       return c.json({
         success: true,
