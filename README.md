@@ -1,6 +1,6 @@
 # TENNO.DAT
 
-> KIM OS v19.99 // MASTERY_TRACKER.EXE
+> KIM OS v19.99 // TENNO.DAT
 
 A retro-themed Warframe mastery tracker with a Windows 95/98 aesthetic. Track your mastery progress, view your loadout, and see what items you still need to master.
 

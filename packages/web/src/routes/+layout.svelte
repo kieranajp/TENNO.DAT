@@ -66,7 +66,7 @@
 	<header class="header-bar">
 		<div class="header-logo">
 			<span class="material-icons">computer</span>
-			<span>KIM OS v19.99 // <span class="logo-accent">MASTERY_TRACKER</span></span>
+			<span>KIM OS v19.99 // <span class="logo-accent">TENNO.DAT</span></span>
 		</div>
 		<div class="header-controls">
 			<div class="user-badge d-none d-md-block">USER: {username.toUpperCase()}</div>
