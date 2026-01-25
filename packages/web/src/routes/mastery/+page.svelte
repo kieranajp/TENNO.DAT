@@ -178,20 +178,24 @@
 						{#if item.isPrime}
 							<span class="item-prime">PRIME</span>
 						{/if}
-						{#if item.maxRank > 30}
-							<span class="item-rank40">R40</span>
-						{/if}
 					</div>
 				</div>
-				{#if item.masteryState === 'mastered_40'}
-					<div class="item-mastered item-mastered-full">
-						<span class="material-icons">check_circle</span>
-					</div>
-				{:else if item.masteryState === 'mastered_30'}
-					<div class="item-mastered">
-						<span class="material-icons">check</span>
-					</div>
-				{/if}
+				<div class="item-rank-display">
+					{#if item.masteryState === 'mastered_40'}
+						<div class="item-mastered item-mastered-full">
+							<span class="material-icons">check_circle</span>
+						</div>
+					{:else if item.masteryState === 'mastered_30'}
+						{#if item.maxRank > 30}
+							<span class="rank-progress">{item.rank ?? 0}/{item.maxRank}</span>
+						{/if}
+						<div class="item-mastered">
+							<span class="material-icons">check</span>
+						</div>
+					{:else if (item.rank ?? 0) > 0}
+						<span class="rank-progress rank-incomplete">{item.rank}/{item.maxRank}</span>
+					{/if}
+				</div>
 			</div>
 		{/each}
 	</div>
@@ -379,12 +383,21 @@
 		padding: 0 0.25rem
 		border: 1px solid #f59e0b
 
-	.item-rank40
-		font-size: 0.65rem
-		background: #ede9fe
-		color: #6b21a8
-		padding: 0 0.25rem
-		border: 1px solid #a855f7
+	.item-rank-display
+		display: flex
+		align-items: center
+		gap: 0.25rem
+		flex-shrink: 0
+
+	.rank-progress
+		font-family: 'Share Tech Mono', monospace
+		font-size: 0.7rem
+		color: #6b7280
+		white-space: nowrap
+
+		&.rank-incomplete
+			color: #C0392B
+			font-weight: 500
 
 	.item-mastered
 		flex-shrink: 0

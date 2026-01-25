@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import type { Platform } from '../../domain/entities/player'
-import { isMastered } from '../../domain/entities/mastery'
+import { getRankFromXp } from '../../domain/entities/mastery'
 import { createLogger } from '../../infrastructure/logger'
 
 const log = createLogger('Sync')
@@ -77,7 +77,7 @@ export function syncRoutes(container: Container) {
             playerId: settings.playerId,
             itemId: item.id,
             xp: xp.xp,
-            isMastered: isMastered(xp.xp, item.category, item.maxRank),
+            rank: getRankFromXp(xp.xp, item.category, item.maxRank),
           }
         })
 
@@ -96,7 +96,7 @@ export function syncRoutes(container: Container) {
 
       await container.loadoutRepo.upsert(settings.playerId, loadoutData)
 
-      const masteredCount = masteryRecords.filter(r => r.isMastered).length
+      const masteredCount = masteryRecords.filter(r => r.rank >= 30).length
       log.info('Sync complete', {
         synced: masteryRecords.length,
         mastered: masteredCount,

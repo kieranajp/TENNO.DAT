@@ -26,9 +26,6 @@ importers:
         specifier: ^3.4.0
         version: 3.4.8
     devDependencies:
-      '@types/node':
-        specifier: ^25.0.10
-        version: 25.0.10
       drizzle-kit:
         specifier: ^0.21.0
         version: 0.21.4
@@ -1968,6 +1965,7 @@ snapshots:
   '@types/node@25.0.10':
     dependencies:
       undici-types: 7.16.0
+    optional: true
 
   '@wfcd/items@1.1272.109(warframe-worldstate-data@3.1.19)':
     dependencies:
@@ -2442,7 +2440,8 @@ snapshots:
 
   typescript@5.9.3: {}
 
-  undici-types@7.16.0: {}
+  undici-types@7.16.0:
+    optional: true
 
   vite@6.4.1(@types/node@25.0.10)(sass@1.97.3)(tsx@4.21.0):
     dependencies:
