@@ -96,4 +96,4 @@ Workflow for SASS refactors:
 
 ### CI
 
-GitHub Actions runs unit tests on push to `main` and on PRs. Visual tests can be run locally before pushing.
+GitHub Actions runs both unit tests and visual regression tests on push to `main` and on PRs. If E2E tests fail, the Playwright report is uploaded as an artifact with screenshot diffs.

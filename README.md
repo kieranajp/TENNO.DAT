@@ -119,7 +119,7 @@ Visual tests capture screenshots of all pages and compare against baselines.
 
 ### CI
 
-Tests run automatically on push to `main` and on pull requests via GitHub Actions.
+Both unit tests and visual regression tests run automatically on push to `main` and on pull requests via GitHub Actions. If E2E tests fail, the Playwright report is uploaded as an artifact for debugging.
 
 ## License
 
