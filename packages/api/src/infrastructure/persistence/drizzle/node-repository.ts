@@ -119,7 +119,11 @@ export class DrizzleNodeRepository implements NodeRepository {
     const planetOrder = [
       'Earth', 'Venus', 'Mercury', 'Mars', 'Phobos', 'Void', 'Ceres',
       'Jupiter', 'Europa', 'Saturn', 'Uranus', 'Neptune', 'Pluto',
-      'Sedna', 'Eris', 'Kuva Fortress', 'Lua', 'Deimos', 'Zariman'
+      'Sedna', 'Eris', 'Kuva Fortress', 'Lua', 'Deimos', 'Zariman',
+      'Duviri', 'Höllvania',
+      // Railjack Proxima regions
+      'Earth Proxima', 'Venus Proxima', 'Saturn Proxima',
+      'Neptune Proxima', 'Pluto Proxima', 'Veil Proxima'
     ]
 
     for (const planetName of planetOrder) {

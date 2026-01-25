@@ -1,8 +1,18 @@
 import { sql } from 'drizzle-orm'
 import { db, schema } from './connection'
 
-interface RawNode {
-  value: string    // e.g., "Galatea (Neptune)"
+// FrameHub node structure
+interface FrameHubNode {
+  name: string
+  type: number
+  faction: number
+  lvl: [number, number]
+  xp?: number
+}
+
+// Warframestat node structure (for Railjack)
+interface WarframestatNode {
+  value: string
   enemy?: string
   type?: string
 }
@@ -10,8 +20,13 @@ interface RawNode {
 // Junction XP is always 1000
 const JUNCTION_XP = 1000
 
-// Junctions (not in warframestat API, must be hardcoded)
-// Format: Tag from DE API -> Display name
+// Default XP for nodes without explicit XP (FrameHub uses ~24 for most)
+const DEFAULT_NODE_XP = 24
+
+// Railjack nodes give 69 XP each (based on FrameHub data pattern)
+const RAILJACK_NODE_XP = 69
+
+// Junctions (not in any API, must be hardcoded)
 const JUNCTIONS: Array<{ key: string; name: string; planet: string }> = [
   { key: 'EarthToVenusJunction', name: 'Venus Junction', planet: 'Earth' },
   { key: 'VenusToMercuryJunction', name: 'Mercury Junction', planet: 'Venus' },
@@ -24,95 +39,80 @@ const JUNCTIONS: Array<{ key: string; name: string; planet: string }> = [
   { key: 'SaturnToUranusJunction', name: 'Uranus Junction', planet: 'Saturn' },
   { key: 'UranusToNeptuneJunction', name: 'Neptune Junction', planet: 'Uranus' },
   { key: 'NeptuneToPlutoJunction', name: 'Pluto Junction', planet: 'Neptune' },
-  { key: 'PlutoToSednaJunction', name: 'Sedna Junction', planet: 'Pluto' },
+  { key: 'ErisToSednaJunction', name: 'Sedna Junction', planet: 'Eris' },
   { key: 'PlutoToErisJunction', name: 'Eris Junction', planet: 'Pluto' },
 ]
 
-// Regular node XP averages ~63 based on total ~14,000 XP / 227 nodes
-const REGULAR_NODE_XP = 63
-
-// Railjack nodes give more XP (varies, but typically higher)
-const RAILJACK_NODE_XP = 100
+// Railjack proxima regions for grouping
+const RAILJACK_REGIONS: Record<string, string> = {
+  'Earth': 'Earth Proxima',
+  'Venus': 'Venus Proxima',
+  'Saturn': 'Saturn Proxima',
+  'Neptune': 'Neptune Proxima',
+  'Pluto': 'Pluto Proxima',
+  'Veil': 'Veil Proxima',
+}
 
 /**
- * Parse planet from node value like "Galatea (Neptune)" -> "Neptune"
- * For junctions like "EarthToVenusJunction", extract from key
+ * Parse Railjack planet from value like "Mordo Cluster (Saturn)" -> "Saturn Proxima"
  */
-function parsePlanet(value: string, nodeKey: string): string {
-  // Handle junctions - extract planet from key (e.g., "EarthToVenusJunction" -> "Earth")
-  if (nodeKey.includes('Junction')) {
-    const match = nodeKey.match(/^(\w+)To/)
-    return match ? match[1] : 'Unknown'
-  }
-
-  // Regular nodes have format "Name (Planet)"
+function parseRailjackPlanet(value: string): string {
   const match = value.match(/\(([^)]+)\)/)
-  return match ? match[1] : 'Unknown'
-}
-
-/**
- * Determine node type from raw data
- */
-function getNodeType(nodeKey: string, rawType?: string): 'mission' | 'junction' | 'railjack' {
-  if (nodeKey.includes('Junction')) return 'junction'
-  if (rawType?.includes('Empyrean') || rawType?.includes('Railjack') || rawType?.includes('Skirmish')) return 'railjack'
-  return 'mission'
-}
-
-/**
- * Get mastery XP for a node
- */
-function getMasteryXp(nodeType: 'mission' | 'junction' | 'railjack'): number {
-  switch (nodeType) {
-    case 'junction': return JUNCTION_XP
-    case 'railjack': return RAILJACK_NODE_XP
-    default: return REGULAR_NODE_XP
-  }
-}
-
-/**
- * Check if node should be excluded (no mastery XP)
- */
-function shouldExclude(nodeKey: string, rawType?: string, enemy?: string): boolean {
-  // Exclude hub/relay nodes
-  if (rawType === 'Hub' || rawType === 'Relay') return true
-  // Exclude clan/dark sector nodes
-  if (nodeKey.includes('Clan') || rawType?.includes('Dark Sector')) return true
-  // Exclude event nodes
-  if (nodeKey.includes('Event') || rawType?.includes('Event')) return true
-  // Exclude PvP/Conclave
-  if (rawType?.includes('PvP') || rawType?.includes('Conclave')) return true
-  // Exclude crew battle nodes that aren't real missions
-  if (rawType === 'Crew Battle') return true
-  return false
+  const planet = match ? match[1] : 'Unknown'
+  return RAILJACK_REGIONS[planet] || `${planet} Proxima`
 }
 
 async function seedNodes() {
-  console.log('Fetching nodes from warframestat API...')
+  console.log('Fetching nodes from FrameHub...')
 
-  const response = await fetch('https://api.warframestat.us/solNodes')
-  if (!response.ok) {
-    throw new Error(`Failed to fetch nodes: ${response.status}`)
+  // Fetch curated node data from FrameHub
+  const frameHubResponse = await fetch('https://raw.githubusercontent.com/Paroxity/FrameHub/main/src/resources/nodes.json')
+  if (!frameHubResponse.ok) {
+    throw new Error(`Failed to fetch FrameHub nodes: ${frameHubResponse.status}`)
+  }
+  const frameHubData = await frameHubResponse.json() as Record<string, Record<string, FrameHubNode>>
+
+  // Build mission nodes from FrameHub (excludes ClanNodes automatically by filtering SolNode prefix)
+  const missionNodes: Array<{ nodeKey: string; name: string; planet: string; nodeType: 'mission'; masteryXp: number }> = []
+
+  for (const [planet, nodes] of Object.entries(frameHubData)) {
+    for (const [nodeKey, node] of Object.entries(nodes)) {
+      // Only include SolNodes (skip ClanNodes which are Dark Sector)
+      if (!nodeKey.startsWith('SolNode')) continue
+
+      missionNodes.push({
+        nodeKey,
+        name: node.name,
+        planet,
+        nodeType: 'mission',
+        masteryXp: node.xp ?? DEFAULT_NODE_XP,
+      })
+    }
   }
 
-  const data = await response.json() as Record<string, RawNode>
+  console.log(`FrameHub: ${missionNodes.length} mission nodes`)
 
-  console.log(`Received ${Object.keys(data).length} total nodes`)
+  // Fetch Railjack nodes from warframestat (CrewBattleNodes)
+  console.log('Fetching Railjack nodes from warframestat...')
+  const warframestatResponse = await fetch('https://api.warframestat.us/solNodes/')
+  if (!warframestatResponse.ok) {
+    throw new Error(`Failed to fetch warframestat nodes: ${warframestatResponse.status}`)
+  }
+  const warframestatData = await warframestatResponse.json() as Record<string, WarframestatNode>
 
-  const missionNodes = Object.entries(data)
-    .filter(([key, node]) => !shouldExclude(key, node.type, node.enemy))
-    .map(([key, node]) => {
-      const nodeType = getNodeType(key, node.type)
-      return {
-        nodeKey: key,
-        name: node.value.replace(/\s*\([^)]+\)\s*$/, '').trim(), // Remove planet suffix
-        planet: parsePlanet(node.value, key),
-        nodeType,
-        masteryXp: getMasteryXp(nodeType),
-      }
-    })
+  const railjackNodes = Object.entries(warframestatData)
+    .filter(([key]) => key.startsWith('CrewBattleNode'))
+    .map(([key, node]) => ({
+      nodeKey: key,
+      name: node.value.replace(/\s*\([^)]+\)\s*$/, '').trim(),
+      planet: parseRailjackPlanet(node.value),
+      nodeType: 'railjack' as const,
+      masteryXp: RAILJACK_NODE_XP,
+    }))
 
-  // Add hardcoded junctions (not in warframestat API)
+  console.log(`Warframestat: ${railjackNodes.length} Railjack nodes`)
+
+  // Add hardcoded junctions
   const junctionNodes = JUNCTIONS.map(j => ({
     nodeKey: j.key,
     name: j.name,
@@ -121,30 +121,26 @@ async function seedNodes() {
     masteryXp: JUNCTION_XP,
   }))
 
-  const nodesToInsert = [...missionNodes, ...junctionNodes]
+  const nodesToInsert = [...missionNodes, ...railjackNodes, ...junctionNodes]
 
-  console.log(`Filtered to ${nodesToInsert.length} masterable nodes`)
-  console.log(`  - Junctions: ${nodesToInsert.filter(n => n.nodeType === 'junction').length}`)
-  console.log(`  - Railjack: ${nodesToInsert.filter(n => n.nodeType === 'railjack').length}`)
-  console.log(`  - Missions: ${nodesToInsert.filter(n => n.nodeType === 'mission').length}`)
+  console.log(`Total: ${nodesToInsert.length} masterable nodes`)
+  console.log(`  - Missions: ${missionNodes.length}`)
+  console.log(`  - Railjack: ${railjackNodes.length}`)
+  console.log(`  - Junctions: ${junctionNodes.length}`)
 
   const totalXp = nodesToInsert.reduce((sum, n) => sum + n.masteryXp, 0)
   console.log(`  - Total XP: ${totalXp.toLocaleString()}`)
 
-  console.log('Inserting nodes into database...')
+  // Clear existing nodes and insert fresh data
+  console.log('Clearing existing nodes...')
+  await db.delete(schema.playerNodes)
+  await db.delete(schema.nodes)
 
+  console.log('Inserting nodes into database...')
   const BATCH_SIZE = 100
   for (let i = 0; i < nodesToInsert.length; i += BATCH_SIZE) {
     const batch = nodesToInsert.slice(i, i + BATCH_SIZE)
-    await db.insert(schema.nodes).values(batch).onConflictDoUpdate({
-      target: schema.nodes.nodeKey,
-      set: {
-        name: sql`excluded.name`,
-        planet: sql`excluded.planet`,
-        nodeType: sql`excluded.node_type`,
-        masteryXp: sql`excluded.mastery_xp`,
-      },
-    })
+    await db.insert(schema.nodes).values(batch)
     console.log(`Inserted ${Math.min(i + BATCH_SIZE, nodesToInsert.length)}/${nodesToInsert.length}`)
   }
 

@@ -12,10 +12,6 @@
 		loading = true;
 		try {
 			progress = await getStarChartNodes(steelPath);
-			// Expand first planet by default
-			if (progress.planets.length > 0 && expandedPlanets.size === 0) {
-				expandedPlanets = new Set([progress.planets[0].name]);
-			}
 		} finally {
 			loading = false;
 		}
