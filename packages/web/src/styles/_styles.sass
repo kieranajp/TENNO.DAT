@@ -1,0 +1,27 @@
+@import "variables"
+
+// Bootstrap (full import for proper variable cascading)
+@import "bootstrap/scss/bootstrap"
+
+// Custom global styles
+.item-image
+  width: 64px
+  height: 64px
+  object-fit: contain
+  background: #f1f5f9
+  border-radius: $border-radius
+
+  &.placeholder
+    display: flex
+    align-items: center
+    justify-content: center
+    color: #94a3b8
+    font-size: 0.75rem
+
+.mastered
+  opacity: 0.6
+
+.mastery-check
+  color: $success
+  font-weight: bold
+  font-size: 1.25rem

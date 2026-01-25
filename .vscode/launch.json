@@ -8,7 +8,6 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["dev:api"],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]
     },
     {
@@ -18,7 +17,6 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["dev:web"],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]
     },
     {

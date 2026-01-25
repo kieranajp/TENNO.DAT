@@ -4,7 +4,7 @@
 
 Build a local-first web application to track Warframe mastery progress with automatic profile sync, and later manual prime part tracking for targeted farming.
 
-**MVP Scope:** Phases 1 & 2 (project setup + automatic mastery sync)
+**MVP Scope:** Phases 1-3 (project setup + automatic mastery sync + web frontend)
 
 ## Tech Stack
 
@@ -21,14 +21,14 @@ Build a local-first web application to track Warframe mastery progress with auto
 
 ## Current State Analysis
 
-**Status:** Phases 1 & 2 complete. Backend API fully functional with 749 items seeded.
+**Status:** Phases 1, 2 & 3 complete. Full MVP functional.
 
 - ✅ Monorepo structure with pnpm workspaces
 - ✅ PostgreSQL + Drizzle ORM with migrations
 - ✅ 749 masterable items seeded from @wfcd/items
 - ✅ Hono API server with items, mastery, and sync routes
 - ✅ DE profile API adapter for syncing XP data
-- ⬜ Web frontend (Phase 3)
+- ✅ SvelteKit frontend with Dashboard, Mastery list, and Settings pages
 
 **Original context:**
 - Research completed in `thoughts/shared/research/R1-2026-01-24-warframe-mastery-tracker-feasibility.md`
@@ -1275,7 +1275,7 @@ export const playerMastery = pgTable('player_mastery', {
 
 ---
 
-## Phase 3: Web Frontend (MVP) ⬅️ NEXT
+## Phase 3: Web Frontend (MVP) ✅ COMPLETE
 
 ### Overview
 
@@ -1806,10 +1806,10 @@ export function getImageUrl(imageName: string | null): string {
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] `pnpm install` in web package installs dependencies
-- [ ] `pnpm dev:web` starts Vite dev server on port 5173
-- [ ] No TypeScript errors in web package
-- [ ] No SASS compilation errors
+- [x] `pnpm install` in web package installs dependencies
+- [x] `pnpm dev:web` starts Vite dev server on port 5173
+- [x] No TypeScript errors in web package
+- [x] No SASS compilation errors (build passes)
 
 #### Manual Verification:
 - [ ] Dashboard shows category progress bars
@@ -1820,6 +1820,12 @@ export function getImageUrl(imageName: string | null): string {
 - [ ] Search filters items by name
 - [ ] Settings page saves and loads account ID
 - [ ] Navigation between pages works
+
+**Implementation Notes:**
+- Used Svelte 5 with runes syntax ($state, $derived, $props)
+- Full Bootstrap SASS import (selective imports had dependency issues)
+- CSS placeholder for missing images instead of image file
+- Deprecation warnings silenced in vite.config.ts for Bootstrap compatibility
 
 ---
 
