@@ -4,6 +4,20 @@
 
 Add star chart node and junction tracking to the mastery rank calculation. The DE public profile API **does** expose mission completion data, making automatic sync possible.
 
+## Current State
+
+**Already implemented:**
+- Manual intrinsics entry in Settings (railjack 0-50, drifter 0-40)
+- `intrinsicsToXP()` function in mastery calculation
+- Intrinsics stored in `player_settings` table
+
+**Not yet implemented:**
+- Star chart node tracking
+- Junction tracking
+- Auto-sync intrinsics from profile API (currently manual only)
+
+---
+
 ## Research Findings
 
 ### What the Profile API Provides
@@ -16,6 +30,22 @@ Based on analysis of [WFCD/profile-parser](https://github.com/WFCD/profile-parse
 | **Intrinsics** | Yes | `Results[0].LoadOutInventory` | Railjack + Drifter intrinsics ranks |
 | **Junctions** | Unclear | Needs investigation | May be in Missions array or separate field |
 | **MissionsCompleted** | Yes | `Results[0].Stats.MissionsCompleted` | Total count (not per-node) |
+
+### Intrinsics Data (Can Be Auto-Synced!)
+
+The profile API **does** expose intrinsics - contrary to what the settings page currently says. From profile-parser:
+
+```typescript
+// Railjack Intrinsics (in LoadOutInventory)
+LPP_SPACE / 1000 = railjackPoints
+// Individual skills: Tactical, Piloting, Gunnery, Engineering, Command
+
+// Drifter Intrinsics
+LPP_DRIFTER / 1000 = drifterPoints
+// Individual skills: Riding, Combat, Opportunity, Endurance
+```
+
+**Recommendation**: Auto-sync during profile sync, keep manual entry as override/fallback.
 
 ### Mastery XP Values (from [FrameHub](https://github.com/Paroxity/FrameHub))
 
@@ -225,16 +255,30 @@ Add new page/component showing:
 
 ## Tasks
 
+### Phase 0: Quick Win - Auto-Sync Intrinsics
+- [ ] Extend `de-profile-api.ts` to extract intrinsics from `LoadOutInventory`
+- [ ] Update sync route to call `updateIntrinsics()` with extracted values
+- [ ] Update settings page text (remove "not available from API" note)
+
+### Phase 1: Research & Schema
 - [ ] Dump a real profile response and examine `Stats.Missions` structure
 - [ ] Verify junction representation in profile data
-- [ ] Create Drizzle schema for nodes, junctions, intrinsics tables
-- [ ] Create seed script for node data (from FrameHub or build our own)
-- [ ] Extend profile API adapter to extract missions + intrinsics
-- [ ] Add repositories for node/junction/intrinsics data
-- [ ] Update sync route to process star chart data
-- [ ] Update mastery calculation to include all XP sources
-- [ ] Build star chart UI component
-- [ ] Add intrinsics display to dashboard
+- [ ] Create Drizzle schema for nodes, junctions tables
+
+### Phase 2: Seed Star Chart Data
+- [ ] Download/adapt FrameHub's nodes.json
+- [ ] Create seed script for node data
+- [ ] Handle junction data separately
+
+### Phase 3: Sync Star Chart Progress
+- [ ] Extend profile API adapter to extract `Stats.Missions[]`
+- [ ] Add node/junction repositories
+- [ ] Update sync route to process star chart completions
+
+### Phase 4: Mastery & UI
+- [ ] Update mastery calculation to include node/junction XP
+- [ ] Build star chart progress UI component
+- [ ] Add to dashboard summary
 
 ---
 

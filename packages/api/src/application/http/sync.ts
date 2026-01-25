@@ -24,21 +24,6 @@ export function syncRoutes(container: Container) {
     return c.json({ success: true })
   })
 
-  router.post('/intrinsics', async (c) => {
-    const settings = await container.playerRepo.getSettings()
-    if (!settings) {
-      return c.json({ error: 'No player configured' }, 400)
-    }
-
-    const { railjack, drifter } = await c.req.json<{
-      railjack: number
-      drifter: number
-    }>()
-
-    await container.playerRepo.updateIntrinsics(settings.playerId, railjack, drifter)
-    return c.json({ success: true })
-  })
-
   router.post('/profile', async (c) => {
     const settings = await container.playerRepo.getSettings()
 
@@ -96,11 +81,23 @@ export function syncRoutes(container: Container) {
 
       await container.loadoutRepo.upsert(settings.playerId, loadoutData)
 
+      // Auto-sync intrinsics from profile
+      const { intrinsics } = profile
+      await container.playerRepo.updateIntrinsics(
+        settings.playerId,
+        intrinsics.railjack.total,
+        intrinsics.drifter.total
+      )
+
       const masteredCount = masteryRecords.filter(r => r.isMastered).length
       log.info('Sync complete', {
         synced: masteryRecords.length,
         mastered: masteredCount,
         loadout: loadoutData,
+        intrinsics: {
+          railjack: intrinsics.railjack.total,
+          drifter: intrinsics.drifter.total,
+        },
       })
 
       return c.json({

@@ -168,17 +168,6 @@ export async function saveSettings(playerId: string, platform: string): Promise<
 	}
 }
 
-export async function saveIntrinsics(railjack: number, drifter: number): Promise<void> {
-	const res = await fetch(`${API_BASE}/sync/intrinsics`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ railjack, drifter })
-	});
-	if (!res.ok) {
-		throw new Error('Failed to save intrinsics');
-	}
-}
-
 export async function syncProfile(): Promise<SyncResult> {
 	const res = await fetch(`${API_BASE}/sync/profile`, { method: 'POST' });
 	return res.json();

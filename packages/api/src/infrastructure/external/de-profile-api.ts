@@ -1,6 +1,6 @@
 import { writeFileSync } from 'node:fs'
 import type { Platform } from '../../domain/entities/player'
-import type { ProfileApi, ProfileData, Loadout } from '../../domain/ports/profile-api'
+import type { ProfileApi, ProfileData, Loadout, Intrinsics } from '../../domain/ports/profile-api'
 import { createLogger } from '../logger'
 
 const log = createLogger('DeProfileApi')
@@ -58,11 +58,15 @@ export class DeProfileApi implements ProfileApi {
     const loadOutPreset = data.Results?.[0]?.LoadOutPreset ?? {}
     const loadout = this.extractLoadout(loadOutInventory, loadOutPreset)
 
+    // Extract intrinsics
+    const intrinsics = this.extractIntrinsics(loadOutInventory)
+
     log.info('Profile fetched', {
       displayName: data.Results?.[0]?.DisplayName,
       playerLevel: data.Results?.[0]?.PlayerLevel,
       xpItemCount: xpInfo.length,
       loadout,
+      intrinsics,
     })
 
     return {
@@ -73,6 +77,7 @@ export class DeProfileApi implements ProfileApi {
         xp: xp.XP,
       })),
       loadout,
+      intrinsics,
     }
   }
 
@@ -85,6 +90,39 @@ export class DeProfileApi implements ProfileApi {
       secondary: loadOutInventory?.Pistols?.[0]?.ItemType ?? null,
       melee: loadOutInventory?.Melee?.[0]?.ItemType ?? null,
       focusSchool: focusSchoolCode ? (FOCUS_SCHOOLS[focusSchoolCode] ?? focusSchoolCode) : null,
+    }
+  }
+
+  private extractIntrinsics(loadOutInventory: any): Intrinsics {
+    // Railjack intrinsics (5 skills, max 10 each = 50 total)
+    const tactical = loadOutInventory?.LPS_TACTICAL ?? 0
+    const piloting = loadOutInventory?.LPS_PILOTING ?? 0
+    const gunnery = loadOutInventory?.LPS_GUNNERY ?? 0
+    const engineering = loadOutInventory?.LPS_ENGINEERING ?? 0
+    const command = loadOutInventory?.LPS_COMMAND ?? 0
+
+    // Drifter intrinsics (4 skills, max 10 each = 40 total)
+    const riding = loadOutInventory?.LPS_DRIFT_RIDING ?? 0
+    const combat = loadOutInventory?.LPS_DRIFT_COMBAT ?? 0
+    const opportunity = loadOutInventory?.LPS_DRIFT_OPPORTUNITY ?? 0
+    const endurance = loadOutInventory?.LPS_DRIFT_ENDURANCE ?? 0
+
+    return {
+      railjack: {
+        tactical,
+        piloting,
+        gunnery,
+        engineering,
+        command,
+        total: tactical + piloting + gunnery + engineering + command,
+      },
+      drifter: {
+        riding,
+        combat,
+        opportunity,
+        endurance,
+        total: riding + combat + opportunity + endurance,
+      },
     }
   }
 }
