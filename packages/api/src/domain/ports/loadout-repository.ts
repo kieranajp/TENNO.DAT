@@ -1,3 +1,5 @@
+import type { MasteryState } from '../entities/mastery'
+
 export interface LoadoutData {
   warframeId: number | null
   primaryId: number | null
@@ -11,6 +13,9 @@ export interface LoadoutItem {
   name: string
   imageName: string | null
   category: string
+  maxRank: number
+  rank: number | null
+  masteryState: MasteryState
 }
 
 export interface LoadoutWithItems {

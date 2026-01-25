@@ -32,28 +32,39 @@ export function getRank30Xp(category: string): number {
 }
 
 /**
- * Determine the three-state mastery level.
- * For rank 40 items: distinguishes between "mastered at 30" and "fully mastered at 40"
- * For rank 30 items: mastered_30 means fully mastered
+ * Calculate item rank from XP.
+ * Formula: rank = floor(sqrt(xp / multiplier)), capped at maxRank
  */
-export function getMasteryState(xp: number, category: string, maxRank: number): MasteryState {
-  const rank30Xp = getRank30Xp(category)
-  const fullXp = getMasteredXp(category, maxRank)
+export function getRankFromXp(xp: number, category: string, maxRank: number): number {
+  const multiplier = FRAME_CATEGORIES.includes(category as any) ? 1000 : 500
+  return Math.min(Math.floor(Math.sqrt(xp / multiplier)), maxRank)
+}
 
-  if (maxRank > 30 && xp >= fullXp) {
+/**
+ * Derive mastery state from stored rank.
+ * - unmastered: rank < 30
+ * - mastered_30: rank >= 30 (fully mastered for maxRank=30 items, or base mastery for maxRank=40)
+ * - mastered_40: rank >= 40 (only possible for maxRank=40 items)
+ */
+export function getMasteryStateFromRank(rank: number, maxRank: number): MasteryState {
+  if (maxRank > 30 && rank >= 40) {
     return 'mastered_40'
   }
-  if (xp >= rank30Xp) {
+  if (rank >= 30) {
     return 'mastered_30'
   }
   return 'unmastered'
 }
 
 /**
- * Legacy binary mastery check - returns true if mastered at rank 30 or above.
+ * Determine the three-state mastery level from XP.
+ * For rank 40 items: distinguishes between "mastered at 30" and "fully mastered at 40"
+ * For rank 30 items: mastered_30 means fully mastered
+ * @deprecated Use getMasteryStateFromRank with stored rank instead
  */
-export function isMastered(xp: number, category: string, maxRank: number): boolean {
-  return getMasteryState(xp, category, maxRank) !== 'unmastered'
+export function getMasteryState(xp: number, category: string, maxRank: number): MasteryState {
+  const rank = getRankFromXp(xp, category, maxRank)
+  return getMasteryStateFromRank(rank, maxRank)
 }
 
 export interface MasteryRecord {
@@ -61,7 +72,7 @@ export interface MasteryRecord {
   playerId: string
   itemId: number
   xp: number
-  isMastered: boolean
+  rank: number
   syncedAt: Date
 }
 

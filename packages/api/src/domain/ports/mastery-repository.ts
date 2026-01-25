@@ -11,7 +11,7 @@ export interface MasteryWithItem {
   imageName: string | null
   vaulted: boolean | null
   xp: number | null
-  isMastered: boolean | null
+  rank: number | null
   masteryState: MasteryState
 }
 

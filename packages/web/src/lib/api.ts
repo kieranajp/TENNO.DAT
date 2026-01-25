@@ -22,6 +22,9 @@ export interface LoadoutItem {
 	name: string;
 	imageName: string | null;
 	category: string;
+	maxRank: number;
+	rank: number | null;
+	masteryState: MasteryState;
 }
 
 export interface Loadout {
@@ -66,7 +69,7 @@ export interface MasteryItem {
 	imageName: string | null;
 	vaulted: boolean | null;
 	xp: number | null;
-	isMastered: boolean | null;
+	rank: number | null;
 	masteryState: MasteryState;
 }
 

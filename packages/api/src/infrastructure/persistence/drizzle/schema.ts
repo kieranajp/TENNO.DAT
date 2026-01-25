@@ -38,7 +38,7 @@ export const playerMastery = pgTable('player_mastery', {
   playerId: varchar('player_id', { length: 50 }).notNull(),
   itemId: integer('item_id').notNull().references(() => items.id),
   xp: integer('xp').notNull(),
-  isMastered: boolean('is_mastered').notNull(),
+  rank: integer('rank').notNull().default(0),
   syncedAt: timestamp('synced_at').defaultNow().notNull(),
 }, (table) => ({
   playerItemIdx: index('player_item_idx').on(table.playerId, table.itemId),
