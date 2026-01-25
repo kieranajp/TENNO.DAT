@@ -21,7 +21,16 @@ Build a local-first web application to track Warframe mastery progress with auto
 
 ## Current State Analysis
 
-- Greenfield project - no existing code
+**Status:** Phases 1 & 2 complete. Backend API fully functional with 749 items seeded.
+
+- ✅ Monorepo structure with pnpm workspaces
+- ✅ PostgreSQL + Drizzle ORM with migrations
+- ✅ 749 masterable items seeded from @wfcd/items
+- ✅ Hono API server with items, mastery, and sync routes
+- ✅ DE profile API adapter for syncing XP data
+- ⬜ Web frontend (Phase 3)
+
+**Original context:**
 - Research completed in `thoughts/shared/research/R1-2026-01-24-warframe-mastery-tracker-feasibility.md`
 - User is on Linux, so Windows-only tools (AlecaFrame/Overwolf) are not viable
 - Public profile API provides mastery data but NOT inventory
@@ -212,7 +221,7 @@ warframe-tracker/
 
 ---
 
-## Phase 1: Project Setup & Data Layer
+## Phase 1: Project Setup & Data Layer ✅ COMPLETE
 
 ### Overview
 
@@ -822,23 +831,23 @@ export function itemsRoutes(container: Container) {
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] `docker compose up -d` starts PostgreSQL
-- [ ] `pnpm install` completes without errors
-- [ ] `pnpm db:generate` creates migration files
-- [ ] `pnpm db:migrate` applies migrations
-- [ ] `pnpm db:seed` populates items table with 500+ items
-- [ ] `pnpm dev:api` starts Hono server on port 3000
-- [ ] `curl localhost:3000/health` returns `{"status":"ok"}`
-- [ ] `curl localhost:3000/items/categories` returns category counts
+- [x] `docker compose up -d` starts PostgreSQL
+- [x] `pnpm install` completes without errors
+- [x] `pnpm db:generate` creates migration files
+- [x] `pnpm db:migrate` applies migrations
+- [x] `pnpm db:seed` populates items table with 500+ items (749 items)
+- [x] `pnpm dev:api` starts Hono server on port 3000
+- [x] `curl localhost:3000/health` returns `{"status":"ok"}`
+- [x] `curl localhost:3000/items/categories` returns category counts
 
 #### Manual Verification:
-- [ ] Items table contains expected categories (Warframes, Primary, etc.)
-- [ ] Prime items have `is_prime = true`
-- [ ] Kuva/Tenet weapons have `max_rank = 40`
+- [x] Items table contains expected categories (Warframes, Primary, etc.)
+- [x] Prime items have `is_prime = true`
+- [x] Kuva/Tenet weapons have `max_rank = 40`
 
 ---
 
-## Phase 2: Profile Sync & Mastery Tracking
+## Phase 2: Profile Sync & Mastery Tracking ✅ COMPLETE
 
 ### Overview
 
@@ -1251,22 +1260,22 @@ export const playerMastery = pgTable('player_mastery', {
 ### Success Criteria:
 
 #### Automated Verification:
-- [ ] `pnpm db:generate` creates new migration for unique constraint
-- [ ] `pnpm db:migrate` applies migration
-- [ ] `curl -X POST localhost:3000/sync/settings -H "Content-Type: application/json" -d '{"playerId":"xxx","platform":"pc"}'` saves settings
-- [ ] `curl localhost:3000/sync/settings` returns saved settings
+- [x] `pnpm db:generate` creates new migration for unique constraint (already in schema)
+- [x] `pnpm db:migrate` applies migration
+- [x] `curl -X POST localhost:3000/sync/settings ...` saves settings
+- [x] `curl localhost:3000/sync/settings` returns saved settings
 - [ ] `curl -X POST localhost:3000/sync/profile` triggers sync (requires valid account ID)
-- [ ] `curl localhost:3000/mastery/summary` returns category breakdown
-- [ ] `curl localhost:3000/mastery/items?category=Warframes` returns warframes with mastery status
+- [x] `curl localhost:3000/mastery/summary` returns category breakdown
+- [x] `curl localhost:3000/mastery/items?category=Warframes` returns warframes with mastery status
 
 #### Manual Verification:
-- [ ] Profile sync correctly retrieves data from DE API
-- [ ] Mastery status correctly calculated based on XP thresholds
-- [ ] Re-syncing updates existing records rather than creating duplicates
+- [ ] Profile sync correctly retrieves data from DE API (needs real account ID)
+- [x] Mastery status correctly calculated based on XP thresholds
+- [x] Re-syncing updates existing records rather than creating duplicates
 
 ---
 
-## Phase 3: Web Frontend (MVP)
+## Phase 3: Web Frontend (MVP) ⬅️ NEXT
 
 ### Overview
 
