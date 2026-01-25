@@ -2,7 +2,7 @@
 
 > KIM OS v19.99 // TENNO.DAT
 
-A retro-themed Warframe mastery tracker with a Windows 95/98 aesthetic. Track your mastery progress, view your loadout, and see what items you still need to master.
+A 1999-themed Warframe mastery tracker. Track your mastery progress, view your loadout, and see what items you still need to master.
 
 ## Screenshots
 
@@ -73,6 +73,11 @@ packages/
 │       ├── domain/           # Entities, ports (interfaces)
 │       ├── infrastructure/   # Drizzle repos, DE API adapter
 │       └── application/      # HTTP routes
+│
+├── shared/       # Shared configuration & types
+│   └── src/
+│       ├── categories.ts     # Single source of truth for all category config
+│       └── seeding-rules.ts  # Declarative item detection & filtering
 │
 └── web/          # SvelteKit frontend
     └── src/
