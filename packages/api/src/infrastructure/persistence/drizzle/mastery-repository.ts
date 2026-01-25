@@ -75,11 +75,20 @@ export class DrizzleMasteryRepository implements MasteryRepository {
       conditions.push(eq(items.category, filters.category))
     }
     if (filters?.masteredOnly) {
-      conditions.push(gte(playerMastery.rank, 30))
+      // Fully mastered = rank >= 30 AND (maxRank = 30 OR rank >= 40)
+      // This means: R30 items at rank 30+, or R40 items at rank 40
+      conditions.push(sql`(
+        ${playerMastery.rank} >= 30
+        AND (${items.maxRank} = 30 OR ${playerMastery.rank} >= 40)
+      )`)
     }
     if (filters?.unmasteredOnly) {
-      // Not mastered = rank is null (no record) or rank < 30
-      conditions.push(sql`(${playerMastery.rank} IS NULL OR ${playerMastery.rank} < 30)`)
+      // Not fully mastered = rank is null, rank < 30, or (maxRank > 30 AND rank < 40)
+      conditions.push(sql`(
+        ${playerMastery.rank} IS NULL
+        OR ${playerMastery.rank} < 30
+        OR (${items.maxRank} > 30 AND ${playerMastery.rank} < 40)
+      )`)
     }
 
     if (conditions.length) {

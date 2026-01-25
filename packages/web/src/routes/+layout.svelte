@@ -39,8 +39,8 @@
 
 	const navItems = [
 		{ href: '/', label: 'Dashboard' },
-		{ href: '/starchart', label: 'Star Chart' },
 		{ href: '/mastery', label: 'Mastery' },
+		{ href: '/starchart', label: 'Star Chart' },
 		{ href: '/settings', label: 'Settings' }
 	];
 </script>

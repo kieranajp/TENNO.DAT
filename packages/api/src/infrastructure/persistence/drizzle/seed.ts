@@ -104,7 +104,12 @@ async function seed() {
   console.log(`Found ${masterableItems.length} masterable items`)
 
   const getMaxRank = (item: any): number => {
-    if (item.category === 'Necramechs') return 40
+    // Use maxLevelCap from @wfcd/items if available (handles Incarnon weapons, etc.)
+    if (item.maxLevelCap && typeof item.maxLevelCap === 'number') {
+      return item.maxLevelCap
+    }
+    // Fallback logic for items without maxLevelCap
+    if (item.name === 'Bonewidow' || item.name === 'Voidrig') return 40
     if (item.name?.includes('Kuva ') || item.name?.includes('Tenet ')) return 40
     if (item.name === 'Paracesis') return 40
     return 30
