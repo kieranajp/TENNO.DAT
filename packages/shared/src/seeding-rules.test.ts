@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { SeedingRules } from './seeding-rules'
+import { isFrameCategory } from './categories'
 
 /**
  * These tests cover the core seeding logic used to populate the database.
@@ -635,6 +636,105 @@ describe('SeedingRules', () => {
 
     it('detects Sweeper as SentinelWeapons', () => {
       expect(SeedingRules.detectCategory(sweeper)).toBe('SentinelWeapons')
+    })
+  })
+
+  /**
+   * Venari and Venari Prime are Khora's companion kavats.
+   * They are marked as masterable: false in @wfcd/items, but they DO give mastery.
+   * The seeding rules have explicit inclusions to ensure they are seeded.
+   */
+  describe('Seeder Integration: Venari (Special Inclusion)', () => {
+    // Venari is marked masterable: false in @wfcd/items, but it IS masterable in-game
+    const venari = {
+      uniqueName: '/Lotus/Powersuits/Khora/Kavat/KhoraKavatPowerSuit',
+      name: 'Venari',
+      category: 'Pets',
+      productCategory: 'Pets',
+      masterable: false, // @wfcd/items marks this incorrectly
+    }
+
+    const venariPrime = {
+      uniqueName: '/Lotus/Powersuits/Khora/Kavat/KhoraPrimeKavatPowerSuit',
+      name: 'Venari Prime',
+      category: 'Pets',
+      productCategory: 'Pets',
+      masterable: false, // @wfcd/items marks this incorrectly
+    }
+
+    // Regular kavat for comparison
+    const smeeta = {
+      uniqueName: '/Lotus/Types/Friendly/Pets/CatbrowPet/CatbrowPetPowerSuit',
+      name: 'Smeeta Kavat',
+      category: 'Pets',
+      productCategory: 'Pets',
+      masterable: true,
+    }
+
+    it('includes Venari despite masterable: false', () => {
+      expect(SeedingRules.shouldInclude(venari)).toBe(true)
+    })
+
+    it('includes Venari Prime despite masterable: false', () => {
+      expect(SeedingRules.shouldInclude(venariPrime)).toBe(true)
+    })
+
+    it('detects Venari as Pets category', () => {
+      expect(SeedingRules.detectCategory(venari)).toBe('Pets')
+    })
+
+    it('detects Venari Prime as Pets category', () => {
+      expect(SeedingRules.detectCategory(venariPrime)).toBe('Pets')
+    })
+
+    it('assigns maxRank 30 to Venari (frame-type)', () => {
+      expect(SeedingRules.getMaxRank(venari, 'Pets')).toBe(30)
+    })
+
+    it('assigns maxRank 30 to Venari Prime (frame-type)', () => {
+      expect(SeedingRules.getMaxRank(venariPrime, 'Pets')).toBe(30)
+    })
+
+    it('includes regular kavats with masterable: true', () => {
+      expect(SeedingRules.shouldInclude(smeeta)).toBe(true)
+    })
+  })
+
+  /**
+   * The Railjack Plexus is the mod configuration system for Railjack.
+   * It was introduced in Update 29.10.0 and gives 6000 mastery XP (200 per rank × 30).
+   *
+   * NOTE: The Plexus is NOT in the @wfcd/items library, so it must be
+   * added manually in the seeder (seed.ts). These tests document the expected
+   * uniqueName and category for when it's manually inserted.
+   */
+  describe('Seeder Integration: Railjack Plexus (Manual Addition)', () => {
+    // The Plexus must be manually added because @wfcd/items doesn't include it
+    const plexus = {
+      uniqueName: '/Lotus/Types/Game/CrewShip/RailJack/DefaultHarness',
+      name: 'Plexus',
+      category: 'Vehicles',
+      maxRank: 30,
+    }
+
+    it('documents the correct uniqueName for Plexus', () => {
+      // This uniqueName is used in DE's profile API for XP tracking
+      expect(plexus.uniqueName).toBe('/Lotus/Types/Game/CrewShip/RailJack/DefaultHarness')
+    })
+
+    it('documents that Plexus should be in Vehicles category', () => {
+      // Grouped with K-Drives and other vehicles
+      expect(plexus.category).toBe('Vehicles')
+    })
+
+    it('documents that Plexus has maxRank 30', () => {
+      // Standard 30 ranks like other equipment
+      expect(plexus.maxRank).toBe(30)
+    })
+
+    it('Vehicles category is frame-type (200 MR per rank)', () => {
+      // Plexus gives 6000 MR (30 ranks × 200 per rank)
+      expect(isFrameCategory('Vehicles')).toBe(true)
     })
   })
 })
