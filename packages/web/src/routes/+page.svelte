@@ -17,7 +17,7 @@
 		Kitgun: { icon: 'tune', subtitle: 'MODULAR SECONDARY' },
 		Zaw: { icon: 'handyman', subtitle: 'MODULAR MELEE' },
 		Amp: { icon: 'electric_bolt', subtitle: 'OPERATOR AMPLIFIERS' },
-		Necramech: { icon: 'smart_toy', subtitle: 'COMBAT MECHS' },
+		Necramechs: { icon: 'smart_toy', subtitle: 'COMBAT MECHS' },
 		Vehicles: { icon: 'skateboarding', subtitle: 'K-DRIVES' },
 		Pets: { icon: 'pets', subtitle: 'KUBROWS, KAVATS' },
 		Sentinels: { icon: 'smart_toy', subtitle: 'FLOATING COMPANIONS' },

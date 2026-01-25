@@ -34,7 +34,7 @@ function normalizeCategory(item: any): string {
 
   // Necramechs (Bonewidow, Voidrig)
   if (item.name === 'Bonewidow' || item.name === 'Voidrig') {
-    return 'Necramech'
+    return 'Necramechs'
   }
 
   // K-Drives (hoverboards) - only the board decks count for mastery

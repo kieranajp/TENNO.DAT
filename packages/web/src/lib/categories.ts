@@ -4,20 +4,20 @@
  */
 export const CATEGORY_ORDER = [
 	'Warframes',
-	'Necramech',
 	'Primary',
 	'Secondary',
 	'Melee',
 	'Kitgun',
 	'Zaw',
 	'Amp',
-	'Vehicles',
 	'Pets',
 	'Sentinels',
 	'SentinelWeapons',
 	'Archwing',
 	'ArchGun',
-	'ArchMelee'
+	'ArchMelee',
+	'Necramechs',
+	'Vehicles',
 ] as const;
 
 export type MasterableCategory = (typeof CATEGORY_ORDER)[number];
