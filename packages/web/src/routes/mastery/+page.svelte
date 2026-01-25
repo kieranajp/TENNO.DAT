@@ -288,6 +288,7 @@
 		object-fit: contain
 		background: #e5e7eb
 		border: 1px solid #9ca3af
+		image-rendering: pixelated
 
 	.item-img-placeholder
 		width: 48px
