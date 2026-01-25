@@ -1,6 +1,15 @@
 import { describe, it, expect } from 'vitest'
 import { SeedingRules } from './seeding-rules'
 
+/**
+ * These tests cover the core seeding logic used to populate the database.
+ * Special attention is paid to:
+ * - Modular weapons (Kitguns, Zaws, Amps) - only primary parts should be included
+ * - Necramechs - should be in separate category with maxRank 40
+ * - PvP variants - should be globally excluded
+ * - Kuva/Tenet weapons - should have maxRank 40
+ */
+
 describe('SeedingRules', () => {
   describe('matches', () => {
     it('matches exact string against uniqueName', () => {
@@ -246,6 +255,386 @@ describe('SeedingRules', () => {
         masterable: false
       }
       expect(SeedingRules.shouldInclude(item)).toBe(true)
+    })
+  })
+
+  /**
+   * Integration tests for seeder scenarios
+   * These test realistic item data as would come from @wfcd/items
+   */
+  describe('Seeder Integration: Kitguns', () => {
+    // Kitgun chambers (barrels) - SHOULD be included
+    const catchmoon = {
+      uniqueName: '/Lotus/Weapons/SolarisUnited/SUModularSecondary/Barrel/SUBarrelC',
+      name: 'Catchmoon',
+      category: 'Misc',
+      productCategory: 'Misc',
+      masterable: true,
+    }
+
+    const tombfinger = {
+      uniqueName: '/Lotus/Weapons/SolarisUnited/SUModularSecondary/Barrel/SUBarrelA',
+      name: 'Tombfinger',
+      category: 'Misc',
+      productCategory: 'Misc',
+    }
+
+    const vermisplicer = {
+      uniqueName: '/Lotus/Weapons/SolarisUnited/SUModularPrimary/Barrel/SUPrimaryBarrelB',
+      name: 'Vermisplicer',
+      category: 'Misc',
+      productCategory: 'Misc',
+    }
+
+    // Kitgun grips - SHOULD be excluded
+    const haymaker = {
+      uniqueName: '/Lotus/Weapons/SolarisUnited/SUModularSecondary/Grip/SUGripA',
+      name: 'Haymaker',
+      category: 'Misc',
+      productCategory: 'Misc',
+    }
+
+    const loaderGrip = {
+      uniqueName: '/Lotus/Weapons/SolarisUnited/SUModularSecondary/Grip/SUGripB',
+      name: 'Ramble',
+      category: 'Misc',
+    }
+
+    // Kitgun loaders - SHOULD be excluded
+    const splat = {
+      uniqueName: '/Lotus/Weapons/SolarisUnited/SUModularSecondary/Handle/SUHandle',
+      name: 'Splat',
+      category: 'Misc',
+    }
+
+    it('includes Kitgun chambers (Catchmoon)', () => {
+      expect(SeedingRules.isGloballyExcluded(catchmoon)).toBe(false)
+      expect(SeedingRules.detectCategory(catchmoon)).toBe('Kitgun')
+      expect(SeedingRules.shouldInclude(catchmoon)).toBe(true)
+    })
+
+    it('includes Kitgun chambers (Tombfinger)', () => {
+      expect(SeedingRules.detectCategory(tombfinger)).toBe('Kitgun')
+    })
+
+    it('includes Primary Kitgun chambers (Vermisplicer)', () => {
+      expect(SeedingRules.detectCategory(vermisplicer)).toBe('Kitgun')
+    })
+
+    it('excludes Kitgun grips (Haymaker)', () => {
+      expect(SeedingRules.isGloballyExcluded(haymaker)).toBe(true)
+      expect(SeedingRules.detectCategory(haymaker)).toBe(null)
+    })
+
+    it('excludes Kitgun grips (Ramble)', () => {
+      expect(SeedingRules.isGloballyExcluded(loaderGrip)).toBe(true)
+    })
+
+    it('excludes Kitgun loaders (Splat)', () => {
+      // Loaders don't match /Barrel/ or /Tip/ patterns
+      expect(SeedingRules.isGloballyExcluded(splat)).toBe(true)
+    })
+
+    it('assigns maxRank 30 to Kitguns', () => {
+      expect(SeedingRules.getMaxRank(catchmoon, 'Kitgun')).toBe(30)
+    })
+  })
+
+  describe('Seeder Integration: Zaws', () => {
+    // Zaw strikes (tips) - SHOULD be included
+    const balla = {
+      uniqueName: '/Lotus/Weapons/Ostron/ModularMelee/Tip/OstronTip1',
+      name: 'Balla',
+      category: 'Misc',
+    }
+
+    const dokrahm = {
+      uniqueName: '/Lotus/Weapons/Ostron/ModularMelee/Tip/OstronTip5',
+      name: 'Dokrahm',
+      category: 'Misc',
+    }
+
+    // Zaw grips - SHOULD be excluded
+    const peye = {
+      uniqueName: '/Lotus/Weapons/Ostron/ModularMelee/Grip/OstronGrip1',
+      name: 'Peye',
+      category: 'Misc',
+    }
+
+    // Zaw links - SHOULD be excluded
+    const ekwanaJaiLink = {
+      uniqueName: '/Lotus/Weapons/Ostron/ModularMelee/Balance/OstronBalance1',
+      name: 'Ekwana Jai Link',
+      category: 'Misc',
+    }
+
+    it('includes Zaw strikes (Balla)', () => {
+      expect(SeedingRules.isGloballyExcluded(balla)).toBe(false)
+      expect(SeedingRules.detectCategory(balla)).toBe('Zaw')
+    })
+
+    it('includes Zaw strikes (Dokrahm)', () => {
+      expect(SeedingRules.detectCategory(dokrahm)).toBe('Zaw')
+    })
+
+    it('excludes Zaw grips (Peye)', () => {
+      expect(SeedingRules.isGloballyExcluded(peye)).toBe(true)
+    })
+
+    it('excludes Zaw links', () => {
+      expect(SeedingRules.isGloballyExcluded(ekwanaJaiLink)).toBe(true)
+    })
+  })
+
+  describe('Seeder Integration: Amps', () => {
+    // Amp prisms (barrels) - SHOULD be included
+    const raplakPrism = {
+      uniqueName: '/Lotus/Weapons/Sentients/OperatorAmplifiers/Set1/Barrel/SentAmpBarrel1',
+      name: 'Raplak Prism',
+      category: 'Misc',
+    }
+
+    const klamora = {
+      uniqueName: '/Lotus/Weapons/Sentients/OperatorAmplifiers/Set2/Barrel/SentAmpBarrel2A',
+      name: 'Klamora Prism',
+      category: 'Misc',
+    }
+
+    // Sirocco (special Drifter amp) - SHOULD be included
+    const sirocco = {
+      uniqueName: '/Lotus/Weapons/Operator/Pistols/DrifterPistol/DrifterPistolPlayerWeapon',
+      name: 'Sirocco',
+      category: 'Misc',
+    }
+
+    // Amp scaffolds - SHOULD be excluded
+    const shraksunScaffold = {
+      uniqueName: '/Lotus/Weapons/Sentients/OperatorAmplifiers/Set1/Grip/SentAmpGrip1',
+      name: 'Shraksun Scaffold',
+      category: 'Misc',
+    }
+
+    // Amp braces - SHOULD be excluded
+    const lohrinBrace = {
+      uniqueName: '/Lotus/Weapons/Sentients/OperatorAmplifiers/Set1/Brace/SentAmpBrace1',
+      name: 'Lohrin Brace',
+      category: 'Misc',
+    }
+
+    it('includes Amp prisms (Raplak)', () => {
+      expect(SeedingRules.isGloballyExcluded(raplakPrism)).toBe(false)
+      expect(SeedingRules.detectCategory(raplakPrism)).toBe('Amp')
+    })
+
+    it('includes Amp prisms (Klamora)', () => {
+      expect(SeedingRules.detectCategory(klamora)).toBe('Amp')
+    })
+
+    it('includes Sirocco (Drifter amp)', () => {
+      expect(SeedingRules.detectCategory(sirocco)).toBe('Amp')
+    })
+
+    it('excludes Amp scaffolds', () => {
+      expect(SeedingRules.isGloballyExcluded(shraksunScaffold)).toBe(true)
+    })
+
+    it('excludes Amp braces', () => {
+      expect(SeedingRules.isGloballyExcluded(lohrinBrace)).toBe(true)
+    })
+  })
+
+  describe('Seeder Integration: Necramechs', () => {
+    const voidrig = {
+      uniqueName: '/Lotus/Powersuits/EntratiMech/ArchonMech/ArchonMechA',
+      name: 'Voidrig',
+      category: 'Warframes',
+      productCategory: 'Warframes',
+    }
+
+    const bonewidow = {
+      uniqueName: '/Lotus/Powersuits/EntratiMech/ArchonMech/ArchonMechB',
+      name: 'Bonewidow',
+      category: 'Warframes',
+      productCategory: 'Warframes',
+    }
+
+    // Regular warframe for comparison
+    const excalibur = {
+      uniqueName: '/Lotus/Powersuits/Excalibur/Excalibur',
+      name: 'Excalibur',
+      category: 'Warframes',
+      productCategory: 'Warframes',
+    }
+
+    it('detects Voidrig as Necramech, not Warframe', () => {
+      expect(SeedingRules.detectCategory(voidrig)).toBe('Necramechs')
+    })
+
+    it('detects Bonewidow as Necramech, not Warframe', () => {
+      expect(SeedingRules.detectCategory(bonewidow)).toBe('Necramechs')
+    })
+
+    it('assigns maxRank 40 to Voidrig', () => {
+      expect(SeedingRules.getMaxRank(voidrig, 'Necramechs')).toBe(40)
+    })
+
+    it('assigns maxRank 40 to Bonewidow', () => {
+      expect(SeedingRules.getMaxRank(bonewidow, 'Necramechs')).toBe(40)
+    })
+
+    it('detects regular Warframes correctly', () => {
+      expect(SeedingRules.detectCategory(excalibur)).toBe('Warframes')
+    })
+
+    it('assigns maxRank 30 to regular Warframes', () => {
+      expect(SeedingRules.getMaxRank(excalibur, 'Warframes')).toBe(30)
+    })
+  })
+
+  describe('Seeder Integration: PvP Variants', () => {
+    const bratonPvP = {
+      uniqueName: '/Lotus/Weapons/Tenno/LongGuns/Rifle/PvPVariants/BratonPvP',
+      name: 'Braton (Conclave)',
+      category: 'Primary',
+      productCategory: 'Primary',
+    }
+
+    const lexPvP = {
+      uniqueName: '/Lotus/Weapons/Tenno/Pistols/PvPVariants/LexPvP',
+      name: 'Lex (Conclave)',
+      category: 'Secondary',
+    }
+
+    const skanaPvP = {
+      uniqueName: '/Lotus/Weapons/Tenno/Melee/PvPVariants/SkanaPvP',
+      name: 'Skana (Conclave)',
+      category: 'Melee',
+    }
+
+    // Regular weapon for comparison
+    const braton = {
+      uniqueName: '/Lotus/Weapons/Tenno/LongGuns/Rifle/Braton',
+      name: 'Braton',
+      category: 'Primary',
+      productCategory: 'Primary',
+    }
+
+    it('excludes Braton PvP variant', () => {
+      expect(SeedingRules.isGloballyExcluded(bratonPvP)).toBe(true)
+      expect(SeedingRules.detectCategory(bratonPvP)).toBe(null)
+    })
+
+    it('excludes Lex PvP variant', () => {
+      expect(SeedingRules.isGloballyExcluded(lexPvP)).toBe(true)
+    })
+
+    it('excludes Skana PvP variant', () => {
+      expect(SeedingRules.isGloballyExcluded(skanaPvP)).toBe(true)
+    })
+
+    it('includes regular Braton', () => {
+      expect(SeedingRules.isGloballyExcluded(braton)).toBe(false)
+      expect(SeedingRules.detectCategory(braton)).toBe('Primary')
+    })
+  })
+
+  describe('Seeder Integration: Kuva & Tenet Weapons', () => {
+    const kuvaBraton = {
+      uniqueName: '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/KuvaBraton',
+      name: 'Kuva Braton',
+      category: 'Primary',
+      productCategory: 'Primary',
+    }
+
+    const kuvaChakkhurr = {
+      uniqueName: '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/KuvaChakkhurr',
+      name: 'Kuva Chakkhurr',
+      category: 'Primary',
+    }
+
+    const tenetEnvoy = {
+      uniqueName: '/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEArmCannon',
+      name: 'Tenet Envoy',
+      category: 'Primary',
+    }
+
+    const tenetCycron = {
+      uniqueName: '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEPistol',
+      name: 'Tenet Cycron',
+      category: 'Secondary',
+    }
+
+    it('assigns maxRank 40 to Kuva Braton', () => {
+      expect(SeedingRules.getMaxRank(kuvaBraton, 'Primary')).toBe(40)
+    })
+
+    it('assigns maxRank 40 to Kuva Chakkhurr', () => {
+      expect(SeedingRules.getMaxRank(kuvaChakkhurr, 'Primary')).toBe(40)
+    })
+
+    it('assigns maxRank 40 to Tenet Envoy', () => {
+      expect(SeedingRules.getMaxRank(tenetEnvoy, 'Primary')).toBe(40)
+    })
+
+    it('assigns maxRank 40 to Tenet Cycron', () => {
+      expect(SeedingRules.getMaxRank(tenetCycron, 'Secondary')).toBe(40)
+    })
+  })
+
+  describe('Seeder Integration: K-Drives', () => {
+    // K-Drive decks - SHOULD be included
+    const coldWaveDeck = {
+      uniqueName: '/Lotus/Types/Vehicles/Hoverboard/HBDeckA/HBDeckA',
+      name: 'Cold Wave',
+      category: 'Misc',
+    }
+
+    const badBabyDeck = {
+      uniqueName: '/Lotus/Types/Vehicles/Hoverboard/HBDeckB/HBDeckB',
+      name: 'Bad Baby',
+      category: 'Misc',
+    }
+
+    // K-Drive parts (not decks) - SHOULD be excluded
+    const jetWiskers = {
+      uniqueName: '/Lotus/Types/Vehicles/Hoverboard/Parts/HBReactorA',
+      name: 'Jet Wiskers',
+      category: 'Misc',
+    }
+
+    it('includes K-Drive decks (Cold Wave)', () => {
+      expect(SeedingRules.detectCategory(coldWaveDeck)).toBe('Vehicles')
+    })
+
+    it('includes K-Drive decks (Bad Baby)', () => {
+      expect(SeedingRules.detectCategory(badBabyDeck)).toBe('Vehicles')
+    })
+
+    it('does not categorize K-Drive parts as Vehicles', () => {
+      // Parts that aren't decks shouldn't match the Vehicles category
+      expect(SeedingRules.detectCategory(jetWiskers)).not.toBe('Vehicles')
+    })
+  })
+
+  describe('Seeder Integration: Sentinel Weapons', () => {
+    const deth = {
+      uniqueName: '/Lotus/Weapons/Sentinels/SentinelGlaive',
+      name: 'Deth Machine Rifle',
+      productCategory: 'SentinelWeapons',
+    }
+
+    const sweeper = {
+      uniqueName: '/Lotus/Weapons/Sentinels/SentinelShotgun',
+      name: 'Sweeper',
+      productCategory: 'SentinelWeapons',
+    }
+
+    it('detects Deth Machine Rifle as SentinelWeapons', () => {
+      expect(SeedingRules.detectCategory(deth)).toBe('SentinelWeapons')
+    })
+
+    it('detects Sweeper as SentinelWeapons', () => {
+      expect(SeedingRules.detectCategory(sweeper)).toBe('SentinelWeapons')
     })
   })
 })
