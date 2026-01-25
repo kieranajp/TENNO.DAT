@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, boolean, timestamp, index, unique, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, serial, varchar, integer, boolean, timestamp, index, unique, jsonb, text } from 'drizzle-orm/pg-core'
 
 export const items = pgTable('items', {
   id: serial('id').primaryKey(),
@@ -55,3 +55,23 @@ export const playerLoadout = pgTable('player_loadout', {
   focusSchool: varchar('focus_school', { length: 50 }),
   syncedAt: timestamp('synced_at').defaultNow().notNull(),
 })
+
+export const nodes = pgTable('nodes', {
+  id: serial('id').primaryKey(),
+  nodeKey: varchar('node_key', { length: 50 }).notNull().unique(),
+  name: varchar('name', { length: 100 }).notNull(),
+  planet: varchar('planet', { length: 50 }).notNull(),
+  nodeType: varchar('node_type', { length: 20 }).notNull(), // mission, junction, railjack
+  masteryXp: integer('mastery_xp').notNull(),
+})
+
+export const playerNodes = pgTable('player_nodes', {
+  id: serial('id').primaryKey(),
+  playerId: varchar('player_id', { length: 50 }).notNull(),
+  nodeId: integer('node_id').notNull().references(() => nodes.id),
+  completes: integer('completes').notNull().default(0),
+  isSteelPath: boolean('is_steel_path').notNull().default(false),
+  syncedAt: timestamp('synced_at').defaultNow().notNull(),
+}, (table) => ({
+  playerNodeUnique: unique().on(table.playerId, table.nodeId, table.isSteelPath),
+}))

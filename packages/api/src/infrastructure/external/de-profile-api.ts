@@ -1,6 +1,6 @@
 import { writeFileSync } from 'node:fs'
 import type { Platform } from '../../domain/entities/player'
-import type { ProfileApi, ProfileData, Loadout, Intrinsics } from '../../domain/ports/profile-api'
+import type { ProfileApi, ProfileData, Loadout, Intrinsics, MissionCompletion } from '../../domain/ports/profile-api'
 import { createLogger } from '../logger'
 
 const log = createLogger('DeProfileApi')
@@ -62,10 +62,15 @@ export class DeProfileApi implements ProfileApi {
     const playerSkills = data.Results?.[0]?.PlayerSkills ?? {}
     const intrinsics = this.extractIntrinsics(playerSkills)
 
+    // Extract mission completions for star chart tracking
+    const rawMissions = data.Results?.[0]?.Missions ?? []
+    const missions = this.extractMissions(rawMissions)
+
     log.info('Profile fetched', {
       displayName: data.Results?.[0]?.DisplayName,
       playerLevel: data.Results?.[0]?.PlayerLevel,
       xpItemCount: xpInfo.length,
+      missionsCount: missions.length,
       loadout,
       intrinsics,
     })
@@ -79,6 +84,7 @@ export class DeProfileApi implements ProfileApi {
       })),
       loadout,
       intrinsics,
+      missions,
     }
   }
 
@@ -125,5 +131,13 @@ export class DeProfileApi implements ProfileApi {
         total: riding + combat + opportunity + endurance,
       },
     }
+  }
+
+  private extractMissions(rawMissions: any[]): MissionCompletion[] {
+    return rawMissions.map((m: any) => ({
+      tag: m.Tag,
+      completes: m.Completes ?? 0,
+      tier: m.Tier,
+    }))
   }
 }

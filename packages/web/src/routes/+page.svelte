@@ -14,12 +14,16 @@
 		Primary: { icon: 'gps_fixed', subtitle: 'RIFLES, BOWS, SHOTGUNS' },
 		Secondary: { icon: 'filter_tilt_shift', subtitle: 'PISTOLS, THROWN' },
 		Melee: { icon: 'colorize', subtitle: 'SWORDS, POLEARMS' },
+		Kitgun: { icon: 'tune', subtitle: 'MODULAR SECONDARY' },
+		Zaw: { icon: 'handyman', subtitle: 'MODULAR MELEE' },
+		Amp: { icon: 'electric_bolt', subtitle: 'OPERATOR AMPLIFIERS' },
 		Pets: { icon: 'pets', subtitle: 'KUBROWS, KAVATS' },
 		Sentinels: { icon: 'smart_toy', subtitle: 'FLOATING COMPANIONS' },
 		SentinelWeapons: { icon: 'precision_manufacturing', subtitle: 'SENTINEL ARMS' },
 		Archwing: { icon: 'flight', subtitle: 'SPACE WINGS' },
 		ArchGun: { icon: 'rocket_launch', subtitle: 'HEAVY WEAPONS' },
-		ArchMelee: { icon: 'bolt', subtitle: 'ARCH BLADES' }
+		ArchMelee: { icon: 'bolt', subtitle: 'ARCH BLADES' },
+		Misc: { icon: 'skateboarding', subtitle: 'K-DRIVES, MECHS' }
 	};
 
 	onMount(async () => {

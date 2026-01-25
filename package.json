@@ -8,5 +8,8 @@
     "db:generate": "pnpm --filter api db:generate",
     "db:migrate": "pnpm --filter api db:migrate",
     "db:seed": "pnpm --filter api db:seed"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10"
   }
 }

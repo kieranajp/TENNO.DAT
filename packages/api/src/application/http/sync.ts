@@ -89,10 +89,28 @@ export function syncRoutes(container: Container) {
         intrinsics.drifter.total
       )
 
+      // Sync star chart node completions
+      const nodesMap = await container.nodeRepo.findAllAsMap()
+      const nodeCompletions = profile.missions
+        .filter(m => nodesMap.has(m.tag))
+        .flatMap(m => {
+          const completions = []
+          if (m.completes > 0) {
+            completions.push({ nodeKey: m.tag, completes: m.completes, isSteelPath: false })
+          }
+          if (m.tier === 1) {
+            completions.push({ nodeKey: m.tag, completes: m.completes, isSteelPath: true })
+          }
+          return completions
+        })
+
+      await container.nodeRepo.upsertCompletions(settings.playerId, nodeCompletions)
+
       const masteredCount = masteryRecords.filter(r => r.isMastered).length
       log.info('Sync complete', {
         synced: masteryRecords.length,
         mastered: masteredCount,
+        nodesSynced: nodeCompletions.length,
         loadout: loadoutData,
         intrinsics: {
           railjack: intrinsics.railjack.total,
@@ -104,6 +122,7 @@ export function syncRoutes(container: Container) {
         success: true,
         synced: masteryRecords.length,
         mastered: masteredCount,
+        nodesSynced: nodeCompletions.length,
       })
     } catch (error) {
       log.error('Sync failed', error instanceof Error ? error : undefined)

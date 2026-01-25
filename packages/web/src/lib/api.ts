@@ -191,6 +191,44 @@ export async function getItemDetails(id: number): Promise<ItemDetails> {
 	return res.json();
 }
 
+// Star Chart types
+export interface NodeWithCompletion {
+	id: number;
+	nodeKey: string;
+	name: string;
+	planet: string;
+	nodeType: 'mission' | 'junction' | 'railjack';
+	masteryXp: number;
+	completed: boolean;
+}
+
+export interface PlanetProgress {
+	name: string;
+	completed: number;
+	total: number;
+	xpEarned: number;
+	xpTotal: number;
+	nodes: NodeWithCompletion[];
+}
+
+export interface StarChartProgress {
+	planets: PlanetProgress[];
+	summary: {
+		completedNodes: number;
+		totalNodes: number;
+		completedXP: number;
+		totalXP: number;
+	};
+}
+
+export async function getStarChartNodes(steelPath: boolean = false): Promise<StarChartProgress> {
+	const res = await fetch(`${API_BASE}/starchart/nodes?steelPath=${steelPath}`);
+	if (!res.ok) {
+		throw new Error('Failed to fetch star chart nodes');
+	}
+	return res.json();
+}
+
 /**
  * Format build time from seconds to human readable format.
  */

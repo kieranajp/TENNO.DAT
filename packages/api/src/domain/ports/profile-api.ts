@@ -31,12 +31,19 @@ export interface Intrinsics {
   }
 }
 
+export interface MissionCompletion {
+  tag: string       // e.g., "SolNode63" or "EarthToVenusJunction"
+  completes: number
+  tier?: number     // 1 = Steel Path
+}
+
 export interface ProfileData {
   displayName: string | null
   playerLevel: number
   xpComponents: ProfileXpComponent[]
   loadout: Loadout
   intrinsics: Intrinsics
+  missions: MissionCompletion[]
 }
 
 export interface ProfileApi {
