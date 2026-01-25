@@ -1,7 +1,7 @@
 import { eq, sql, and } from 'drizzle-orm'
 import type { DrizzleDb } from './connection'
 import { playerMastery, items } from './schema'
-import { getMasteryState, type MasteryRecord } from '../../../domain/entities/mastery'
+import { getMasteryState, getMasteryContribution, type MasteryRecord } from '../../../domain/entities/mastery'
 import type { MasteryRepository, MasterySummary, MasteryWithItem } from '../../../domain/ports/mastery-repository'
 
 export class DrizzleMasteryRepository implements MasteryRepository {
@@ -92,5 +92,21 @@ export class DrizzleMasteryRepository implements MasteryRepository {
       ...row,
       masteryState: getMasteryState(row.xp ?? 0, row.category, row.maxRank),
     }))
+  }
+
+  async getEquipmentMasteryXP(playerId: string): Promise<number> {
+    const records = await this.db
+      .select({
+        xp: playerMastery.xp,
+        category: items.category,
+        maxRank: items.maxRank,
+      })
+      .from(playerMastery)
+      .innerJoin(items, eq(playerMastery.itemId, items.id))
+      .where(eq(playerMastery.playerId, playerId))
+
+    return records.reduce((total, r) => {
+      return total + getMasteryContribution(r.xp ?? 0, r.category, r.maxRank)
+    }, 0)
   }
 }

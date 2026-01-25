@@ -1,5 +1,5 @@
 // Frame-type categories (200 mastery points per rank, 1000 XP multiplier)
-const FRAME_CATEGORIES = [
+export const FRAME_CATEGORIES = [
   'Warframes', 'Companions', 'Archwing', 'KDrives', 'Sentinels', 'Pets', 'Necramechs'
 ] as const
 
@@ -63,4 +63,51 @@ export interface MasteryRecord {
   xp: number
   isMastered: boolean
   syncedAt: Date
+}
+
+/**
+ * Get mastery XP contribution from stored XP.
+ * Each level contributes mastery XP: 200/level for frames, 100/level for weapons.
+ */
+export function getMasteryContribution(xp: number, category: string, maxRank: number): number {
+  const multiplier = FRAME_CATEGORIES.includes(category as any) ? 1000 : 500
+  const masteryPerLevel = FRAME_CATEGORIES.includes(category as any) ? 200 : 100
+  const currentRank = Math.min(Math.floor(Math.sqrt(xp / multiplier)), maxRank)
+  return currentRank * masteryPerLevel
+}
+
+/**
+ * Get cumulative XP threshold for a mastery rank.
+ * MR 1-30: 2500 * mr²
+ * Legendary (31+): 2,250,000 + 147,500 * (mr - 30)
+ */
+export function getMRThreshold(mr: number): number {
+  if (mr > 30) {
+    return 2250000 + 147500 * (mr - 30)
+  }
+  return 2500 * mr * mr
+}
+
+export interface MasteryRankInfo {
+  rank: number
+  current: number
+  next: number
+  progress: number
+}
+
+/**
+ * Calculate MR and progress from total mastery XP.
+ */
+export function calculateMR(totalMasteryXp: number): MasteryRankInfo {
+  let rank: number
+  if (totalMasteryXp >= 2250000) {
+    // Legendary ranks
+    rank = 30 + Math.floor((totalMasteryXp - 2250000) / 147500)
+  } else {
+    rank = Math.floor(Math.sqrt(totalMasteryXp / 2500))
+  }
+  const current = getMRThreshold(rank)
+  const next = getMRThreshold(rank + 1)
+  const progress = next > current ? ((totalMasteryXp - current) / (next - current)) * 100 : 0
+  return { rank, current, next, progress }
 }

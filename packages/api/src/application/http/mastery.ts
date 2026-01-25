@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import { calculateMR } from '../../domain/entities/mastery'
 
 export function masteryRoutes(container: Container) {
   const router = new Hono()
@@ -12,9 +13,10 @@ export function masteryRoutes(container: Container) {
       return c.json({ error: 'No player configured' }, 400)
     }
 
-    const [categories, loadout] = await Promise.all([
+    const [categories, loadout, equipmentXP] = await Promise.all([
       container.masteryRepo.getSummary(settings.playerId),
       container.loadoutRepo.getWithItems(settings.playerId),
+      container.masteryRepo.getEquipmentMasteryXP(settings.playerId),
     ])
 
     const totals = categories.reduce(
@@ -25,12 +27,22 @@ export function masteryRoutes(container: Container) {
       { total: 0, mastered: 0 }
     )
 
+    const mrInfo = calculateMR(equipmentXP)
+    const masteryRank = {
+      rank: mrInfo.rank,
+      equipmentXP,
+      currentThreshold: mrInfo.current,
+      nextThreshold: mrInfo.next,
+      progress: mrInfo.progress,
+    }
+
     return c.json({
       categories,
       totals,
       loadout,
       lastSyncAt: settings.lastSyncAt,
       displayName: settings.displayName,
+      masteryRank,
     })
   })
 

@@ -32,6 +32,14 @@ export interface Loadout {
 	focusSchool: string | null;
 }
 
+export interface MasteryRankInfo {
+	rank: number;
+	equipmentXP: number;
+	currentThreshold: number;
+	nextThreshold: number;
+	progress: number;
+}
+
 export interface MasterySummary {
 	categories: Array<{
 		category: string;
@@ -42,6 +50,7 @@ export interface MasterySummary {
 	loadout: Loadout | null;
 	lastSyncAt: string | null;
 	displayName: string | null;
+	masteryRank: MasteryRankInfo | null;
 }
 
 export interface MasteryItem {

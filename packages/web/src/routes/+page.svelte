@@ -83,16 +83,34 @@
 							{/if}
 						</div>
 						<div class="mastery-rank">
-							MR {summary.totals.mastered > 0 ? Math.floor(summary.totals.mastered / 30) : '??'}
+							MR {summary.masteryRank?.rank ?? '??'}
 							{#if summary.displayName}
 								<span class="rank-title">{summary.displayName.replace(/[^\x20-\x7E]/g, '').trim()}</span>
 							{/if}
 						</div>
 					</div>
 
+					{#if summary.masteryRank}
+						<div class="xp-section">
+							<div class="xp-label">
+								<span>MR {summary.masteryRank.rank} → {summary.masteryRank.rank + 1}</span>
+								<span>{summary.masteryRank.equipmentXP.toLocaleString()} / {summary.masteryRank.nextThreshold.toLocaleString()}</span>
+							</div>
+							<div class="progress-retro progress-accent">
+								<div
+									class="progress-bar"
+									style="width: {summary.masteryRank.progress.toFixed(1)}%"
+								></div>
+							</div>
+							<div class="xp-subtext">
+								{(summary.masteryRank.nextThreshold - summary.masteryRank.equipmentXP).toLocaleString()} XP to next rank
+							</div>
+						</div>
+					{/if}
+
 					<div class="xp-section">
 						<div class="xp-label">
-							<span>XP PROGRESS</span>
+							<span>ITEMS MASTERED</span>
 							<span>{summary.totals.mastered.toLocaleString()} / {summary.totals.total.toLocaleString()}</span>
 						</div>
 						<div class="progress-retro progress-accent">
@@ -277,6 +295,13 @@
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.875rem
 		margin-bottom: 0.25rem
+
+	.xp-subtext
+		font-family: 'Share Tech Mono', monospace
+		font-size: 0.75rem
+		color: #6b7280
+		margin-top: 0.25rem
+		text-align: right
 
 	.sync-btn
 		width: 100%
