@@ -28,6 +28,9 @@ export const playerSettings = pgTable('player_settings', {
   displayName: varchar('display_name', { length: 100 }),
   lastSyncAt: timestamp('last_sync_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  // Manual mastery inputs (not available from DE API)
+  railjackIntrinsics: integer('railjack_intrinsics').default(0).notNull(),
+  drifterIntrinsics: integer('drifter_intrinsics').default(0).notNull(),
 })
 
 export const playerMastery = pgTable('player_mastery', {

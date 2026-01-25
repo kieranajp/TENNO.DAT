@@ -24,6 +24,21 @@ export function syncRoutes(container: Container) {
     return c.json({ success: true })
   })
 
+  router.post('/intrinsics', async (c) => {
+    const settings = await container.playerRepo.getSettings()
+    if (!settings) {
+      return c.json({ error: 'No player configured' }, 400)
+    }
+
+    const { railjack, drifter } = await c.req.json<{
+      railjack: number
+      drifter: number
+    }>()
+
+    await container.playerRepo.updateIntrinsics(settings.playerId, railjack, drifter)
+    return c.json({ success: true })
+  })
+
   router.post('/profile', async (c) => {
     const settings = await container.playerRepo.getSettings()
 

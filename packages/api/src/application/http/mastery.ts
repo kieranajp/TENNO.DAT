@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import type { Container } from '../../infrastructure/bootstrap/container'
-import { calculateMR } from '../../domain/entities/mastery'
+import { calculateMR, intrinsicsToXP } from '../../domain/entities/mastery'
 
 export function masteryRoutes(container: Container) {
   const router = new Hono()
@@ -27,10 +27,16 @@ export function masteryRoutes(container: Container) {
       { total: 0, mastered: 0 }
     )
 
-    const mrInfo = calculateMR(equipmentXP)
+    // Calculate total mastery XP including intrinsics
+    const intrinsicsXP = intrinsicsToXP(settings.railjackIntrinsics + settings.drifterIntrinsics)
+    const totalMasteryXP = equipmentXP + intrinsicsXP
+
+    const mrInfo = calculateMR(totalMasteryXP)
     const masteryRank = {
       rank: mrInfo.rank,
       equipmentXP,
+      intrinsicsXP,
+      totalXP: totalMasteryXP,
       currentThreshold: mrInfo.current,
       nextThreshold: mrInfo.next,
       progress: mrInfo.progress,

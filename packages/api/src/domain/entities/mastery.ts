@@ -96,6 +96,14 @@ export interface MasteryRankInfo {
 }
 
 /**
+ * Calculate XP from intrinsics.
+ * Each intrinsic level gives 1500 mastery XP.
+ */
+export function intrinsicsToXP(levels: number): number {
+  return levels * 1500
+}
+
+/**
  * Calculate MR and progress from total mastery XP.
  */
 export function calculateMR(totalMasteryXp: number): MasteryRankInfo {

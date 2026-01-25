@@ -38,4 +38,14 @@ export class DrizzlePlayerRepository implements PlayerRepository {
       .set({ lastSyncAt: new Date() })
       .where(eq(playerSettings.playerId, playerId))
   }
+
+  async updateIntrinsics(playerId: string, railjack: number, drifter: number): Promise<void> {
+    await this.db
+      .update(playerSettings)
+      .set({
+        railjackIntrinsics: railjack,
+        drifterIntrinsics: drifter,
+      })
+      .where(eq(playerSettings.playerId, playerId))
+  }
 }

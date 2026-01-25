@@ -1,0 +1,2 @@
+ALTER TABLE "player_settings" ADD COLUMN "railjack_intrinsics" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+ALTER TABLE "player_settings" ADD COLUMN "drifter_intrinsics" integer DEFAULT 0 NOT NULL;

@@ -35,6 +35,8 @@ export interface Loadout {
 export interface MasteryRankInfo {
 	rank: number;
 	equipmentXP: number;
+	intrinsicsXP: number;
+	totalXP: number;
 	currentThreshold: number;
 	nextThreshold: number;
 	progress: number;
@@ -111,6 +113,8 @@ export interface PlayerSettings {
 	platform: string;
 	displayName: string | null;
 	lastSyncAt: string | null;
+	railjackIntrinsics: number;
+	drifterIntrinsics: number;
 }
 
 export interface SyncResult {
@@ -161,6 +165,17 @@ export async function saveSettings(playerId: string, platform: string): Promise<
 	});
 	if (!res.ok) {
 		throw new Error('Failed to save settings');
+	}
+}
+
+export async function saveIntrinsics(railjack: number, drifter: number): Promise<void> {
+	const res = await fetch(`${API_BASE}/sync/intrinsics`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ railjack, drifter })
+	});
+	if (!res.ok) {
+		throw new Error('Failed to save intrinsics');
 	}
 }
 

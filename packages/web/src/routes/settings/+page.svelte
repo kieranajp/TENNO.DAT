@@ -1,18 +1,24 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getSettings, saveSettings, type PlayerSettings } from '$lib/api';
+	import { getSettings, saveSettings, saveIntrinsics, type PlayerSettings } from '$lib/api';
 
 	let settings: PlayerSettings | null = $state(null);
 	let playerId = $state('');
 	let platform = $state('pc');
+	let railjackIntrinsics = $state(0);
+	let drifterIntrinsics = $state(0);
 	let saving = $state(false);
 	let saved = $state(false);
+	let savingIntrinsics = $state(false);
+	let savedIntrinsics = $state(false);
 
 	onMount(async () => {
 		settings = await getSettings();
 		if (settings) {
 			playerId = settings.playerId;
 			platform = settings.platform;
+			railjackIntrinsics = settings.railjackIntrinsics;
+			drifterIntrinsics = settings.drifterIntrinsics;
 		}
 	});
 
@@ -26,6 +32,19 @@
 			setTimeout(() => (saved = false), 3000);
 		} finally {
 			saving = false;
+		}
+	}
+
+	async function handleSaveIntrinsics() {
+		savingIntrinsics = true;
+		savedIntrinsics = false;
+		try {
+			await saveIntrinsics(railjackIntrinsics, drifterIntrinsics);
+			settings = await getSettings();
+			savedIntrinsics = true;
+			setTimeout(() => (savedIntrinsics = false), 3000);
+		} finally {
+			savingIntrinsics = false;
 		}
 	}
 </script>
@@ -79,6 +98,68 @@
 				</button>
 
 				{#if saved}
+					<span class="save-success">
+						<span class="material-icons">check_circle</span>
+						SAVED!
+					</span>
+				{/if}
+			</div>
+		</div>
+	</div>
+
+	<!-- Intrinsics Panel -->
+	<div class="kim-panel intrinsics-panel">
+		<div class="panel-header">
+			<h3>Intrinsics (Manual Entry)</h3>
+		</div>
+		<div class="panel-body">
+			<p class="panel-description">
+				Intrinsic levels are not available from the DE API. Enter your total levels here to include them in MR calculation.
+			</p>
+
+			<div class="intrinsics-grid">
+				<div class="form-group">
+					<label class="form-label" for="railjack">
+						<span class="material-icons">rocket</span>
+						RAILJACK (0-50)
+					</label>
+					<input
+						type="number"
+						class="input-retro"
+						id="railjack"
+						bind:value={railjackIntrinsics}
+						min="0"
+						max="50"
+					/>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="drifter">
+						<span class="material-icons">self_improvement</span>
+						DRIFTER (0-40)
+					</label>
+					<input
+						type="number"
+						class="input-retro"
+						id="drifter"
+						bind:value={drifterIntrinsics}
+						min="0"
+						max="40"
+					/>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<button class="btn-retro" onclick={handleSaveIntrinsics} disabled={savingIntrinsics}>
+					{#if savingIntrinsics}
+						<span class="spinner"></span>
+					{:else}
+						<span class="material-icons">save</span>
+					{/if}
+					SAVE INTRINSICS
+				</button>
+
+				{#if savedIntrinsics}
 					<span class="save-success">
 						<span class="material-icons">check_circle</span>
 						SAVED!
@@ -168,9 +249,24 @@
 		@media (min-width: 768px)
 			grid-template-columns: 1fr 1fr
 
-	.settings-panel
+	.settings-panel, .intrinsics-panel
 		@media (min-width: 768px)
 			grid-column: 1 / -1
+
+	.panel-description
+		font-size: 0.875rem
+		color: #6b7280
+		margin-bottom: 1rem
+		line-height: 1.5
+
+	.intrinsics-grid
+		display: grid
+		grid-template-columns: 1fr 1fr
+		gap: 1rem
+		margin-bottom: 1rem
+
+		@media (max-width: 480px)
+			grid-template-columns: 1fr
 
 	.form-group
 		margin-bottom: 1.25rem

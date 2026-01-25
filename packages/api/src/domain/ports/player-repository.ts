@@ -5,4 +5,5 @@ export interface PlayerRepository {
   saveSettings(playerId: string, platform: Platform): Promise<void>
   updateDisplayName(playerId: string, displayName: string): Promise<void>
   updateLastSync(playerId: string): Promise<void>
+  updateIntrinsics(playerId: string, railjack: number, drifter: number): Promise<void>
 }

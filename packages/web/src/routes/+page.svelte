@@ -94,7 +94,7 @@
 						<div class="xp-section">
 							<div class="xp-label">
 								<span>MR {summary.masteryRank.rank} → {summary.masteryRank.rank + 1}</span>
-								<span>{summary.masteryRank.equipmentXP.toLocaleString()} / {summary.masteryRank.nextThreshold.toLocaleString()}</span>
+								<span>{summary.masteryRank.totalXP.toLocaleString()} / {summary.masteryRank.nextThreshold.toLocaleString()}</span>
 							</div>
 							<div class="progress-retro progress-accent">
 								<div
@@ -103,7 +103,7 @@
 								></div>
 							</div>
 							<div class="xp-subtext">
-								{(summary.masteryRank.nextThreshold - summary.masteryRank.equipmentXP).toLocaleString()} XP to next rank
+								{(summary.masteryRank.nextThreshold - summary.masteryRank.totalXP).toLocaleString()} XP to next rank
 							</div>
 						</div>
 					{/if}

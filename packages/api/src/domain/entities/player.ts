@@ -6,4 +6,6 @@ export interface PlayerSettings {
   platform: Platform
   displayName: string | null
   lastSyncAt: Date | null
+  railjackIntrinsics: number
+  drifterIntrinsics: number
 }
