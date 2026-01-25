@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.8.0",
+    "@warframe-tracker/shared": "workspace:*",
     "@wfcd/items": "latest",
     "drizzle-orm": "^0.30.0",
     "hono": "^4.0.0",

@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@warframe-tracker/shared": "workspace:*",
     "bootstrap": "^5.3.3"
   },
   "devDependencies": {

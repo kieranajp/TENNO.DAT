@@ -1,0 +1,11 @@
+{
+  "name": "@warframe-tracker/shared",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

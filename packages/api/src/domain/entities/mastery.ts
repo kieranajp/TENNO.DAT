@@ -1,7 +1,4 @@
-// Frame-type categories (200 mastery points per rank, 1000 XP multiplier)
-export const FRAME_CATEGORIES = [
-  'Warframes', 'Companions', 'Archwing', 'KDrives', 'Sentinels', 'Pets', 'Necramechs'
-] as const
+import { FRAME_CATEGORIES } from '@warframe-tracker/shared'
 
 /**
  * Three-state mastery for items that can go to rank 40.

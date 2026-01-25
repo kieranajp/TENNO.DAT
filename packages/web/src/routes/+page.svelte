@@ -2,29 +2,20 @@
 	import { onMount } from 'svelte';
 	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, type MasterySummary } from '$lib/api';
 	import { sortByCategory } from '$lib/categories';
+	import { CATEGORIES } from '@warframe-tracker/shared';
 
 	let summary: MasterySummary | null = $state(null);
 	let sortedCategories = $derived(summary ? sortByCategory(summary.categories) : []);
 	let syncing = $state(false);
 	let error: string | null = $state(null);
 
-	// Category icons and subtitles
-	const categoryMeta: Record<string, { icon: string; subtitle: string }> = {
-		Warframes: { icon: 'accessibility_new', subtitle: 'BIOLOGICAL SUITS' },
-		Primary: { icon: 'gps_fixed', subtitle: 'RIFLES, BOWS, SHOTGUNS' },
-		Secondary: { icon: 'filter_tilt_shift', subtitle: 'PISTOLS, THROWN' },
-		Melee: { icon: 'colorize', subtitle: 'SWORDS, POLEARMS' },
-		Kitgun: { icon: 'tune', subtitle: 'MODULAR SECONDARY' },
-		Zaw: { icon: 'handyman', subtitle: 'MODULAR MELEE' },
-		Amp: { icon: 'electric_bolt', subtitle: 'OPERATOR AMPS' },
-		Vehicles: { icon: 'skateboarding', subtitle: 'K-DRIVES, NECRAMECHS' },
-		Pets: { icon: 'pets', subtitle: 'KUBROWS, KAVATS' },
-		Sentinels: { icon: 'smart_toy', subtitle: 'FLOATING COMPANIONS' },
-		SentinelWeapons: { icon: 'precision_manufacturing', subtitle: 'SENTINEL ARMS' },
-		Archwing: { icon: 'flight', subtitle: 'SPACE WINGS' },
-		ArchGun: { icon: 'rocket_launch', subtitle: 'HEAVY WEAPONS' },
-		ArchMelee: { icon: 'bolt', subtitle: 'ARCH BLADES' }
-	};
+	// Build category metadata from shared config
+	const categoryMeta: Record<string, { icon: string; subtitle: string }> = Object.fromEntries(
+		Object.entries(CATEGORIES).map(([key, config]) => [
+			key,
+			{ icon: config.icon, subtitle: config.subtitle }
+		])
+	);
 
 	onMount(async () => {
 		try {

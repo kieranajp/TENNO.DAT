@@ -1,18 +1,7 @@
-// Item categories from @wfcd/items
-export type ItemCategory =
-  | 'Warframes'
-  | 'Primary'
-  | 'Secondary'
-  | 'Melee'
-  | 'Companions'
-  | 'Sentinels'
-  | 'SentinelWeapons'
-  | 'Archwing'
-  | 'ArchGun'
-  | 'ArchMelee'
-  | 'Necramechs'
-  | 'KDrives'
-  | 'Amps'
+import type { CategoryName } from '@warframe-tracker/shared'
+
+// Item categories - using shared configuration
+export type ItemCategory = CategoryName
 
 export interface ItemAcquisitionData {
   drops: Array<{

@@ -1,29 +1,18 @@
 import Items from '@wfcd/items'
 import { sql } from 'drizzle-orm'
 import { db, schema } from './connection'
+import { WFCD_CATEGORIES } from '@warframe-tracker/shared'
 
 // Categories to fetch from @wfcd/items
 // The library filters by productCategory, not the 'category' field
-const MASTERABLE_CATEGORIES = [
-  'Warframes',
-  'Primary',
-  'Secondary',
-  'Melee',
-  'Pets',
-  'Sentinels',
-  'SentinelWeapons',  // Library filters by productCategory
-  'Archwing',
-  'Arch-Gun',         // Library uses hyphenated name
-  'Arch-Melee',       // Library uses hyphenated name
-  'Misc',             // For Amps (will filter to prisms only)
-]
+const MASTERABLE_CATEGORIES = WFCD_CATEGORIES
 
 /**
  * Normalize category names from @wfcd/items to our internal format.
  * - Arch-Gun and Arch-Melee use hyphens in the library but we want ArchGun/ArchMelee
  * - SentinelWeapons items have category: "Primary" but we want them as SentinelWeapons
  * - Modular weapons (Zaws, Kitguns, Amps) need special categorization based on uniqueName
- * - Necramechs separated from Warframes
+ * - Necramechs separated from Warframes into their own "Necramechs" category
  * - K-Drives as Vehicles instead of Misc
  */
 function normalizeCategory(item: any): string {
@@ -32,9 +21,9 @@ function normalizeCategory(item: any): string {
     return 'PvPVariant' // Will be filtered out
   }
 
-  // Necramechs (Bonewidow, Voidrig)
+  // Necramechs (Bonewidow, Voidrig) - separate from Warframes
   if (item.name === 'Bonewidow' || item.name === 'Voidrig') {
-    return 'Vehicles'
+    return 'Necramechs'
   }
 
   // K-Drives (hoverboards) - only the board decks count for mastery

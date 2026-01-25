@@ -28,7 +28,12 @@ export class DrizzleMasteryRepository implements MasteryRepository {
       .select({
         category: items.category,
         total: sql<number>`count(*)::int`,
-        mastered: sql<number>`count(case when ${playerMastery.rank} >= 30 then 1 end)::int`,
+        mastered: sql<number>`count(
+          case
+            when ${items.maxRank} = 40 and ${playerMastery.rank} >= 40 then 1
+            when ${items.maxRank} = 30 and ${playerMastery.rank} >= 30 then 1
+          end
+        )::int`,
       })
       .from(items)
       .leftJoin(
@@ -60,6 +65,14 @@ export class DrizzleMasteryRepository implements MasteryRepository {
         vaulted: items.vaulted,
         xp: playerMastery.xp,
         rank: playerMastery.rank,
+        masteryState: sql<'unmastered' | 'mastered_30' | 'mastered_40'>`
+          case
+            when ${playerMastery.rank} IS NULL then 'unmastered'
+            when ${items.maxRank} > 30 and ${playerMastery.rank} >= 40 then 'mastered_40'
+            when ${playerMastery.rank} >= 30 then 'mastered_30'
+            else 'unmastered'
+          end
+        `,
       })
       .from(items)
       .leftJoin(
