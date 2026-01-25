@@ -39,6 +39,7 @@
 
 	const navItems = [
 		{ href: '/', label: 'Dashboard' },
+		{ href: '/starchart', label: 'Star Chart' },
 		{ href: '/mastery', label: 'Mastery' },
 		{ href: '/settings', label: 'Settings' }
 	];
@@ -85,6 +86,8 @@
 				<span class="title-text">
 					{#if $page.url.pathname === '/'}
 						MASTERY DASHBOARD.EXE
+					{:else if $page.url.pathname === '/starchart'}
+						STAR CHART.EXE
 					{:else if $page.url.pathname === '/mastery'}
 						MASTERY DATABASE.EXE
 					{:else if $page.url.pathname === '/settings'}

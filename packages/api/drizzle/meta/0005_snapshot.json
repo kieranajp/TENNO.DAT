@@ -1,0 +1,554 @@
+{
+<<<<<<< HEAD
+  "id": "e34b6469-2dc1-4c31-b3fc-d5092f872b52",
+=======
+  "id": "f8b3c2d1-4e5f-6a7b-8c9d-0e1f2a3b4c5d",
+>>>>>>> origin/main
+  "prevId": "ed22c7d6-1d32-4290-9cfd-dd5d4a4ef0d0",
+  "version": "6",
+  "dialect": "postgresql",
+  "tables": {
+    "public.items": {
+      "name": "items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "unique_name": {
+          "name": "unique_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_prime": {
+          "name": "is_prime",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "mastery_req": {
+          "name": "mastery_req",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "max_rank": {
+          "name": "max_rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 30
+        },
+        "image_name": {
+          "name": "image_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vaulted": {
+          "name": "vaulted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "market_cost": {
+          "name": "market_cost",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bp_cost": {
+          "name": "bp_cost",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "build_price": {
+          "name": "build_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "build_time": {
+          "name": "build_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acquisition_data": {
+          "name": "acquisition_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "category_idx": {
+          "name": "category_idx",
+          "columns": [
+            "category"
+          ],
+          "isUnique": false
+        },
+        "is_prime_idx": {
+          "name": "is_prime_idx",
+          "columns": [
+            "is_prime"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "items_unique_name_unique": {
+          "name": "items_unique_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "unique_name"
+          ]
+        }
+      }
+    },
+<<<<<<< HEAD
+    "public.nodes": {
+      "name": "nodes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "node_key": {
+          "name": "node_key",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "planet": {
+          "name": "planet",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "node_type": {
+          "name": "node_type",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mastery_xp": {
+          "name": "mastery_xp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "nodes_node_key_unique": {
+          "name": "nodes_node_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "node_key"
+          ]
+        }
+      }
+    },
+=======
+>>>>>>> origin/main
+    "public.player_loadout": {
+      "name": "player_loadout",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "player_id": {
+          "name": "player_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "warframe_id": {
+          "name": "warframe_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "primary_id": {
+          "name": "primary_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secondary_id": {
+          "name": "secondary_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "melee_id": {
+          "name": "melee_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "focus_school": {
+          "name": "focus_school",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "synced_at": {
+          "name": "synced_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "player_loadout_warframe_id_items_id_fk": {
+          "name": "player_loadout_warframe_id_items_id_fk",
+          "tableFrom": "player_loadout",
+          "tableTo": "items",
+          "columnsFrom": [
+            "warframe_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_loadout_primary_id_items_id_fk": {
+          "name": "player_loadout_primary_id_items_id_fk",
+          "tableFrom": "player_loadout",
+          "tableTo": "items",
+          "columnsFrom": [
+            "primary_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_loadout_secondary_id_items_id_fk": {
+          "name": "player_loadout_secondary_id_items_id_fk",
+          "tableFrom": "player_loadout",
+          "tableTo": "items",
+          "columnsFrom": [
+            "secondary_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "player_loadout_melee_id_items_id_fk": {
+          "name": "player_loadout_melee_id_items_id_fk",
+          "tableFrom": "player_loadout",
+          "tableTo": "items",
+          "columnsFrom": [
+            "melee_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "player_loadout_player_id_unique": {
+          "name": "player_loadout_player_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "player_id"
+          ]
+        }
+      }
+    },
+    "public.player_mastery": {
+      "name": "player_mastery",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "player_id": {
+          "name": "player_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "item_id": {
+          "name": "item_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "xp": {
+          "name": "xp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+<<<<<<< HEAD
+        "is_mastered": {
+          "name": "is_mastered",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+=======
+        "rank": {
+          "name": "rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+>>>>>>> origin/main
+        },
+        "synced_at": {
+          "name": "synced_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "player_item_idx": {
+          "name": "player_item_idx",
+          "columns": [
+            "player_id",
+            "item_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "player_mastery_item_id_items_id_fk": {
+          "name": "player_mastery_item_id_items_id_fk",
+          "tableFrom": "player_mastery",
+          "tableTo": "items",
+          "columnsFrom": [
+            "item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "player_item_unique": {
+          "name": "player_item_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "player_id",
+            "item_id"
+          ]
+        }
+      }
+    },
+<<<<<<< HEAD
+    "public.player_nodes": {
+      "name": "player_nodes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "player_id": {
+          "name": "player_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "node_id": {
+          "name": "node_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "completes": {
+          "name": "completes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "is_steel_path": {
+          "name": "is_steel_path",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "synced_at": {
+          "name": "synced_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "player_nodes_node_id_nodes_id_fk": {
+          "name": "player_nodes_node_id_nodes_id_fk",
+          "tableFrom": "player_nodes",
+          "tableTo": "nodes",
+          "columnsFrom": [
+            "node_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "player_nodes_player_id_node_id_is_steel_path_unique": {
+          "name": "player_nodes_player_id_node_id_is_steel_path_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "player_id",
+            "node_id",
+            "is_steel_path"
+          ]
+        }
+      }
+    },
+=======
+>>>>>>> origin/main
+    "public.player_settings": {
+      "name": "player_settings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "player_id": {
+          "name": "player_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "platform": {
+          "name": "platform",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pc'"
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_sync_at": {
+          "name": "last_sync_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "railjack_intrinsics": {
+          "name": "railjack_intrinsics",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "drifter_intrinsics": {
+          "name": "drifter_intrinsics",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "player_settings_player_id_unique": {
+          "name": "player_settings_player_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "player_id"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+<<<<<<< HEAD
+}
+=======
+}
+>>>>>>> origin/main

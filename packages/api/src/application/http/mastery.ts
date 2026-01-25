@@ -13,10 +13,11 @@ export function masteryRoutes(container: Container) {
       return c.json({ error: 'No player configured' }, 400)
     }
 
-    const [categories, loadout, equipmentXP] = await Promise.all([
+    const [categories, loadout, equipmentXP, starChartXP] = await Promise.all([
       container.masteryRepo.getSummary(settings.playerId),
       container.loadoutRepo.getWithItems(settings.playerId),
       container.masteryRepo.getEquipmentMasteryXP(settings.playerId),
+      container.nodeRepo.getStarChartMasteryXP(settings.playerId),
     ])
 
     const totals = categories.reduce(
@@ -27,15 +28,16 @@ export function masteryRoutes(container: Container) {
       { total: 0, mastered: 0 }
     )
 
-    // Calculate total mastery XP including intrinsics
+    // Calculate total mastery XP including intrinsics and star chart
     const intrinsicsXP = intrinsicsToXP(settings.railjackIntrinsics + settings.drifterIntrinsics)
-    const totalMasteryXP = equipmentXP + intrinsicsXP
+    const totalMasteryXP = equipmentXP + intrinsicsXP + starChartXP
 
     const mrInfo = calculateMR(totalMasteryXP)
     const masteryRank = {
       rank: mrInfo.rank,
       equipmentXP,
       intrinsicsXP,
+      starChartXP,
       totalXP: totalMasteryXP,
       currentThreshold: mrInfo.current,
       nextThreshold: mrInfo.next,

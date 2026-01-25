@@ -7,12 +7,17 @@ export const CATEGORY_ORDER = [
 	'Primary',
 	'Secondary',
 	'Melee',
+	'Kitgun',
+	'Zaw',
+	'Amp',
 	'Pets',
 	'Sentinels',
 	'SentinelWeapons',
 	'Archwing',
 	'ArchGun',
-	'ArchMelee'
+	'ArchMelee',
+	'Necramechs',
+	'Vehicles',
 ] as const;
 
 export type MasterableCategory = (typeof CATEGORY_ORDER)[number];

@@ -171,17 +171,6 @@ export async function saveSettings(playerId: string, platform: string): Promise<
 	}
 }
 
-export async function saveIntrinsics(railjack: number, drifter: number): Promise<void> {
-	const res = await fetch(`${API_BASE}/sync/intrinsics`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ railjack, drifter })
-	});
-	if (!res.ok) {
-		throw new Error('Failed to save intrinsics');
-	}
-}
-
 export async function syncProfile(): Promise<SyncResult> {
 	const res = await fetch(`${API_BASE}/sync/profile`, { method: 'POST' });
 	return res.json();
@@ -201,6 +190,44 @@ export async function getItemDetails(id: number): Promise<ItemDetails> {
 	const res = await fetch(`${API_BASE}/items/${id}`);
 	if (!res.ok) {
 		throw new Error('Failed to fetch item details');
+	}
+	return res.json();
+}
+
+// Star Chart types
+export interface NodeWithCompletion {
+	id: number;
+	nodeKey: string;
+	name: string;
+	planet: string;
+	nodeType: 'mission' | 'junction' | 'railjack';
+	masteryXp: number;
+	completed: boolean;
+}
+
+export interface PlanetProgress {
+	name: string;
+	completed: number;
+	total: number;
+	xpEarned: number;
+	xpTotal: number;
+	nodes: NodeWithCompletion[];
+}
+
+export interface StarChartProgress {
+	planets: PlanetProgress[];
+	summary: {
+		completedNodes: number;
+		totalNodes: number;
+		completedXP: number;
+		totalXP: number;
+	};
+}
+
+export async function getStarChartNodes(steelPath: boolean = false): Promise<StarChartProgress> {
+	const res = await fetch(`${API_BASE}/starchart/nodes?steelPath=${steelPath}`);
+	if (!res.ok) {
+		throw new Error('Failed to fetch star chart nodes');
 	}
 	return res.json();
 }

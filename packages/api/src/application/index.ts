@@ -6,6 +6,7 @@ import { createContainer } from '../infrastructure/bootstrap/container'
 import { itemsRoutes } from './http/items'
 import { masteryRoutes } from './http/mastery'
 import { syncRoutes } from './http/sync'
+import { starchartRoutes } from './http/starchart'
 
 const container = createContainer()
 const app = new Hono()
@@ -18,6 +19,7 @@ app.get('/health', (c) => c.json({ status: 'ok' }))
 app.route('/items', itemsRoutes(container))
 app.route('/mastery', masteryRoutes(container))
 app.route('/sync', syncRoutes(container))
+app.route('/starchart', starchartRoutes(container))
 
 const port = Number(process.env.PORT) || 3000
 

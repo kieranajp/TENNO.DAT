@@ -15,18 +15,67 @@ const MASTERABLE_CATEGORIES = [
   'Archwing',
   'Arch-Gun',         // Library uses hyphenated name
   'Arch-Melee',       // Library uses hyphenated name
+  'Misc',             // For Amps (will filter to prisms only)
 ]
 
 /**
  * Normalize category names from @wfcd/items to our internal format.
  * - Arch-Gun and Arch-Melee use hyphens in the library but we want ArchGun/ArchMelee
  * - SentinelWeapons items have category: "Primary" but we want them as SentinelWeapons
+ * - Modular weapons (Zaws, Kitguns, Amps) need special categorization based on uniqueName
+ * - Necramechs separated from Warframes
+ * - K-Drives as Vehicles instead of Misc
  */
 function normalizeCategory(item: any): string {
+  // Skip PvP variants
+  if (item.uniqueName?.includes('PvPVariant')) {
+    return 'PvPVariant' // Will be filtered out
+  }
+
+  // Necramechs (Bonewidow, Voidrig)
+  if (item.name === 'Bonewidow' || item.name === 'Voidrig') {
+    return 'Necramechs'
+  }
+
+  // K-Drives (hoverboards) - only the board decks count for mastery
+  if (item.uniqueName?.includes('/Vehicles/Hoverboard/') && item.uniqueName?.includes('Deck')) {
+    return 'Vehicles'
+  }
+
+  // Zaw strikes (primary parts only - Tip in path means it's the strike)
+  if (item.uniqueName?.includes('ModularMelee') && item.uniqueName?.includes('/Tip/')) {
+    return 'Zaw'
+  }
+
+  // Kitgun chambers (primary parts only - Barrel in path means it's the chamber)
+  if (item.uniqueName?.includes('SUModularSecondary') && item.uniqueName?.includes('/Barrel/')) {
+    return 'Kitgun'
+  }
+  if (item.uniqueName?.includes('SUModularPrimary') && item.uniqueName?.includes('/Barrel/')) {
+    return 'Kitgun'
+  }
+
+  // Amp prisms (primary parts only - Barrel in path means it's the prism)
+  // Includes the Mote Amp (training amp) and Sirocco (Drifter amp)
+  if (item.uniqueName?.includes('OperatorAmplifiers') && item.uniqueName?.includes('Barrel')) {
+    return 'Amp'
+  }
+  if (item.uniqueName === '/Lotus/Weapons/Operator/Pistols/DrifterPistol/DrifterPistolPlayerWeapon') {
+    return 'Amp' // Sirocco (Drifter's amp)
+  }
+
+  // Skip non-primary modular parts (grips, links, braces, loaders, etc)
+  if (item.uniqueName?.includes('ModularMelee') ||
+      item.uniqueName?.includes('OperatorAmplifiers') ||
+      item.uniqueName?.includes('SUModular')) {
+    return 'ModularPart' // Will be filtered out
+  }
+
   // SentinelWeapons items have productCategory set correctly but category says "Primary"
   if (item.productCategory === 'SentinelWeapons') {
     return 'SentinelWeapons'
   }
+
   // Normalize hyphenated categories to our internal names
   const categoryMap: Record<string, string> = {
     'Arch-Gun': 'ArchGun',
@@ -38,8 +87,19 @@ function normalizeCategory(item: any): string {
 async function seed() {
   console.log('Fetching items from @wfcd/items...')
 
-  const allItems = new Items({ category: MASTERABLE_CATEGORIES })
-  const masterableItems = allItems.filter((item: any) => item.masterable !== false)
+  const allItems = new Items({ category: MASTERABLE_CATEGORIES as any })
+
+  // Include items marked as masterable, plus modular weapon primary parts
+  // (The library incorrectly marks amp/zaw/kitgun parts as non-masterable)
+  const masterableItems = allItems.filter((item: any) => {
+    const isModularPrimary =
+      (item.uniqueName?.includes('ModularMelee') && item.uniqueName?.includes('/Tip/')) ||
+      (item.uniqueName?.includes('SUModular') && item.uniqueName?.includes('/Barrel/')) ||
+      (item.uniqueName?.includes('OperatorAmplifiers') && item.uniqueName?.includes('Barrel')) ||
+      item.uniqueName === '/Lotus/Weapons/Operator/Pistols/DrifterPistol/DrifterPistolPlayerWeapon' // Sirocco
+
+    return item.masterable !== false || isModularPrimary
+  })
 
   console.log(`Found ${masterableItems.length} masterable items`)
 
@@ -86,34 +146,36 @@ async function seed() {
     }
   }
 
-  const itemsToInsert = masterableItems.map((item: any) => {
-    const mapped = {
-      uniqueName: String(item.uniqueName ?? ''),
-      name: String(item.name ?? ''),
-      category: normalizeCategory(item),  // Normalize category names
-      isPrime: Boolean(item.isPrime ?? false),
-      masteryReq: getMasteryReq(item),
-      maxRank: getMaxRank(item),
-      imageName: item.imageName ? String(item.imageName) : null,
-      vaulted: item.vaulted != null ? Boolean(item.vaulted) : null,
-      // Acquisition data
-      marketCost: typeof item.marketCost === 'number' ? item.marketCost : null,
-      bpCost: typeof item.bpCost === 'number' ? item.bpCost : null,
-      buildPrice: typeof item.buildPrice === 'number' ? item.buildPrice : null,
-      buildTime: typeof item.buildTime === 'number' ? item.buildTime : null,
-      acquisitionData: getAcquisitionData(item),
-    }
-    // Validate all integer fields
-    if (typeof mapped.masteryReq !== 'number' || isNaN(mapped.masteryReq)) {
-      console.error('Invalid masteryReq for', item.name, ':', item.masteryReq)
-      mapped.masteryReq = 0
-    }
-    if (typeof mapped.maxRank !== 'number' || isNaN(mapped.maxRank)) {
-      console.error('Invalid maxRank for', item.name, ':', item.maxRank)
-      mapped.maxRank = 30
-    }
-    return mapped
-  })
+  const itemsToInsert = masterableItems
+    .map((item: any) => {
+      const mapped = {
+        uniqueName: String(item.uniqueName ?? ''),
+        name: String(item.name ?? ''),
+        category: normalizeCategory(item),  // Normalize category names
+        isPrime: Boolean(item.isPrime ?? false),
+        masteryReq: getMasteryReq(item),
+        maxRank: getMaxRank(item),
+        imageName: item.imageName ? String(item.imageName) : null,
+        vaulted: item.vaulted != null ? Boolean(item.vaulted) : null,
+        // Acquisition data
+        marketCost: typeof item.marketCost === 'number' ? item.marketCost : null,
+        bpCost: typeof item.bpCost === 'number' ? item.bpCost : null,
+        buildPrice: typeof item.buildPrice === 'number' ? item.buildPrice : null,
+        buildTime: typeof item.buildTime === 'number' ? item.buildTime : null,
+        acquisitionData: getAcquisitionData(item),
+      }
+      // Validate all integer fields
+      if (typeof mapped.masteryReq !== 'number' || isNaN(mapped.masteryReq)) {
+        console.error('Invalid masteryReq for', item.name, ':', item.masteryReq)
+        mapped.masteryReq = 0
+      }
+      if (typeof mapped.maxRank !== 'number' || isNaN(mapped.maxRank)) {
+        console.error('Invalid maxRank for', item.name, ':', item.maxRank)
+        mapped.maxRank = 30
+      }
+      return mapped
+    })
+    .filter(item => item.category !== 'ModularPart' && item.category !== 'PvPVariant')  // Exclude non-primary modular parts and PvP variants
 
   console.log('Inserting items into database...')
 
