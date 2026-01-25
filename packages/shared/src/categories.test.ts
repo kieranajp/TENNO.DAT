@@ -82,6 +82,11 @@ describe('FRAME_CATEGORIES', () => {
     expect(FRAME_CATEGORIES).toContain('Necramechs')
   })
 
+  it('includes Vehicles (K-Drives, Plexus)', () => {
+    // K-Drives and Plexus give 200 MR per rank (6000 total at rank 30)
+    expect(FRAME_CATEGORIES).toContain('Vehicles')
+  })
+
   it('does not include Primary', () => {
     expect(FRAME_CATEGORIES).not.toContain('Primary')
   })

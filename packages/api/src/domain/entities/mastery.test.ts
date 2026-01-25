@@ -28,6 +28,11 @@ describe('getMasteredXp', () => {
     it('calculates Necramechs XP (frame-type)', () => {
       expect(getMasteredXp('Necramechs', 40)).toBe(1600000)
     })
+
+    it('calculates Vehicles XP (K-Drives, Plexus - frame-type)', () => {
+      // K-Drives and Plexus use 1000 multiplier like Warframes
+      expect(getMasteredXp('Vehicles', 30)).toBe(900000)
+    })
   })
 
   describe('for weapon-type categories (500 multiplier)', () => {
@@ -54,6 +59,7 @@ describe('getRank30Xp', () => {
     expect(getRank30Xp('Warframes')).toBe(900000)
     expect(getRank30Xp('Pets')).toBe(900000)
     expect(getRank30Xp('Sentinels')).toBe(900000)
+    expect(getRank30Xp('Vehicles')).toBe(900000) // K-Drives, Plexus
   })
 
   it('returns 450,000 for weapon-type categories', () => {
@@ -164,6 +170,11 @@ describe('getMasteryContribution', () => {
 
     it('returns contribution capped at maxRank', () => {
       expect(getMasteryContribution(2000000, 'Warframes', 30)).toBe(6000) // capped at 30
+    })
+
+    it('returns correct contribution for Vehicles (K-Drives)', () => {
+      // K-Drives are frame-type: 200 MR per rank
+      expect(getMasteryContribution(900000, 'Vehicles', 30)).toBe(6000) // 30 × 200
     })
   })
 
