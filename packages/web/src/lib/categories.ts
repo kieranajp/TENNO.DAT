@@ -16,7 +16,6 @@ export const CATEGORY_ORDER = [
 	'Archwing',
 	'ArchGun',
 	'ArchMelee',
-	'Necramechs',
 	'Vehicles',
 ] as const;
 

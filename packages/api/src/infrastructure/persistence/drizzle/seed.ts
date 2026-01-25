@@ -34,7 +34,7 @@ function normalizeCategory(item: any): string {
 
   // Necramechs (Bonewidow, Voidrig)
   if (item.name === 'Bonewidow' || item.name === 'Voidrig') {
-    return 'Necramechs'
+    return 'Vehicles'
   }
 
   // K-Drives (hoverboards) - only the board decks count for mastery
@@ -91,6 +91,7 @@ async function seed() {
 
   // Include items marked as masterable, plus modular weapon primary parts
   // (The library incorrectly marks amp/zaw/kitgun parts as non-masterable)
+  // Also include Venari (Khora's companion) which the library marks incorrectly
   const masterableItems = allItems.filter((item: any) => {
     const isModularPrimary =
       (item.uniqueName?.includes('ModularMelee') && item.uniqueName?.includes('/Tip/')) ||
@@ -98,7 +99,12 @@ async function seed() {
       (item.uniqueName?.includes('OperatorAmplifiers') && item.uniqueName?.includes('Barrel')) ||
       item.uniqueName === '/Lotus/Weapons/Operator/Pistols/DrifterPistol/DrifterPistolPlayerWeapon' // Sirocco
 
-    return item.masterable !== false || isModularPrimary
+    // Venari and Venari Prime are masterable despite library marking them as false
+    const isVenari =
+      item.uniqueName === '/Lotus/Powersuits/Khora/Kavat/KhoraKavatPowerSuit' || // Venari
+      item.uniqueName === '/Lotus/Powersuits/Khora/Kavat/KhoraPrimeKavatPowerSuit' // Venari Prime
+
+    return item.masterable !== false || isModularPrimary || isVenari
   })
 
   console.log(`Found ${masterableItems.length} masterable items`)
@@ -181,6 +187,31 @@ async function seed() {
       return mapped
     })
     .filter(item => item.category !== 'ModularPart' && item.category !== 'PvPVariant')  // Exclude non-primary modular parts and PvP variants
+
+  // Add Plexus manually (not in @wfcd/items library)
+  // The Plexus is the Railjack mod configuration system introduced in Update 29.10.0
+  itemsToInsert.push({
+    uniqueName: '/Lotus/Types/Game/CrewShip/RailJack/DefaultHarness',
+    name: 'Plexus',
+    category: 'Vehicles',
+    isPrime: false,
+    masteryReq: 0,
+    maxRank: 30,
+    imageName: 'railjack-9d84497d87.png',
+    vaulted: null,
+    marketCost: null,
+    bpCost: null,
+    buildPrice: null,
+    buildTime: null,
+    acquisitionData: {
+      drops: [],
+      components: [],
+      introduced: {
+        name: 'Update 29.10.0: Corpus Proxima & The New Railjack',
+        date: '2021-03-19',
+      },
+    },
+  })
 
   console.log('Inserting items into database...')
 
