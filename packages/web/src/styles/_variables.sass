@@ -1,11 +1,50 @@
+// KIM OS Color Palette
+$kim-bg-light: #A8BFA5        // Sage green background
+$kim-bg-dark: #1A2623         // Dark green/black
+$kim-terminal-light: #E0E5DF  // Whitish grey terminal
+$kim-terminal-dark: #2C3E3A   // Dark mode terminal
+$kim-border: #5D6D65          // Dark green border
+$kim-title: #8CA894           // Title bar green
+$kim-accent: #C0392B          // Red accent
+
 // Bootstrap variable overrides
-$primary: #7c3aed
-$secondary: #64748b
+$primary: $kim-border
+$secondary: $kim-accent
 $success: #22c55e
 $warning: #f59e0b
-$danger: #ef4444
+$danger: $kim-accent
 
-$border-radius: 6px
-$border-radius-lg: 8px
+$body-bg: $kim-bg-light
+$body-color: #1a1a1a
 
-$font-family-sans-serif: system-ui, -apple-system, sans-serif
+$border-radius: 2px
+$border-radius-sm: 2px
+$border-radius-lg: 2px
+
+// Typography - Retro monospace fonts
+$font-family-sans-serif: 'VT323', monospace
+$font-family-monospace: 'Share Tech Mono', monospace
+$font-family-base: $font-family-sans-serif
+
+$font-size-base: 1.1rem
+$h1-font-size: 1.5rem
+$h2-font-size: 1.25rem
+$h3-font-size: 1.1rem
+
+// Forms
+$input-bg: white
+$input-border-color: $kim-border
+$input-focus-border-color: $kim-accent
+
+// Cards
+$card-bg: white
+$card-border-color: $kim-border
+$card-border-width: 2px
+
+// Buttons
+$btn-border-width: 1px
+
+// Progress bars
+$progress-height: 1.25rem
+$progress-bg: #d1d5db
+$progress-bar-bg: $kim-border

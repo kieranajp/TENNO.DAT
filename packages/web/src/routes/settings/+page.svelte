@@ -30,56 +30,284 @@
 	}
 </script>
 
-<h1 class="mb-4">Settings</h1>
+<div class="settings-layout">
+	<!-- Account Settings Panel -->
+	<div class="kim-panel settings-panel">
+		<div class="panel-header">
+			<h3>Account Configuration</h3>
+		</div>
+		<div class="panel-body">
+			<div class="form-group">
+				<label class="form-label" for="playerId">
+					<span class="material-icons">badge</span>
+					ACCOUNT ID
+				</label>
+				<input
+					type="text"
+					class="input-retro"
+					id="playerId"
+					bind:value={playerId}
+					placeholder="ENTER YOUR WARFRAME ACCOUNT ID"
+				/>
+				<div class="form-help">
+					<span class="material-icons">info</span>
+					Find this in your EE.log file or use the Tenno Tracker browser extension.
+				</div>
+			</div>
 
-<div class="card" style="max-width: 500px">
-	<div class="card-body">
-		<h5 class="card-title">Account Settings</h5>
+			<div class="form-group">
+				<label class="form-label" for="platform">
+					<span class="material-icons">devices</span>
+					PLATFORM
+				</label>
+				<select class="input-retro" id="platform" bind:value={platform}>
+					<option value="pc">PC</option>
+					<option value="ps">PLAYSTATION</option>
+					<option value="xbox">XBOX</option>
+					<option value="switch">NINTENDO SWITCH</option>
+				</select>
+			</div>
 
-		<div class="mb-3">
-			<label class="form-label" for="playerId">Account ID</label>
-			<input
-				type="text"
-				class="form-control"
-				id="playerId"
-				bind:value={playerId}
-				placeholder="Your Warframe Account ID"
-			/>
-			<div class="form-text">
-				Find this in your EE.log file or use the Tenno Tracker browser extension.
+			<div class="form-actions">
+				<button class="btn-retro" onclick={handleSave} disabled={saving || !playerId}>
+					{#if saving}
+						<span class="spinner"></span>
+					{:else}
+						<span class="material-icons">save</span>
+					{/if}
+					SAVE CONFIGURATION
+				</button>
+
+				{#if saved}
+					<span class="save-success">
+						<span class="material-icons">check_circle</span>
+						SAVED!
+					</span>
+				{/if}
 			</div>
 		</div>
+	</div>
 
-		<div class="mb-3">
-			<label class="form-label" for="platform">Platform</label>
-			<select class="form-select" id="platform" bind:value={platform}>
-				<option value="pc">PC</option>
-				<option value="ps">PlayStation</option>
-				<option value="xbox">Xbox</option>
-				<option value="switch">Nintendo Switch</option>
-			</select>
+	<!-- System Information Panel -->
+	<div class="kim-panel info-panel">
+		<div class="panel-header">
+			<h3>System Information</h3>
 		</div>
+		<div class="panel-body">
+			<div class="info-grid">
+				<div class="info-row">
+					<span class="info-label">STATUS</span>
+					<span class="info-value">
+						{#if settings}
+							<span class="status-online">CONFIGURED</span>
+						{:else}
+							<span class="status-offline">NOT CONFIGURED</span>
+						{/if}
+					</span>
+				</div>
 
-		<button class="btn btn-primary" onclick={handleSave} disabled={saving || !playerId}>
-			{#if saving}
-				<span class="spinner-border spinner-border-sm me-2"></span>
-			{/if}
-			Save Settings
-		</button>
+				{#if settings?.displayName}
+					<div class="info-row">
+						<span class="info-label">DISPLAY NAME</span>
+						<span class="info-value">{settings.displayName.replace(/[^\x20-\x7E]/g, '').trim()}</span>
+					</div>
+				{/if}
 
-		{#if saved}
-			<span class="text-success ms-3">Saved!</span>
-		{/if}
+				{#if settings?.lastSyncAt}
+					<div class="info-row">
+						<span class="info-label">LAST SYNC</span>
+						<span class="info-value">{new Date(settings.lastSyncAt).toLocaleString()}</span>
+					</div>
+				{/if}
+
+				<div class="info-row">
+					<span class="info-label">PLATFORM</span>
+					<span class="info-value">{platform.toUpperCase()}</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Help Panel -->
+	<div class="kim-panel help-panel">
+		<div class="panel-header">
+			<h3>Help: Finding Your Account ID</h3>
+		</div>
+		<div class="panel-body">
+			<div class="help-content">
+				<p><strong>Method 1: EE.log File</strong></p>
+				<ol>
+					<li>Open Warframe and log in</li>
+					<li>Navigate to <code>%LOCALAPPDATA%\Warframe\EE.log</code></li>
+					<li>Search for "accountId" in the file</li>
+				</ol>
+
+				<p><strong>Method 2: Tenno Tracker Extension</strong></p>
+				<ol>
+					<li>Install the Tenno Tracker browser extension</li>
+					<li>Visit your profile on warframe.com</li>
+					<li>The extension will display your Account ID</li>
+				</ol>
+
+				<p class="help-note">
+					<span class="material-icons">warning</span>
+					Your profile must be set to PUBLIC for syncing to work.
+				</p>
+			</div>
+		</div>
 	</div>
 </div>
 
-{#if settings?.lastSyncAt}
-	<div class="card mt-4" style="max-width: 500px">
-		<div class="card-body">
-			<h5 class="card-title">Sync History</h5>
-			<p class="mb-0">
-				Last sync: {new Date(settings.lastSyncAt).toLocaleString()}
-			</p>
-		</div>
-	</div>
-{/if}
+<style lang="sass">
+	.settings-layout
+		display: grid
+		grid-template-columns: 1fr
+		gap: 1.5rem
+		max-width: 800px
+
+		@media (min-width: 768px)
+			grid-template-columns: 1fr 1fr
+
+	.settings-panel
+		@media (min-width: 768px)
+			grid-column: 1 / -1
+
+	.form-group
+		margin-bottom: 1.25rem
+
+	.form-label
+		display: flex
+		align-items: center
+		gap: 0.5rem
+		font-family: 'Share Tech Mono', monospace
+		font-size: 0.875rem
+		margin-bottom: 0.5rem
+		color: #374151
+
+		.material-icons
+			font-size: 1rem
+			color: #5D6D65
+
+	.input-retro
+		width: 100%
+		padding: 0.5rem 0.75rem
+
+	.form-help
+		display: flex
+		align-items: flex-start
+		gap: 0.5rem
+		margin-top: 0.5rem
+		font-size: 0.75rem
+		color: #6b7280
+
+		.material-icons
+			font-size: 0.875rem
+			flex-shrink: 0
+			margin-top: 0.125rem
+
+	.form-actions
+		display: flex
+		align-items: center
+		gap: 1rem
+		margin-top: 1.5rem
+
+	.btn-retro
+		display: flex
+		align-items: center
+		gap: 0.5rem
+		padding: 0.5rem 1rem
+
+		&:disabled
+			opacity: 0.6
+			cursor: not-allowed
+
+	.save-success
+		display: flex
+		align-items: center
+		gap: 0.25rem
+		color: #22c55e
+		font-family: 'Share Tech Mono', monospace
+		font-size: 0.875rem
+		text-transform: uppercase
+
+		.material-icons
+			font-size: 1rem
+
+	.spinner
+		width: 16px
+		height: 16px
+		border: 2px solid rgba(255, 255, 255, 0.3)
+		border-top-color: white
+		border-radius: 50%
+		animation: spin 1s linear infinite
+
+	@keyframes spin
+		to
+			transform: rotate(360deg)
+
+	// Info Panel
+	.info-grid
+		display: flex
+		flex-direction: column
+		gap: 0.75rem
+
+	.info-row
+		display: flex
+		justify-content: space-between
+		align-items: center
+		padding: 0.5rem
+		background: #f5f5f5
+		border: 1px solid #d1d5db
+
+	.info-label
+		font-family: 'Share Tech Mono', monospace
+		font-size: 0.75rem
+		color: #6b7280
+		text-transform: uppercase
+
+	.info-value
+		font-family: 'Share Tech Mono', monospace
+		font-size: 0.875rem
+
+	.status-online
+		color: #22c55e
+
+	.status-offline
+		color: #C0392B
+
+	// Help Panel
+	.help-content
+		font-size: 0.875rem
+		line-height: 1.6
+
+		p
+			margin-bottom: 0.75rem
+
+		ol
+			margin: 0 0 1rem 1.25rem
+			padding: 0
+
+		li
+			margin-bottom: 0.25rem
+
+		code
+			background: #e5e7eb
+			padding: 0.125rem 0.375rem
+			font-family: 'Share Tech Mono', monospace
+			font-size: 0.8rem
+
+	.help-note
+		display: flex
+		align-items: flex-start
+		gap: 0.5rem
+		padding: 0.75rem
+		background: #fef3c7
+		border: 1px solid #f59e0b
+		margin-top: 1rem
+
+		.material-icons
+			font-size: 1rem
+			color: #d97706
+			flex-shrink: 0
+			margin-top: 0.125rem
+</style>
