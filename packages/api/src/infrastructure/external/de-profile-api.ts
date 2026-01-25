@@ -58,8 +58,9 @@ export class DeProfileApi implements ProfileApi {
     const loadOutPreset = data.Results?.[0]?.LoadOutPreset ?? {}
     const loadout = this.extractLoadout(loadOutInventory, loadOutPreset)
 
-    // Extract intrinsics
-    const intrinsics = this.extractIntrinsics(loadOutInventory)
+    // Extract intrinsics from PlayerSkills
+    const playerSkills = data.Results?.[0]?.PlayerSkills ?? {}
+    const intrinsics = this.extractIntrinsics(playerSkills)
 
     log.info('Profile fetched', {
       displayName: data.Results?.[0]?.DisplayName,
@@ -93,19 +94,19 @@ export class DeProfileApi implements ProfileApi {
     }
   }
 
-  private extractIntrinsics(loadOutInventory: any): Intrinsics {
+  private extractIntrinsics(playerSkills: any): Intrinsics {
     // Railjack intrinsics (5 skills, max 10 each = 50 total)
-    const tactical = loadOutInventory?.LPS_TACTICAL ?? 0
-    const piloting = loadOutInventory?.LPS_PILOTING ?? 0
-    const gunnery = loadOutInventory?.LPS_GUNNERY ?? 0
-    const engineering = loadOutInventory?.LPS_ENGINEERING ?? 0
-    const command = loadOutInventory?.LPS_COMMAND ?? 0
+    const tactical = playerSkills?.LPS_TACTICAL ?? 0
+    const piloting = playerSkills?.LPS_PILOTING ?? 0
+    const gunnery = playerSkills?.LPS_GUNNERY ?? 0
+    const engineering = playerSkills?.LPS_ENGINEERING ?? 0
+    const command = playerSkills?.LPS_COMMAND ?? 0
 
     // Drifter intrinsics (4 skills, max 10 each = 40 total)
-    const riding = loadOutInventory?.LPS_DRIFT_RIDING ?? 0
-    const combat = loadOutInventory?.LPS_DRIFT_COMBAT ?? 0
-    const opportunity = loadOutInventory?.LPS_DRIFT_OPPORTUNITY ?? 0
-    const endurance = loadOutInventory?.LPS_DRIFT_ENDURANCE ?? 0
+    const riding = playerSkills?.LPS_DRIFT_RIDING ?? 0
+    const combat = playerSkills?.LPS_DRIFT_COMBAT ?? 0
+    const opportunity = playerSkills?.LPS_DRIFT_OPPORTUNITY ?? 0
+    const endurance = playerSkills?.LPS_DRIFT_ENDURANCE ?? 0
 
     return {
       railjack: {
