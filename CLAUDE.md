@@ -57,3 +57,43 @@ To add a new item category (e.g., "Incarnon", "Companions"):
    - `seeding` (optional) - Detection rules, inclusions, exclusions, maxRank overrides
 3. Run `pnpm db:seed` to re-seed the database
 4. No other files need modification - everything is derived from this config!
+
+## Testing
+
+### Unit Tests (Vitest)
+
+```bash
+pnpm test           # Run all unit tests
+pnpm test:watch     # Watch mode
+```
+
+Test files are co-located with source: `*.test.ts`
+
+Key test coverage:
+- `packages/shared/src/seeding-rules.test.ts` - Kitguns, Zaws, Amps, Necramechs, PvP exclusions, Venari, Plexus
+- `packages/shared/src/categories.test.ts` - Category config, FRAME_CATEGORIES, sorting
+- `packages/api/src/domain/entities/mastery.test.ts` - XP calculations, MR thresholds
+- `packages/api/src/infrastructure/external/de-profile-api.test.ts` - Profile parsing, focus schools
+- `packages/api/src/application/http/sync.test.ts` - Rank calculation during sync
+- `packages/web/src/lib/api.test.ts` - URL formatters, time display
+
+### Visual Regression Tests (Playwright)
+
+For CSS/SASS refactors, use visual regression tests to catch unintended changes:
+
+```bash
+cd packages/web
+pnpm test:e2e                    # Run tests (fails if screenshots differ)
+pnpm test:e2e:update-snapshots   # Update baseline screenshots after intentional changes
+pnpm test:e2e:ui                 # Interactive UI for debugging
+```
+
+Workflow for SASS refactors:
+1. Run `pnpm test:e2e:update-snapshots` to capture current state
+2. Make your CSS/SASS changes
+3. Run `pnpm test:e2e` to see what changed visually
+4. Review diffs and update snapshots if changes are intentional
+
+### CI
+
+GitHub Actions runs unit tests on push to `main` and on PRs. Visual tests can be run locally before pushing.

@@ -86,6 +86,41 @@ packages/
         └── styles/           # KIM OS theme (SASS)
 ```
 
+## Testing
+
+### Unit Tests (Vitest)
+
+Run unit tests for the API, shared package, and web utilities:
+
+```bash
+pnpm test              # Run all unit tests
+pnpm test:watch        # Watch mode
+pnpm test:coverage     # With coverage report
+```
+
+Tests cover:
+- **Seeding rules** - Category detection, Kitgun/Zaw/Amp filtering, PvP exclusions
+- **Mastery calculations** - XP formulas, MR thresholds, rank calculations
+- **Profile sync** - DE API parsing, loadout extraction, intrinsics
+- **Web utilities** - URL formatting, time display
+
+### Visual Regression Tests (Playwright)
+
+Catch unintended UI changes during CSS/SASS refactors:
+
+```bash
+cd packages/web
+pnpm test:e2e                    # Run visual tests
+pnpm test:e2e:update-snapshots   # Update baseline screenshots
+pnpm test:e2e:ui                 # Interactive UI mode
+```
+
+Visual tests capture screenshots of all pages and compare against baselines.
+
+### CI
+
+Tests run automatically on push to `main` and on pull requests via GitHub Actions.
+
 ## License
 
 MIT
