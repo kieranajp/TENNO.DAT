@@ -1,5 +1,5 @@
 import { FocusSchool, Platform } from '@warframe-tracker/shared'
-import type { ProfileApi, ProfileData, Loadout, Intrinsics, MissionCompletion } from '../../domain/ports/profile-api'
+import type { ProfileApi, ProfileData, Loadout, Intrinsics, MissionCompletion, WeaponStats } from '../../domain/ports/profile-api'
 import { createLogger } from '../logger'
 
 const log = createLogger('DeProfileApi')
@@ -43,10 +43,15 @@ export class DeProfileApi implements ProfileApi {
     const rawMissions = data.Results?.[0]?.Missions ?? []
     const missions = this.extractMissions(rawMissions)
 
+    // Extract weapon combat stats (at root level, not under Results[0])
+    const rawWeaponStats = data.Stats?.Weapons ?? []
+    const weaponStats = this.extractWeaponStats(rawWeaponStats)
+
     log.info('Profile fetched', {
       displayName: data.Results?.[0]?.DisplayName,
       playerLevel: data.Results?.[0]?.PlayerLevel,
       xpItemCount: xpInfo.length,
+      weaponStatsCount: weaponStats.length,
       missionsCount: missions.length,
       loadout,
       intrinsics,
@@ -59,6 +64,7 @@ export class DeProfileApi implements ProfileApi {
         itemType: xp.ItemType,
         xp: xp.XP,
       })),
+      weaponStats,
       loadout,
       intrinsics,
       missions,
@@ -116,5 +122,19 @@ export class DeProfileApi implements ProfileApi {
       completes: m.Completes ?? 0,
       tier: m.Tier,
     }))
+  }
+
+  private extractWeaponStats(rawStats: any[]): WeaponStats[] {
+    return rawStats
+      .filter((s: any) => s.type) // Must have type (uniqueName)
+      .map((s: any) => ({
+        itemType: s.type,
+        fired: s.fired ?? null,
+        hits: s.hits ?? null,
+        kills: s.kills ?? 0,
+        headshots: s.headshots ?? 0,
+        equipTime: Math.round(s.equipTime ?? 0),
+        assists: s.assists ?? 0,
+      }))
   }
 }

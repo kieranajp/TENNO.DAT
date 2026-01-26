@@ -40,6 +40,13 @@ export interface MasteryRecord {
   xp: number
   rank: number
   syncedAt: Date
+  // Combat stats
+  fired?: number | null
+  hits?: number | null
+  kills?: number | null
+  headshots?: number | null
+  equipTime?: number | null
+  assists?: number | null
 }
 
 /**

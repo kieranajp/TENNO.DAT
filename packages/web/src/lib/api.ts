@@ -62,6 +62,15 @@ export interface MasteryItem {
 
 // ItemAcquisitionData is now imported from @warframe-tracker/shared
 
+export interface PersonalStats {
+	fired: number | null;
+	hits: number | null;
+	kills: number;
+	headshots: number;
+	equipTime: number;
+	assists: number;
+}
+
 export interface ItemDetails {
 	id: number;
 	uniqueName: string;
@@ -77,6 +86,7 @@ export interface ItemDetails {
 	buildPrice: number | null;
 	buildTime: number | null;
 	acquisitionData: ItemAcquisitionData | null;
+	personalStats: PersonalStats | null;
 }
 
 export interface PlayerSettings {

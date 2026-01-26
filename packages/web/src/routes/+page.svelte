@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, type MasterySummary } from '$lib/api';
+	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, getItemDetails, type MasterySummary, type ItemDetails } from '$lib/api';
 	import { sortByCategory } from '$lib/categories';
 	import { CATEGORIES } from '@warframe-tracker/shared';
+	import ItemModal from '$lib/components/ItemModal.svelte';
 
 	let summary: MasterySummary | null = $state(null);
 	let sortedCategories = $derived(summary ? sortByCategory(summary.categories) : []);
 	let syncing = $state(false);
 	let error: string | null = $state(null);
+	let selectedItem: ItemDetails | null = $state(null);
+	let loadingItem = $state(false);
 
 	// Build category metadata from shared config
 	const categoryMeta: Record<string, { icon: string; subtitle: string }> = Object.fromEntries(
@@ -44,6 +47,21 @@
 
 	function percent(mastered: number, total: number): number {
 		return total > 0 ? Math.round((mastered / total) * 100) : 0;
+	}
+
+	async function openItemModal(itemId: number) {
+		loadingItem = true;
+		try {
+			selectedItem = await getItemDetails(itemId);
+		} catch (e) {
+			console.error('Failed to load item details:', e);
+		} finally {
+			loadingItem = false;
+		}
+	}
+
+	function closeItemModal() {
+		selectedItem = null;
 	}
 </script>
 
@@ -145,7 +163,9 @@
 							{ label: 'Secondary', item: summary.loadout.secondary },
 							{ label: 'Melee', item: summary.loadout.melee }
 						] as slot}
-							<div class="loadout-item">
+							<!-- svelte-ignore a11y_click_events_have_key_events -->
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div class="loadout-item" class:clickable={slot.item} onclick={() => slot.item && openItemModal(slot.item.id)}>
 								<div class="loadout-image">
 									{#if slot.item}
 										{@const imgUrl = getImageUrl(slot.item.imageName)}
@@ -223,6 +243,15 @@
 	<div class="loading-state">
 		<div class="spinner"></div>
 		<p>LOADING DATABASE...</p>
+	</div>
+{/if}
+
+<!-- Item Detail Modal -->
+<ItemModal item={selectedItem} onClose={closeItemModal} />
+
+{#if loadingItem}
+	<div class="loading-overlay">
+		<div class="spinner"></div>
 	</div>
 {/if}
 
@@ -336,11 +365,14 @@
 		flex-direction: column
 		gap: 0.5rem
 
+	.loadout-item.clickable
+		cursor: pointer
+
 	.loadout-chevron
 		color: $gray-400
 		transition: color 0.15s
 
-	.loadout-item:hover .loadout-chevron
+	.loadout-item.clickable:hover .loadout-chevron
 		color: $kim-accent
 
 	// Categories Grid
@@ -395,4 +427,13 @@
 	@keyframes spin
 		to
 			transform: rotate(360deg)
+
+	.loading-overlay
+		position: fixed
+		inset: 0
+		background: rgba(0, 0, 0, 0.5)
+		display: flex
+		align-items: center
+		justify-content: center
+		z-index: 999
 </style>

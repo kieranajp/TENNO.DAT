@@ -37,7 +37,7 @@ export function syncRoutes(container: Container) {
     }
 
     try {
-      const platform = Platform.fromId(settings.platform as string)
+      const platform = Platform.fromId(settings.platform)
       if (!platform) {
         return c.json({ error: `Invalid platform in settings: ${settings.platform}` }, 400)
       }
@@ -51,6 +51,12 @@ export function syncRoutes(container: Container) {
       }
 
       const itemsMap = await container.itemRepo.findAllAsMap()
+
+      // Build weapon stats lookup by uniqueName
+      const weaponStatsMap = new Map(
+        profile.weaponStats.map(ws => [ws.itemType, ws])
+      )
+
       const matchedCount = profile.xpComponents.filter(xp => itemsMap.has(xp.itemType)).length
       const unmatchedSample = profile.xpComponents
         .filter(xp => !itemsMap.has(xp.itemType))
@@ -68,11 +74,19 @@ export function syncRoutes(container: Container) {
         .filter(xp => itemsMap.has(xp.itemType))
         .map(xp => {
           const item = itemsMap.get(xp.itemType)!
+          const stats = weaponStatsMap.get(xp.itemType)
           return {
             playerId: settings.playerId,
             itemId: item.id,
             xp: xp.xp,
             rank: getRankFromXp(xp.xp, item.category, item.maxRank),
+            // Combat stats (null if not a weapon or no stats)
+            fired: stats?.fired ?? null,
+            hits: stats?.hits ?? null,
+            kills: stats?.kills ?? null,
+            headshots: stats?.headshots ?? null,
+            equipTime: stats?.equipTime ?? null,
+            assists: stats?.assists ?? null,
           }
         })
 

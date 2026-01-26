@@ -26,7 +26,6 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["db:migrate"],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal"
     },
     {
       "name": "DB Seed",
@@ -35,7 +34,6 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["db:seed"],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal"
     }
   ],
   "compounds": [

@@ -22,4 +22,7 @@ export interface Item {
   buildPrice: number | null
   buildTime: number | null
   acquisitionData: ItemAcquisitionData | null
+  // Introduced info (normalized from acquisitionData)
+  introducedName: string | null
+  introducedDate: string | null
 }
