@@ -205,26 +205,26 @@
 		font-size: 0.875rem
 
 	.mode-label
-		color: #6b7280
+		color: $gray-500
 		transition: color 0.2s
 
 		&.active
-			color: #C0392B
+			color: $kim-accent
 			font-weight: bold
 
 	.toggle-switch
 		width: 48px
 		height: 24px
-		background: #d1d5db
-		border: 2px solid #5D6D65
+		background: $gray-300
+		border: 2px solid $kim-border
 		border-radius: 12px
 		position: relative
 		cursor: pointer
 		transition: all 0.2s
 
 		&.active
-			background: #C0392B
-			border-color: #a02d23
+			background: $kim-accent
+			border-color: $kim-accent-dark
 
 		.toggle-knob
 			position: absolute
@@ -250,18 +250,18 @@
 		font-family: 'Share Tech Mono', monospace
 
 	.stat-value
-		color: #C0392B
+		color: $kim-accent
 		font-weight: bold
 
 	.stat-sep
-		color: #9ca3af
+		color: $gray-400
 
 	.stat-total
-		color: #6b7280
+		color: $gray-500
 
 	.stat-label
 		font-size: 0.75rem
-		color: #9ca3af
+		color: $gray-400
 		margin-left: 0.25rem
 
 	.planets-list
@@ -278,12 +278,12 @@
 		align-items: center
 		padding: 0.75rem 1rem
 		cursor: pointer
-		background: #f3f4f6
-		border-bottom: 1px solid #d1d5db
+		background: $gray-150
+		border-bottom: 1px solid $gray-300
 		transition: background 0.15s
 
 		&:hover
-			background: #e5e7eb
+			background: $gray-200
 
 	.planet-title
 		display: flex
@@ -292,13 +292,13 @@
 
 	.expand-icon
 		font-size: 1.25rem
-		color: #5D6D65
+		color: $kim-border
 
 	.planet-name
 		font-family: 'Share Tech Mono', monospace
 		font-size: 1rem
 		font-weight: bold
-		color: #374151
+		color: $gray-700
 
 	.planet-progress
 		display: flex
@@ -308,15 +308,15 @@
 	.progress-text
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.875rem
-		color: #5D6D65
+		color: $kim-border
 		min-width: 50px
 		text-align: right
 
 	.progress-bar
 		width: 100px
 		height: 12px
-		background: #e5e7eb
-		border: 1px solid #9ca3af
+		background: $gray-200
+		border: 1px solid $gray-400
 		overflow: hidden
 
 		@media (max-width: 640px)
@@ -324,11 +324,11 @@
 
 	.progress-fill
 		height: 100%
-		background: #5D6D65
+		background: $kim-border
 		transition: width 0.3s
 
 		&.complete
-			background: #22c55e
+			background: $success
 
 	.planet-nodes
 		background: white
@@ -338,14 +338,14 @@
 		align-items: center
 		gap: 0.75rem
 		padding: 0.5rem 1rem
-		border-bottom: 1px solid #e5e7eb
+		border-bottom: 1px solid $gray-200
 		transition: background 0.15s
 
 		&:last-child
 			border-bottom: none
 
 		&:hover
-			background: #f9fafb
+			background: $gray-50
 
 		&.completed
 			opacity: 0.6
@@ -358,16 +358,16 @@
 
 		.material-icons
 			font-size: 1.25rem
-			color: #9ca3af
+			color: $gray-400
 
 		.junction-icon
-			color: #f59e0b
+			color: $warning
 
 	.node-row.completed .node-status .material-icons
-		color: #22c55e
+		color: $success
 
 	.node-row.completed .node-status .junction-icon
-		color: #f59e0b
+		color: $warning
 
 	.node-info
 		flex: 1
@@ -385,13 +385,13 @@
 
 	.node-type
 		font-size: 0.75rem
-		color: #6b7280
+		color: $gray-500
 		text-transform: capitalize
 
 	.node-xp
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.75rem
-		color: #5D6D65
+		color: $kim-border
 		flex-shrink: 0
 
 	.loading-state
@@ -402,13 +402,13 @@
 		padding: 4rem
 		font-family: 'Share Tech Mono', monospace
 		text-transform: uppercase
-		color: #6b7280
+		color: $gray-500
 
 	.spinner
 		width: 24px
 		height: 24px
-		border: 3px solid #d1d5db
-		border-top-color: #5D6D65
+		border: 3px solid $gray-300
+		border-top-color: $kim-border
 		border-radius: 50%
 		animation: spin 1s linear infinite
 		margin-bottom: 1rem
@@ -425,7 +425,7 @@
 		padding: 4rem
 		font-family: 'Share Tech Mono', monospace
 		text-transform: uppercase
-		color: #6b7280
+		color: $gray-500
 
 		.material-icons
 			font-size: 3rem

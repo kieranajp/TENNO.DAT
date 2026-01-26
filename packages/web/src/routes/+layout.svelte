@@ -154,24 +154,24 @@
 	.title-icon
 		width: 16px
 		height: 16px
-		background: #C0392B
+		background: $kim-accent
 		border: 1px solid black
 
 	.nav-tabs-bar
 		display: flex
-		background: #d1d5db
-		border-bottom: 2px solid #4a5a54
+		background: $gray-300
+		border-bottom: 2px solid $kim-border-dark
 		padding: 0 0.5rem
 		gap: 0.25rem
 		padding-top: 0.25rem
 
 	.nav-tab
 		padding: 0.25rem 1rem
-		background: #e5e7eb
-		border: 1px solid #9ca3af
+		background: $gray-200
+		border: 1px solid $gray-400
 		border-bottom: none
 		text-decoration: none
-		color: #374151
+		color: $gray-700
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.875rem
 		text-transform: uppercase
@@ -179,12 +179,12 @@
 		transition: all 0.1s
 
 		&:hover
-			background: #f5f5f5
+			background: $gray-100
 
 		&.active
-			background: #E0E5DF
-			border-color: #4a5a54
-			border-bottom: 2px solid #E0E5DF
+			background: $kim-terminal-light
+			border-color: $kim-border-dark
+			border-bottom: 2px solid $kim-terminal-light
 			color: black
 			font-weight: bold
 
@@ -192,5 +192,5 @@
 		flex: 1
 		padding: 1.5rem
 		overflow-y: auto
-		background: #E0E5DF
+		background: $kim-terminal-light
 </style>

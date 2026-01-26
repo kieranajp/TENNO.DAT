@@ -43,14 +43,14 @@ body
 
 // Window Frame
 .window-frame
-  border: 2px solid #4a5a54
+  border: 2px solid $kim-border-dark
   box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.25)
   background: $kim-terminal-light
 
 // Title Bar
 .title-bar
   background: linear-gradient(90deg, $kim-title 0%, darken($kim-title, 8%) 100%)
-  border-bottom: 2px solid #4a5a54
+  border-bottom: 2px solid $kim-border-dark
   padding: 0.25rem 0.5rem
   display: flex
   justify-content: space-between
@@ -139,7 +139,7 @@ body
 
 // Retro Input
 .input-retro
-  background: #f5f5f5
+  background: $gray-100
   border: 2px solid $kim-border
   border-style: inset
   font-family: $font-family-monospace
@@ -153,8 +153,8 @@ body
 // Progress Bar with dither pattern
 .progress-retro
   height: 1.25rem
-  background: #d1d5db
-  border: 1px solid #6b7280
+  background: $gray-300
+  border: 1px solid $gray-500
   border-radius: 0
   overflow: hidden
   position: relative
@@ -203,7 +203,7 @@ body
   .category-subtitle
     font-family: $font-family-monospace
     font-size: 0.75rem
-    color: #6b7280
+    color: $gray-500
     text-transform: uppercase
 
   .category-percent
@@ -215,7 +215,7 @@ body
   .category-stats
     font-family: $font-family-monospace
     font-size: 0.75rem
-    color: #6b7280
+    color: $gray-500
 
 // Loadout Item Row
 .loadout-item
@@ -223,8 +223,8 @@ body
   align-items: center
   gap: 0.75rem
   padding: 0.5rem
-  background: #f5f5f5
-  border: 1px solid #d1d5db
+  background: $gray-100
+  border: 1px solid $gray-300
   transition: border-color 0.15s
   cursor: pointer
 
@@ -235,8 +235,8 @@ body
     width: 48px
     height: 48px
     min-width: 48px
-    background: #d1d5db
-    border: 1px solid #9ca3af
+    background: $gray-300
+    border: 1px solid $gray-400
     overflow: hidden
     display: flex
     align-items: center
@@ -268,7 +268,7 @@ body
 
   .loadout-status
     font-size: 0.7rem
-    color: #6b7280
+    color: $gray-500
     display: flex
     align-items: center
     gap: 0.25rem
@@ -280,17 +280,17 @@ body
       background: $success
 
       &.status-gold
-        background: #f59e0b
+        background: $warning
 
       &.status-incomplete
-        background: #C0392B
+        background: $kim-accent
 
     .rank-display
       font-family: $font-family-monospace
       font-size: 0.7rem
 
       &.rank-incomplete
-        color: #C0392B
+        color: $kim-accent
         font-weight: 500
 
 // Filter Tabs
@@ -303,13 +303,13 @@ body
     font-family: $font-family-monospace
     font-size: 0.875rem
     border: 1px solid $kim-border
-    background: #e5e7eb
-    color: #374151
+    background: $gray-200
+    color: $gray-700
     cursor: pointer
     transition: all 0.1s
 
     &:hover
-      background: #d1d5db
+      background: $gray-300
 
     &.active
       background: $kim-accent
@@ -320,13 +320,13 @@ body
 .search-retro
   display: flex
   align-items: center
-  background: #f5f5f5
+  background: $gray-100
   border: 2px solid $kim-border
   border-style: inset
   padding: 0 0.5rem
 
   .search-icon
-    color: #6b7280
+    color: $gray-500
     font-size: 1rem
 
   input
@@ -338,7 +338,7 @@ body
     width: 100%
 
     &::placeholder
-      color: #9ca3af
+      color: $gray-400
 
     &:focus
       outline: none
@@ -346,7 +346,7 @@ body
 // Status Bar (footer)
 .status-bar
   background: $kim-terminal-light
-  border-top: 2px solid #9ca3af
+  border-top: 2px solid $gray-400
   padding: 0.25rem 0.5rem
   display: flex
   justify-content: space-between
@@ -368,7 +368,7 @@ body
       animation: pulse 2s infinite
 
   .status-info
-    color: #6b7280
+    color: $gray-500
 
 @keyframes pulse
   0%, 100%
@@ -379,7 +379,7 @@ body
 // Header Bar
 .header-bar
   background: $kim-terminal-light
-  border: 2px solid #4a5a54
+  border: 2px solid $kim-border-dark
   box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.25)
   padding: 0.25rem 0.5rem
   display: flex
@@ -429,15 +429,15 @@ body
   width: 64px
   height: 64px
   object-fit: contain
-  background: #e5e7eb
-  border: 1px solid #9ca3af
+  background: $gray-200
+  border: 1px solid $gray-400
   image-rendering: pixelated
 
   &.placeholder
     display: flex
     align-items: center
     justify-content: center
-    color: #9ca3af
+    color: $gray-400
     font-size: 0.75rem
 
 // Mastery check

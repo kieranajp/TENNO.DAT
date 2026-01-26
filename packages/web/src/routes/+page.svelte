@@ -228,13 +228,13 @@
 
 <style lang="sass">
 	.error-panel
-		background: #fef2f2
-		border: 2px solid #C0392B
+		background: $danger-bg
+		border: 2px solid $kim-accent
 		padding: 0.75rem 1rem
 		display: flex
 		align-items: center
 		gap: 0.5rem
-		color: #C0392B
+		color: $kim-accent
 		font-family: 'Share Tech Mono', monospace
 		text-transform: uppercase
 
@@ -264,8 +264,8 @@
 	.operator-avatar
 		width: 96px
 		height: 96px
-		background: #1a1a2e
-		border: 3px solid #6b7280
+		background: $gray-800
+		border: 3px solid $gray-500
 		display: flex
 		align-items: center
 		justify-content: center
@@ -273,7 +273,7 @@
 
 		.material-icons
 			font-size: 3rem
-			color: #6b7280
+			color: $gray-500
 
 		.mastery-rank-icon
 			width: 80px
@@ -283,12 +283,12 @@
 	.mastery-rank
 		font-size: 1.5rem
 		font-family: 'Share Tech Mono', monospace
-		color: #5D6D65
+		color: $kim-border
 
 		.rank-title
 			display: block
 			font-size: 0.875rem
-			color: #C0392B
+			color: $kim-accent
 			text-transform: uppercase
 			margin-top: 0.25rem
 
@@ -305,7 +305,7 @@
 	.xp-subtext
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.75rem
-		color: #6b7280
+		color: $gray-500
 		margin-top: 0.25rem
 		text-align: right
 
@@ -325,7 +325,7 @@
 	.last-sync
 		margin-top: 0.75rem
 		font-size: 0.75rem
-		color: #6b7280
+		color: $gray-500
 		text-align: center
 		font-family: 'Share Tech Mono', monospace
 
@@ -337,11 +337,11 @@
 		gap: 0.5rem
 
 	.loadout-chevron
-		color: #9ca3af
+		color: $gray-400
 		transition: color 0.15s
 
 	.loadout-item:hover .loadout-chevron
-		color: #C0392B
+		color: $kim-accent
 
 	// Categories Grid
 	.categories-grid
@@ -382,13 +382,13 @@
 		padding: 4rem
 		font-family: 'Share Tech Mono', monospace
 		text-transform: uppercase
-		color: #6b7280
+		color: $gray-500
 
 	.spinner
 		width: 24px
 		height: 24px
-		border: 3px solid #d1d5db
-		border-top-color: #5D6D65
+		border: 3px solid $gray-300
+		border-top-color: $kim-border
 		border-radius: 50%
 		animation: spin 1s linear infinite
 

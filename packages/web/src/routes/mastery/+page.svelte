@@ -255,7 +255,7 @@
 		.checkmark
 			width: 18px
 			height: 18px
-			border: 2px solid #5D6D65
+			border: 2px solid $kim-border
 			background: white
 			display: flex
 			align-items: center
@@ -266,13 +266,13 @@
 				display: none
 				width: 10px
 				height: 10px
-				background: #C0392B
+				background: $kim-accent
 
 		input:checked + .checkmark::after
 			display: block
 
 		&:hover .checkmark
-			border-color: #C0392B
+			border-color: $kim-accent
 
 	.search-retro
 		flex: 1
@@ -288,10 +288,10 @@
 		font-size: 0.875rem
 
 	.results-count
-		color: #5D6D65
+		color: $kim-border
 
 	.results-filter
-		color: #C0392B
+		color: $kim-accent
 
 	.items-grid
 		display: grid
@@ -306,7 +306,7 @@
 
 	.item-card
 		background: white
-		border: 2px solid #5D6D65
+		border: 2px solid $kim-border
 		display: flex
 		align-items: center
 		gap: 0.75rem
@@ -315,8 +315,8 @@
 		cursor: pointer
 
 		&:hover
-			border-color: #C0392B
-			background: #fef2f2
+			border-color: $kim-accent
+			background: $danger-bg
 
 		&.mastered
 			opacity: 0.6
@@ -326,8 +326,8 @@
 
 		&.mastered-full
 			opacity: 0.7
-			border-color: #f59e0b
-			background: #fffbeb
+			border-color: $warning
+			background: $warning-bg
 
 			&:hover
 				opacity: 1
@@ -339,19 +339,19 @@
 		width: 48px
 		height: 48px
 		object-fit: contain
-		background: #e5e7eb
-		border: 1px solid #9ca3af
+		background: $gray-200
+		border: 1px solid $gray-400
 		image-rendering: pixelated
 
 	.item-img-placeholder
 		width: 48px
 		height: 48px
-		background: #e5e7eb
-		border: 1px solid #9ca3af
+		background: $gray-200
+		border: 1px solid $gray-400
 		display: flex
 		align-items: center
 		justify-content: center
-		color: #9ca3af
+		color: $gray-400
 
 	.item-details
 		flex: 1
@@ -373,15 +373,15 @@
 
 	.item-category
 		font-size: 0.7rem
-		color: #6b7280
+		color: $gray-500
 		text-transform: uppercase
 
 	.item-prime
 		font-size: 0.65rem
-		background: #fef3c7
-		color: #92400e
+		background: $warning-bg-soft
+		color: $warning-text
 		padding: 0 0.25rem
-		border: 1px solid #f59e0b
+		border: 1px solid $warning
 
 	.item-rank-display
 		display: flex
@@ -392,18 +392,18 @@
 	.rank-progress
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.7rem
-		color: #6b7280
+		color: $gray-500
 		white-space: nowrap
 
 		&.rank-incomplete
-			color: #C0392B
+			color: $kim-accent
 			font-weight: 500
 
 	.item-mastered
 		flex-shrink: 0
 		width: 24px
 		height: 24px
-		background: #22c55e
+		background: $success
 		color: white
 		display: flex
 		align-items: center
@@ -413,7 +413,7 @@
 			font-size: 1rem
 
 		&.item-mastered-full
-			background: #f59e0b
+			background: $warning
 
 			.material-icons
 				font-size: 1.1rem
@@ -426,13 +426,13 @@
 		padding: 4rem
 		font-family: 'Share Tech Mono', monospace
 		text-transform: uppercase
-		color: #6b7280
+		color: $gray-500
 
 	.spinner
 		width: 24px
 		height: 24px
-		border: 3px solid #d1d5db
-		border-top-color: #5D6D65
+		border: 3px solid $gray-300
+		border-top-color: $kim-border
 		border-radius: 50%
 		animation: spin 1s linear infinite
 		margin-bottom: 1rem
@@ -449,7 +449,7 @@
 		padding: 4rem
 		font-family: 'Share Tech Mono', monospace
 		text-transform: uppercase
-		color: #6b7280
+		color: $gray-500
 
 		.material-icons
 			font-size: 3rem

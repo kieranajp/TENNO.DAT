@@ -197,18 +197,18 @@
 		border: none
 		cursor: pointer
 		padding: 0.25rem
-		color: #5D6D65
+		color: $kim-border
 
 		&:hover
-			color: #C0392B
+			color: $kim-accent
 
 	.item-preview
 		display: flex
 		flex-direction: column
 		align-items: center
 		padding: 1rem
-		background: #1a1a2e
-		border: 2px solid #5D6D65
+		background: $gray-800
+		border: 2px solid $kim-border
 		margin-bottom: 1rem
 
 	.preview-img
@@ -223,8 +223,8 @@
 		display: flex
 		align-items: center
 		justify-content: center
-		background: #374151
-		color: #9ca3af
+		background: $gray-700
+		color: $gray-400
 
 		.material-icons
 			font-size: 3rem
@@ -243,29 +243,29 @@
 		text-transform: uppercase
 
 	.badge-category
-		background: #374151
+		background: $gray-700
 		color: white
-		border: 1px solid #6b7280
+		border: 1px solid $gray-500
 
 	.badge-prime
-		background: #fef3c7
-		color: #92400e
-		border: 1px solid #f59e0b
+		background: $warning-bg-soft
+		color: $warning-text
+		border: 1px solid $warning
 
 	.badge-vaulted
-		background: #fce7f3
-		color: #9d174d
-		border: 1px solid #ec4899
+		background: $pink-bg
+		color: $pink-text
+		border: 1px solid $pink-border
 
 	.badge-rank40
-		background: #ede9fe
-		color: #6b21a8
-		border: 1px solid #a855f7
+		background: $purple-bg
+		color: $purple-text
+		border: 1px solid $purple-border
 
 	.acquisition-section
 		margin-bottom: 1rem
 		padding-bottom: 1rem
-		border-bottom: 1px dashed #d1d5db
+		border-bottom: 1px dashed $gray-300
 
 		&:last-child
 			border-bottom: none
@@ -277,7 +277,7 @@
 			gap: 0.5rem
 			font-size: 0.875rem
 			font-family: 'Share Tech Mono', monospace
-			color: #C0392B
+			color: $kim-accent
 			margin: 0 0 0.75rem 0
 			text-transform: uppercase
 
@@ -292,13 +292,13 @@
 		font-size: 0.875rem
 
 	.info-label
-		color: #6b7280
+		color: $gray-500
 
 	.info-value
 		font-family: 'Share Tech Mono', monospace
 
 		&.platinum
-			color: #3b82f6
+			color: $info
 
 	.component-group
 		margin-bottom: 0.75rem
@@ -309,7 +309,7 @@
 	.component-name
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.875rem
-		color: #5D6D65
+		color: $kim-border
 		margin-bottom: 0.25rem
 		text-transform: uppercase
 
@@ -324,12 +324,12 @@
 		align-items: center
 		font-size: 0.8rem
 		padding: 0.25rem 0.5rem
-		background: #f3f4f6
+		background: $gray-150
 
 	.drop-location
-		color: #374151
+		color: $gray-700
 
 	.drop-chance
 		font-family: 'Share Tech Mono', monospace
-		color: #22c55e
+		color: $success
 </style>
