@@ -1,12 +1,7 @@
-import { FRAME_CATEGORIES } from '@warframe-tracker/shared'
+import { FRAME_CATEGORIES, type MasteryState } from '@warframe-tracker/shared'
 
-/**
- * Three-state mastery for items that can go to rank 40.
- * - unmastered: Below rank 30 XP threshold
- * - mastered_30: At/above rank 30, below rank 40 (for maxRank=40 items)
- * - mastered_40: At/above full mastery threshold
- */
-export type MasteryState = 'unmastered' | 'mastered_30' | 'mastered_40'
+// Re-export MasteryState for consumers that import from this module
+export type { MasteryState } from '@warframe-tracker/shared'
 
 /**
  * Calculate XP required for mastery at a given max rank.

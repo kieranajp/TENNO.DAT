@@ -1,26 +1,10 @@
-import type { CategoryName } from '@warframe-tracker/shared'
+import type { CategoryName, ItemAcquisitionData } from '@warframe-tracker/shared'
 
 // Item categories - using shared configuration
 export type ItemCategory = CategoryName
 
-export interface ItemAcquisitionData {
-  drops: Array<{
-    location: string
-    chance: number
-    rarity: string
-  }>
-  components: Array<{
-    name: string
-    drops: Array<{
-      location: string
-      chance: number
-    }>
-  }>
-  introduced?: {
-    name: string | null
-    date: string | null
-  } | null
-}
+// Re-export ItemAcquisitionData for consumers that import from this module
+export type { ItemAcquisitionData } from '@warframe-tracker/shared'
 
 export interface Item {
   id: number

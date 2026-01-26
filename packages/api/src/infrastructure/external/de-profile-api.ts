@@ -1,4 +1,5 @@
 import { writeFileSync } from 'node:fs'
+import { getFocusSchoolFromCode } from '@warframe-tracker/shared'
 import type { Platform } from '../../domain/entities/player'
 import type { ProfileApi, ProfileData, Loadout, Intrinsics, MissionCompletion } from '../../domain/ports/profile-api'
 import { createLogger } from '../logger'
@@ -11,14 +12,6 @@ const PLATFORM_URLS: Record<Platform, string> = {
   ps: 'https://content-ps4.warframe.com/dynamic',
   xbox: 'https://content-xb1.warframe.com/dynamic',
   switch: 'https://content-swi.warframe.com/dynamic',
-}
-
-const FOCUS_SCHOOLS: Record<string, string> = {
-  'AP_ATTACK': 'Madurai',
-  'AP_DEFENSE': 'Vazarin',
-  'AP_TACTIC': 'Naramon',
-  'AP_POWER': 'Zenurik',
-  'AP_WARD': 'Unairu',
 }
 
 export class DeProfileApi implements ProfileApi {
@@ -96,7 +89,7 @@ export class DeProfileApi implements ProfileApi {
       primary: loadOutInventory?.LongGuns?.[0]?.ItemType ?? null,
       secondary: loadOutInventory?.Pistols?.[0]?.ItemType ?? null,
       melee: loadOutInventory?.Melee?.[0]?.ItemType ?? null,
-      focusSchool: focusSchoolCode ? (FOCUS_SCHOOLS[focusSchoolCode] ?? focusSchoolCode) : null,
+      focusSchool: focusSchoolCode ? (getFocusSchoolFromCode(focusSchoolCode) ?? focusSchoolCode) : null,
     }
   }
 
