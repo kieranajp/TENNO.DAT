@@ -1,3 +1,5 @@
 .svelte-kit
 node_modules
 build
+playwright-report
+test-results

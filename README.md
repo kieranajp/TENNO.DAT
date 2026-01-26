@@ -86,6 +86,60 @@ packages/
         └── styles/           # KIM OS theme (SASS)
 ```
 
+## Testing
+
+### Unit Tests (Vitest)
+
+Run unit tests for the API, shared package, and web utilities:
+
+```bash
+pnpm test              # Run all unit tests
+pnpm test:watch        # Watch mode
+pnpm test:coverage     # With coverage report
+```
+
+Tests cover:
+- **Seeding rules** - Category detection, Kitgun/Zaw/Amp filtering, PvP exclusions
+- **Mastery calculations** - XP formulas, MR thresholds, rank calculations
+- **Profile sync** - DE API parsing, loadout extraction, intrinsics
+- **Web utilities** - URL formatting, time display
+
+### Visual Regression Tests (Playwright)
+
+Catch unintended UI changes during CSS/SASS refactors:
+
+```bash
+cd packages/web
+pnpm test:e2e                    # Run visual tests
+pnpm test:e2e:update-snapshots   # Update baseline screenshots
+pnpm test:e2e:ui                 # Interactive UI mode
+```
+
+Visual tests capture screenshots of all pages at multiple viewports and compare against committed baselines.
+
+#### Workflow for SASS/CSS Refactors
+
+1. **Before changes** - Run `pnpm test:e2e` to confirm tests pass against current baselines
+2. **Make changes** - Edit your SASS/CSS files
+3. **Check for regressions** - Run `pnpm test:e2e` again
+   - Tests will fail if any visual differences are detected
+   - Check `packages/web/test-results/` for diff images showing what changed
+4. **Review changes** - If the visual changes are intentional, update baselines:
+   ```bash
+   pnpm test:e2e:update-snapshots
+   ```
+5. **Commit baselines** - Include the updated screenshots in your commit
+
+#### Troubleshooting
+
+- **Tests fail with "snapshot doesn't exist"** - Run `pnpm test:e2e:update-snapshots` to create missing baselines
+- **Flaky tests** - The config allows 2% pixel difference to handle anti-aliasing variations
+- **Debug mode** - Use `pnpm test:e2e:ui` for an interactive browser to step through tests
+
+### CI
+
+Both unit tests and visual regression tests run automatically on push to `main` and on pull requests via GitHub Actions. If E2E tests fail, the Playwright report is uploaded as an artifact for debugging.
+
 ## License
 
 MIT
