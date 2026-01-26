@@ -5,6 +5,16 @@ export interface ProfileXpComponent {
   xp: number
 }
 
+export interface WeaponStats {
+  itemType: string   // uniqueName
+  fired: number | null
+  hits: number | null
+  kills: number
+  headshots: number
+  equipTime: number  // seconds (rounded from float)
+  assists: number
+}
+
 export interface Loadout {
   warframe: string | null      // uniqueName
   primary: string | null       // uniqueName
@@ -41,6 +51,7 @@ export interface ProfileData {
   displayName: string | null
   playerLevel: number
   xpComponents: ProfileXpComponent[]
+  weaponStats: WeaponStats[]
   loadout: Loadout
   intrinsics: Intrinsics
   missions: MissionCompletion[]

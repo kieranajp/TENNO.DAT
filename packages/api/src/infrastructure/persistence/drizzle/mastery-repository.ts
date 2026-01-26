@@ -18,6 +18,13 @@ export class DrizzleMasteryRepository implements MasteryRepository {
             xp: sql`excluded.xp`,
             rank: sql`excluded.rank`,
             syncedAt: new Date(),
+            // Update stats on sync
+            fired: sql`excluded.fired`,
+            hits: sql`excluded.hits`,
+            kills: sql`excluded.kills`,
+            headshots: sql`excluded.headshots`,
+            equipTime: sql`excluded.equip_time`,
+            assists: sql`excluded.assists`,
           },
         })
     }

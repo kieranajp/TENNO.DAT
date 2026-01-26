@@ -17,10 +17,15 @@ export function itemsRoutes(container: Container) {
     return c.json(categories)
   })
 
-  // Get single item
+  // Get single item with full acquisition data from relational tables
   router.get('/:id', async (c) => {
     const id = Number(c.req.param('id'))
-    const item = await container.itemRepo.findById(id)
+
+    // Get current player settings to include personal stats
+    const settings = await container.playerRepo.getSettings()
+    const playerId = settings?.playerId
+
+    const item = await container.itemRepo.findByIdWithAcquisitionData(id, playerId)
 
     if (!item) {
       return c.json({ error: 'Item not found' }, 404)

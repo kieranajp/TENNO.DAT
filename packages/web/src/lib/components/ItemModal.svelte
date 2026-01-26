@@ -20,6 +20,20 @@
 			onClose();
 		}
 	}
+
+	function formatEquipTime(seconds: number): string {
+		const hours = Math.floor(seconds / 3600);
+		const minutes = Math.floor((seconds % 3600) / 60);
+		if (hours > 0) {
+			return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+		}
+		return `${minutes}m`;
+	}
+
+	function formatAccuracy(hits: number | null, fired: number | null): string | null {
+		if (hits === null || fired === null || fired === 0) return null;
+		return `${((hits / fired) * 100).toFixed(1)}%`;
+	}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -112,7 +126,7 @@
 						{#each item.acquisitionData.components as comp}
 							{#if comp.drops && comp.drops.length > 0}
 								<div class="component-group">
-									<div class="component-name">{comp.name}</div>
+									<div class="component-name">{comp.name}{#if comp.itemCount > 1} x{comp.itemCount}{/if}</div>
 									<div class="drop-list">
 										{#each comp.drops.slice(0, 3) as drop}
 											<div class="drop-item">
@@ -145,6 +159,24 @@
 					</div>
 				{/if}
 
+				<!-- Crafting Resources -->
+				{#if item.acquisitionData?.resources && item.acquisitionData.resources.length > 0}
+					<div class="acquisition-section">
+						<h4>
+							<span class="material-icons">inventory_2</span>
+							CRAFTING RESOURCES
+						</h4>
+						<div class="resource-list">
+							{#each item.acquisitionData.resources as resource}
+								<div class="resource-item">
+									<span class="resource-name">{resource.name}</span>
+									<span class="resource-quantity">x{resource.quantity.toLocaleString()}</span>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
 				<!-- Requirements -->
 				{#if item.masteryReq > 0}
 					<div class="acquisition-section">
@@ -156,6 +188,60 @@
 							<span class="info-label">Mastery Rank</span>
 							<span class="info-value">MR {item.masteryReq}</span>
 						</div>
+					</div>
+				{/if}
+
+				<!-- Personal Stats -->
+				{#if item.personalStats && item.personalStats.kills > 0}
+					<div class="acquisition-section">
+						<h4>
+							<span class="material-icons">analytics</span>
+							PERSONAL STATS
+						</h4>
+
+						{#if item.personalStats.fired !== null && item.personalStats.hits !== null}
+							{@const accuracy = formatAccuracy(item.personalStats.hits, item.personalStats.fired)}
+							{#if accuracy}
+								<div class="info-row">
+									<span class="info-label">Accuracy</span>
+									<span class="info-value"
+										>{accuracy} ({item.personalStats.hits.toLocaleString()} / {item.personalStats.fired.toLocaleString()})</span
+									>
+								</div>
+							{/if}
+						{/if}
+
+						<div class="info-row">
+							<span class="info-label">Kills</span>
+							<span class="info-value">{item.personalStats.kills.toLocaleString()}</span>
+						</div>
+
+						{#if item.personalStats.headshots > 0}
+							{@const headshotPct = (
+								(item.personalStats.headshots / item.personalStats.kills) *
+								100
+							).toFixed(1)}
+							<div class="info-row">
+								<span class="info-label">Headshots</span>
+								<span class="info-value"
+									>{item.personalStats.headshots.toLocaleString()} ({headshotPct}%)</span
+								>
+							</div>
+						{/if}
+
+						{#if item.personalStats.equipTime > 0}
+							<div class="info-row">
+								<span class="info-label">Time Equipped</span>
+								<span class="info-value">{formatEquipTime(item.personalStats.equipTime)}</span>
+							</div>
+						{/if}
+
+						{#if item.personalStats.assists > 0}
+							<div class="info-row">
+								<span class="info-label">Assists</span>
+								<span class="info-value">{item.personalStats.assists.toLocaleString()}</span>
+							</div>
+						{/if}
 					</div>
 				{/if}
 			</div>
@@ -332,4 +418,24 @@
 	.drop-chance
 		font-family: 'Share Tech Mono', monospace
 		color: $success
+
+	.resource-list
+		display: flex
+		flex-direction: column
+		gap: 0.25rem
+
+	.resource-item
+		display: flex
+		justify-content: space-between
+		align-items: center
+		font-size: 0.875rem
+		padding: 0.25rem 0.5rem
+		background: $gray-150
+
+	.resource-name
+		color: $gray-700
+
+	.resource-quantity
+		font-family: 'Share Tech Mono', monospace
+		color: $info
 </style>
