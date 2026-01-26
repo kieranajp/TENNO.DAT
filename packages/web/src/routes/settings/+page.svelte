@@ -182,11 +182,11 @@
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.875rem
 		margin-bottom: 0.5rem
-		color: #374151
+		color: $gray-700
 
 		.material-icons
 			font-size: 1rem
-			color: #5D6D65
+			color: $kim-border
 
 	.input-retro
 		width: 100%
@@ -198,7 +198,7 @@
 		gap: 0.5rem
 		margin-top: 0.5rem
 		font-size: 0.75rem
-		color: #6b7280
+		color: $gray-500
 
 		.material-icons
 			font-size: 0.875rem
@@ -225,7 +225,7 @@
 		display: flex
 		align-items: center
 		gap: 0.25rem
-		color: #22c55e
+		color: $success
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.875rem
 		text-transform: uppercase
@@ -256,13 +256,13 @@
 		justify-content: space-between
 		align-items: center
 		padding: 0.5rem
-		background: #f5f5f5
-		border: 1px solid #d1d5db
+		background: $gray-100
+		border: 1px solid $gray-300
 
 	.info-label
 		font-family: 'Share Tech Mono', monospace
 		font-size: 0.75rem
-		color: #6b7280
+		color: $gray-500
 		text-transform: uppercase
 
 	.info-value
@@ -270,10 +270,10 @@
 		font-size: 0.875rem
 
 	.status-online
-		color: #22c55e
+		color: $success
 
 	.status-offline
-		color: #C0392B
+		color: $kim-accent
 
 	// Help Panel
 	.help-content
@@ -291,7 +291,7 @@
 			margin-bottom: 0.25rem
 
 		code
-			background: #e5e7eb
+			background: $gray-200
 			padding: 0.125rem 0.375rem
 			font-family: 'Share Tech Mono', monospace
 			font-size: 0.8rem
@@ -301,13 +301,13 @@
 		align-items: flex-start
 		gap: 0.5rem
 		padding: 0.75rem
-		background: #fef3c7
-		border: 1px solid #f59e0b
+		background: $warning-bg-soft
+		border: 1px solid $warning
 		margin-top: 1rem
 
 		.material-icons
 			font-size: 1rem
-			color: #d97706
+			color: $warning-text-dark
 			flex-shrink: 0
 			margin-top: 0.125rem
 </style>
