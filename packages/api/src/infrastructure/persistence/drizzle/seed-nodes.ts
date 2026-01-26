@@ -1,5 +1,7 @@
-import { sql } from 'drizzle-orm'
 import { db, schema } from './connection'
+import { createLogger } from '../../logger'
+
+const log = createLogger('SeedNodes')
 
 // FrameHub node structure
 interface FrameHubNode {
@@ -63,7 +65,7 @@ function parseRailjackPlanet(value: string): string {
 }
 
 async function seedNodes() {
-  console.log('Fetching nodes from FrameHub...')
+  log.info('Fetching nodes from FrameHub...')
 
   // Fetch curated node data from FrameHub
   const frameHubResponse = await fetch('https://raw.githubusercontent.com/Paroxity/FrameHub/main/src/resources/nodes.json')
@@ -90,10 +92,10 @@ async function seedNodes() {
     }
   }
 
-  console.log(`FrameHub: ${missionNodes.length} mission nodes`)
+  log.info(`FrameHub: ${missionNodes.length} mission nodes`)
 
   // Fetch Railjack nodes from warframestat (CrewBattleNodes)
-  console.log('Fetching Railjack nodes from warframestat...')
+  log.info('Fetching Railjack nodes from warframestat...')
   const warframestatResponse = await fetch('https://api.warframestat.us/solNodes/')
   if (!warframestatResponse.ok) {
     throw new Error(`Failed to fetch warframestat nodes: ${warframestatResponse.status}`)
@@ -110,7 +112,7 @@ async function seedNodes() {
       masteryXp: RAILJACK_NODE_XP,
     }))
 
-  console.log(`Warframestat: ${railjackNodes.length} Railjack nodes`)
+  log.info(`Warframestat: ${railjackNodes.length} Railjack nodes`)
 
   // Add hardcoded junctions
   const junctionNodes = JUNCTIONS.map(j => ({
@@ -123,29 +125,32 @@ async function seedNodes() {
 
   const nodesToInsert = [...missionNodes, ...railjackNodes, ...junctionNodes]
 
-  console.log(`Total: ${nodesToInsert.length} masterable nodes`)
-  console.log(`  - Missions: ${missionNodes.length}`)
-  console.log(`  - Railjack: ${railjackNodes.length}`)
-  console.log(`  - Junctions: ${junctionNodes.length}`)
+  log.info(`Total: ${nodesToInsert.length} masterable nodes`)
+  log.info(`  - Missions: ${missionNodes.length}`)
+  log.info(`  - Railjack: ${railjackNodes.length}`)
+  log.info(`  - Junctions: ${junctionNodes.length}`)
 
   const totalXp = nodesToInsert.reduce((sum, n) => sum + n.masteryXp, 0)
-  console.log(`  - Total XP: ${totalXp.toLocaleString()}`)
+  log.info(`  - Total XP: ${totalXp.toLocaleString()}`)
 
   // Clear existing nodes and insert fresh data
-  console.log('Clearing existing nodes...')
+  log.info('Clearing existing nodes...')
   await db.delete(schema.playerNodes)
   await db.delete(schema.nodes)
 
-  console.log('Inserting nodes into database...')
+  log.info('Inserting nodes into database...')
   const BATCH_SIZE = 100
   for (let i = 0; i < nodesToInsert.length; i += BATCH_SIZE) {
     const batch = nodesToInsert.slice(i, i + BATCH_SIZE)
     await db.insert(schema.nodes).values(batch)
-    console.log(`Inserted ${Math.min(i + BATCH_SIZE, nodesToInsert.length)}/${nodesToInsert.length}`)
+    log.info(`Inserted ${Math.min(i + BATCH_SIZE, nodesToInsert.length)}/${nodesToInsert.length}`)
   }
 
-  console.log('Node seed complete!')
+  log.info('Node seed complete!')
   process.exit(0)
 }
 
-seedNodes().catch(console.error)
+seedNodes().catch((err) => {
+  log.error('Node seed failed', err)
+  process.exit(1)
+})

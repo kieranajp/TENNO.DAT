@@ -2,20 +2,23 @@ import Items from '@wfcd/items'
 import { sql } from 'drizzle-orm'
 import { db, schema } from './connection'
 import { WFCD_CATEGORIES, SeedingRules } from '@warframe-tracker/shared'
+import { createLogger } from '../../logger'
+
+const log = createLogger('Seed')
 
 // Categories to fetch from @wfcd/items
 // The library filters by productCategory, not the 'category' field
 const MASTERABLE_CATEGORIES = WFCD_CATEGORIES
 
 async function seed() {
-  console.log('Fetching items from @wfcd/items...')
+  log.info('Fetching items from @wfcd/items...')
 
   const allItems = new Items({ category: MASTERABLE_CATEGORIES as any })
 
   // Filter to masterable items using declarative rules
   const masterableItems = allItems.filter((item: any) => SeedingRules.shouldInclude(item))
 
-  console.log(`Found ${masterableItems.length} masterable items`)
+  log.info(`Found ${masterableItems.length} masterable items`)
 
   const getMasteryReq = (item: any): number => {
     const mr = item.masteryReq
@@ -81,11 +84,11 @@ async function seed() {
       }
       // Validate all integer fields
       if (typeof mapped.masteryReq !== 'number' || isNaN(mapped.masteryReq)) {
-        console.error('Invalid masteryReq for', item.name, ':', item.masteryReq)
+        log.warn('Invalid masteryReq', { item: item.name, value: item.masteryReq })
         mapped.masteryReq = 0
       }
       if (typeof mapped.maxRank !== 'number' || isNaN(mapped.maxRank)) {
-        console.error('Invalid maxRank for', item.name, ':', item.maxRank)
+        log.warn('Invalid maxRank', { item: item.name, value: item.maxRank })
         mapped.maxRank = 30
       }
       return mapped
@@ -117,7 +120,7 @@ async function seed() {
     },
   })
 
-  console.log('Inserting items into database...')
+  log.info('Inserting items into database...')
 
   const BATCH_SIZE = 100
   for (let i = 0; i < itemsToInsert.length; i += BATCH_SIZE) {
@@ -139,11 +142,14 @@ async function seed() {
         acquisitionData: sql`excluded.acquisition_data`,
       },
     })
-    console.log(`Inserted ${Math.min(i + BATCH_SIZE, itemsToInsert.length)}/${itemsToInsert.length}`)
+    log.debug(`Inserted ${Math.min(i + BATCH_SIZE, itemsToInsert.length)}/${itemsToInsert.length}`)
   }
 
-  console.log('Seed complete!')
+  log.info('Seed complete!')
   process.exit(0)
 }
 
-seed().catch(console.error)
+seed().catch((err) => {
+  log.error('Seed failed', err)
+  process.exit(1)
+})
