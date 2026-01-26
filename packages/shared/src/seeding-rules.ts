@@ -83,7 +83,7 @@ export class SeedingRules {
 
     // Fallback: check if item's category/productCategory matches wfcdCategory
     for (const config of Object.values(CATEGORIES)) {
-      const itemCategory = item.productCategory || item.category
+      const itemCategory = item.category || item.productCategory
       if (itemCategory === config.wfcdCategory) {
         // Check category-specific exclusions
         if (config.seeding?.exclude && this.matchesAny(item, config.seeding.exclude)) {
