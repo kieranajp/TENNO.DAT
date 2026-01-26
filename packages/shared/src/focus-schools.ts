@@ -1,5 +1,5 @@
 /**
- * Focus school value object - single source of truth.
+ * Focus school value object.
  * Encapsulates DE's internal codes, friendly names, and UI metadata.
  */
 export class FocusSchool {
@@ -22,7 +22,6 @@ export class FocusSchool {
     FocusSchool.byName.set(name, this)
   }
 
-  /** Get all focus schools */
   static all(): FocusSchool[] {
     return [
       FocusSchool.Madurai,
@@ -33,45 +32,15 @@ export class FocusSchool {
     ]
   }
 
-  /** Look up by DE's internal code (e.g., 'AP_ATTACK' → Madurai) */
   static fromCode(code: string): FocusSchool | null {
     return FocusSchool.byCode.get(code) ?? null
   }
 
-  /** Look up by friendly name (e.g., 'Madurai') */
   static fromName(name: string): FocusSchool | null {
     return FocusSchool.byName.get(name) ?? null
   }
 
-  /** Serialize for API responses */
   toJSON() {
     return { name: this.name, color: this.color, imageName: this.imageName }
   }
 }
-
-// Backwards-compatible exports
-export type FocusSchoolName = 'Madurai' | 'Vazarin' | 'Naramon' | 'Zenurik' | 'Unairu'
-export type FocusSchoolCode = 'AP_ATTACK' | 'AP_DEFENSE' | 'AP_TACTIC' | 'AP_POWER' | 'AP_WARD'
-
-/** @deprecated Use FocusSchool.fromCode() */
-export function getFocusSchoolFromCode(code: string): FocusSchoolName | null {
-  return FocusSchool.fromCode(code)?.name as FocusSchoolName | null
-}
-
-/** @deprecated Use FocusSchool.fromName() */
-export function getFocusSchoolInfo(
-  name: string | null
-): { name: string; color: string; imageName: string } | null {
-  if (!name) return null
-  const school = FocusSchool.fromName(name)
-  return school ? school.toJSON() : null
-}
-
-/** @deprecated Use FocusSchool.Madurai etc. directly */
-export const FOCUS_SCHOOLS = {
-  Madurai: FocusSchool.Madurai.toJSON(),
-  Vazarin: FocusSchool.Vazarin.toJSON(),
-  Naramon: FocusSchool.Naramon.toJSON(),
-  Zenurik: FocusSchool.Zenurik.toJSON(),
-  Unairu: FocusSchool.Unairu.toJSON(),
-} as const

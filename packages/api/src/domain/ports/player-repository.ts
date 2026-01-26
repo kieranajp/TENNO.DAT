@@ -1,4 +1,5 @@
-import type { PlayerSettings, Platform } from '../entities/player'
+import type { Platform } from '@warframe-tracker/shared'
+import type { PlayerSettings } from '../entities/player'
 
 export interface PlayerRepository {
   getSettings(): Promise<PlayerSettings | null>

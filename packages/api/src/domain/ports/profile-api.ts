@@ -1,4 +1,4 @@
-import type { Platform } from '../entities/player'
+import type { Platform } from '@warframe-tracker/shared'
 
 export interface ProfileXpComponent {
   itemType: string   // uniqueName, e.g. "/Lotus/Powersuits/Frost/Frost"

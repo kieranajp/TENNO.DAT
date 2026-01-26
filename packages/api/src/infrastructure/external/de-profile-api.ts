@@ -1,19 +1,14 @@
-import { getFocusSchoolFromCode, Platform } from '@warframe-tracker/shared'
-import type { PlatformId } from '@warframe-tracker/shared'
+import { FocusSchool, Platform } from '@warframe-tracker/shared'
 import type { ProfileApi, ProfileData, Loadout, Intrinsics, MissionCompletion } from '../../domain/ports/profile-api'
 import { createLogger } from '../logger'
 
 const log = createLogger('DeProfileApi')
 
 export class DeProfileApi implements ProfileApi {
-  async fetch(playerId: string, platformId: PlatformId): Promise<ProfileData> {
-    const platform = Platform.fromId(platformId)
-    if (!platform) {
-      throw new Error(`Unknown platform: ${platformId}`)
-    }
+  async fetch(playerId: string, platform: Platform): Promise<ProfileData> {
     const url = platform.profileUrl(playerId)
 
-    log.info('Fetching profile', { playerId, platform: platformId, url })
+    log.info('Fetching profile', { playerId, platform: platform.id, url })
 
     const response = await fetch(url)
 
@@ -78,7 +73,7 @@ export class DeProfileApi implements ProfileApi {
       primary: loadOutInventory?.LongGuns?.[0]?.ItemType ?? null,
       secondary: loadOutInventory?.Pistols?.[0]?.ItemType ?? null,
       melee: loadOutInventory?.Melee?.[0]?.ItemType ?? null,
-      focusSchool: focusSchoolCode ? (getFocusSchoolFromCode(focusSchoolCode) ?? focusSchoolCode) : null,
+      focusSchool: focusSchoolCode ? (FocusSchool.fromCode(focusSchoolCode)?.name ?? focusSchoolCode) : null,
     }
   }
 

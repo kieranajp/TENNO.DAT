@@ -1,10 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { Platform } from '@warframe-tracker/shared'
 import { DeProfileApi } from './de-profile-api'
-
-// Mock fs to prevent file writes during tests
-vi.mock('node:fs', () => ({
-  writeFileSync: vi.fn(),
-}))
 
 /**
  * Tests for the DE Profile API extraction logic.
@@ -31,7 +27,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve({ Results: [{ LoadOutInventory: { XPInfo: [] } }] }),
       })
 
-      await api.fetch('TestPlayer', 'pc')
+      await api.fetch('TestPlayer', Platform.PC)
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://api.warframe.com/cdn/getProfileViewingData.php?playerId=TestPlayer'
@@ -44,7 +40,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve({ Results: [{ LoadOutInventory: { XPInfo: [] } }] }),
       })
 
-      await api.fetch('TestPlayer', 'ps')
+      await api.fetch('TestPlayer', Platform.PlayStation)
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://content-ps4.warframe.com/dynamic/getProfileViewingData.php?playerId=TestPlayer'
@@ -57,7 +53,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve({ Results: [{ LoadOutInventory: { XPInfo: [] } }] }),
       })
 
-      await api.fetch('TestPlayer', 'xbox')
+      await api.fetch('TestPlayer', Platform.Xbox)
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://content-xb1.warframe.com/dynamic/getProfileViewingData.php?playerId=TestPlayer'
@@ -70,7 +66,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve({ Results: [{ LoadOutInventory: { XPInfo: [] } }] }),
       })
 
-      await api.fetch('TestPlayer', 'switch')
+      await api.fetch('TestPlayer', Platform.Switch)
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://content-swi.warframe.com/dynamic/getProfileViewingData.php?playerId=TestPlayer'
@@ -84,7 +80,7 @@ describe('DeProfileApi', () => {
         text: () => Promise.resolve('Forbidden'),
       })
 
-      await expect(api.fetch('TestPlayer', 'pc')).rejects.toThrow('rate limited')
+      await expect(api.fetch('TestPlayer', Platform.PC)).rejects.toThrow('rate limited')
     })
 
     it('throws on 409 response with private profile message', async () => {
@@ -94,7 +90,7 @@ describe('DeProfileApi', () => {
         text: () => Promise.resolve('Conflict'),
       })
 
-      await expect(api.fetch('TestPlayer', 'pc')).rejects.toThrow('Profile is private')
+      await expect(api.fetch('TestPlayer', Platform.PC)).rejects.toThrow('Profile is private')
     })
   })
 
@@ -116,7 +112,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.xpComponents).toHaveLength(2)
       expect(result.xpComponents[0]).toEqual({
@@ -141,7 +137,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
       expect(result.xpComponents).toEqual([])
     })
 
@@ -157,7 +153,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
       expect(result.xpComponents).toEqual([])
     })
   })
@@ -184,7 +180,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.loadout.warframe).toBe('/Lotus/Powersuits/Frost/FrostPrime')
       expect(result.loadout.primary).toBe('/Lotus/Weapons/Tenno/Rifle/Soma')
@@ -209,7 +205,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.loadout.warframe).toBe('/Lotus/Powersuits/Frost/Frost')
       expect(result.loadout.primary).toBeNull()
@@ -241,7 +237,7 @@ describe('DeProfileApi', () => {
           json: () => Promise.resolve(mockResponse),
         })
 
-        const result = await api.fetch('TestPlayer', 'pc')
+        const result = await api.fetch('TestPlayer', Platform.PC)
         expect(result.loadout.focusSchool).toBe(name)
       })
     })
@@ -259,7 +255,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
       expect(result.loadout.focusSchool).toBeNull()
     })
 
@@ -276,7 +272,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
       expect(result.loadout.focusSchool).toBe('UNKNOWN_SCHOOL')
     })
   })
@@ -301,7 +297,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.intrinsics.railjack).toEqual({
         tactical: 10,
@@ -331,7 +327,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.intrinsics.drifter).toEqual({
         riding: 10,
@@ -354,7 +350,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.intrinsics.railjack.total).toBe(0)
       expect(result.intrinsics.drifter.total).toBe(0)
@@ -377,7 +373,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.intrinsics.railjack).toEqual({
         tactical: 5,
@@ -408,7 +404,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.missions).toHaveLength(3)
       expect(result.missions[0]).toEqual({ tag: 'SolNode1', completes: 5, tier: undefined })
@@ -431,7 +427,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.missions[0].tier).toBe(1)
       expect(result.missions[1].tier).toBeUndefined()
@@ -449,7 +445,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
       expect(result.missions).toEqual([])
     })
 
@@ -468,7 +464,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
       expect(result.missions[0].completes).toBe(0)
     })
   })
@@ -488,7 +484,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
 
       expect(result.displayName).toBe('TennoMaster2000')
       expect(result.playerLevel).toBe(35)
@@ -507,7 +503,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
       expect(result.displayName).toBeNull()
     })
 
@@ -524,7 +520,7 @@ describe('DeProfileApi', () => {
         json: () => Promise.resolve(mockResponse),
       })
 
-      const result = await api.fetch('TestPlayer', 'pc')
+      const result = await api.fetch('TestPlayer', Platform.PC)
       expect(result.playerLevel).toBe(0)
     })
   })

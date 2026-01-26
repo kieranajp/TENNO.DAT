@@ -1,12 +1,6 @@
-import {
-	FOCUS_SCHOOLS,
-	getFocusSchoolInfo,
-	type MasteryState,
-	type ItemAcquisitionData
-} from '@warframe-tracker/shared';
+import { FocusSchool, MasteryState, type ItemAcquisitionData } from '@warframe-tracker/shared';
 
-// Re-export for consumers that import from this module
-export { FOCUS_SCHOOLS, getFocusSchoolInfo, type MasteryState, type ItemAcquisitionData };
+export { FocusSchool, MasteryState, type ItemAcquisitionData };
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
