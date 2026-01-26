@@ -1,24 +1,19 @@
-import { getFocusSchoolFromCode } from '@warframe-tracker/shared'
-import type { Platform } from '../../domain/entities/player'
+import { getFocusSchoolFromCode, Platform } from '@warframe-tracker/shared'
+import type { PlatformId } from '@warframe-tracker/shared'
 import type { ProfileApi, ProfileData, Loadout, Intrinsics, MissionCompletion } from '../../domain/ports/profile-api'
 import { createLogger } from '../logger'
 
 const log = createLogger('DeProfileApi')
 
-// PC redirects to api.warframe.com/cdn, others still use content-*.warframe.com/dynamic
-const PLATFORM_URLS: Record<Platform, string> = {
-  pc: 'https://api.warframe.com/cdn',
-  ps: 'https://content-ps4.warframe.com/dynamic',
-  xbox: 'https://content-xb1.warframe.com/dynamic',
-  switch: 'https://content-swi.warframe.com/dynamic',
-}
-
 export class DeProfileApi implements ProfileApi {
-  async fetch(playerId: string, platform: Platform): Promise<ProfileData> {
-    const baseUrl = PLATFORM_URLS[platform]
-    const url = `${baseUrl}/getProfileViewingData.php?playerId=${playerId}`
+  async fetch(playerId: string, platformId: PlatformId): Promise<ProfileData> {
+    const platform = Platform.fromId(platformId)
+    if (!platform) {
+      throw new Error(`Unknown platform: ${platformId}`)
+    }
+    const url = platform.profileUrl(playerId)
 
-    log.info('Fetching profile', { playerId, platform, url })
+    log.info('Fetching profile', { playerId, platform: platformId, url })
 
     const response = await fetch(url)
 
