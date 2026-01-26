@@ -1,4 +1,4 @@
-export type Platform = 'pc' | 'ps' | 'xbox' | 'switch'
+import type { Platform } from '@warframe-tracker/shared'
 
 export interface PlayerSettings {
   id: number

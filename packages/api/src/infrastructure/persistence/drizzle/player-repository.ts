@@ -1,7 +1,8 @@
 import { eq } from 'drizzle-orm'
+import type { Platform } from '@warframe-tracker/shared'
 import type { DrizzleDb } from './connection'
 import { playerSettings } from './schema'
-import type { PlayerSettings, Platform } from '../../../domain/entities/player'
+import type { PlayerSettings } from '../../../domain/entities/player'
 import type { PlayerRepository } from '../../../domain/ports/player-repository'
 
 export class DrizzlePlayerRepository implements PlayerRepository {
@@ -18,10 +19,10 @@ export class DrizzlePlayerRepository implements PlayerRepository {
     if (existing) {
       await this.db
         .update(playerSettings)
-        .set({ playerId, platform })
+        .set({ playerId, platform: platform.id })
         .where(eq(playerSettings.id, existing.id))
     } else {
-      await this.db.insert(playerSettings).values({ playerId, platform })
+      await this.db.insert(playerSettings).values({ playerId, platform: platform.id })
     }
   }
 

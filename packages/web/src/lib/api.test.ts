@@ -3,8 +3,7 @@ import {
   formatBuildTime,
   getImageUrl,
   getMasteryRankIconUrl,
-  getFocusSchoolInfo,
-  FOCUS_SCHOOLS,
+  FocusSchool,
 } from './api'
 
 describe('formatBuildTime', () => {
@@ -83,18 +82,18 @@ describe('getMasteryRankIconUrl', () => {
   })
 })
 
-describe('FOCUS_SCHOOLS', () => {
+describe('FocusSchool', () => {
   it('has all five focus schools', () => {
-    expect(Object.keys(FOCUS_SCHOOLS)).toHaveLength(5)
-    expect(FOCUS_SCHOOLS.Madurai).toBeDefined()
-    expect(FOCUS_SCHOOLS.Vazarin).toBeDefined()
-    expect(FOCUS_SCHOOLS.Naramon).toBeDefined()
-    expect(FOCUS_SCHOOLS.Zenurik).toBeDefined()
-    expect(FOCUS_SCHOOLS.Unairu).toBeDefined()
+    expect(FocusSchool.all()).toHaveLength(5)
+    expect(FocusSchool.Madurai).toBeDefined()
+    expect(FocusSchool.Vazarin).toBeDefined()
+    expect(FocusSchool.Naramon).toBeDefined()
+    expect(FocusSchool.Zenurik).toBeDefined()
+    expect(FocusSchool.Unairu).toBeDefined()
   })
 
   it('each school has name, color, and imageName', () => {
-    Object.values(FOCUS_SCHOOLS).forEach(school => {
+    FocusSchool.all().forEach(school => {
       expect(school.name).toBeDefined()
       expect(school.color).toMatch(/^#[0-9a-f]{6}$/i)
       expect(school.imageName).toBeDefined()
@@ -103,36 +102,36 @@ describe('FOCUS_SCHOOLS', () => {
   })
 
   it('has correct school names', () => {
-    expect(FOCUS_SCHOOLS.Madurai.name).toBe('Madurai')
-    expect(FOCUS_SCHOOLS.Vazarin.name).toBe('Vazarin')
-    expect(FOCUS_SCHOOLS.Naramon.name).toBe('Naramon')
-    expect(FOCUS_SCHOOLS.Zenurik.name).toBe('Zenurik')
-    expect(FOCUS_SCHOOLS.Unairu.name).toBe('Unairu')
-  })
-})
-
-describe('getFocusSchoolInfo', () => {
-  it('returns null for null input', () => {
-    expect(getFocusSchoolInfo(null)).toBe(null)
+    expect(FocusSchool.Madurai.name).toBe('Madurai')
+    expect(FocusSchool.Vazarin.name).toBe('Vazarin')
+    expect(FocusSchool.Naramon.name).toBe('Naramon')
+    expect(FocusSchool.Zenurik.name).toBe('Zenurik')
+    expect(FocusSchool.Unairu.name).toBe('Unairu')
   })
 
-  it('returns null for unknown school', () => {
-    expect(getFocusSchoolInfo('Unknown')).toBe(null)
-    expect(getFocusSchoolInfo('')).toBe(null)
+  it('fromName returns null for null-ish input', () => {
+    expect(FocusSchool.fromName('')).toBe(null)
+    expect(FocusSchool.fromName('Unknown')).toBe(null)
   })
 
-  it('returns info for Madurai', () => {
-    const info = getFocusSchoolInfo('Madurai')
-    expect(info).not.toBe(null)
-    expect(info?.name).toBe('Madurai')
-    expect(info?.color).toBe('#ff6b35')
+  it('fromName returns school for valid name', () => {
+    expect(FocusSchool.fromName('Madurai')).toBe(FocusSchool.Madurai)
+    expect(FocusSchool.fromName('Vazarin')).toBe(FocusSchool.Vazarin)
+    expect(FocusSchool.fromName('Naramon')).toBe(FocusSchool.Naramon)
+    expect(FocusSchool.fromName('Zenurik')).toBe(FocusSchool.Zenurik)
+    expect(FocusSchool.fromName('Unairu')).toBe(FocusSchool.Unairu)
   })
 
-  it('returns info for all valid schools', () => {
-    expect(getFocusSchoolInfo('Madurai')).toEqual(FOCUS_SCHOOLS.Madurai)
-    expect(getFocusSchoolInfo('Vazarin')).toEqual(FOCUS_SCHOOLS.Vazarin)
-    expect(getFocusSchoolInfo('Naramon')).toEqual(FOCUS_SCHOOLS.Naramon)
-    expect(getFocusSchoolInfo('Zenurik')).toEqual(FOCUS_SCHOOLS.Zenurik)
-    expect(getFocusSchoolInfo('Unairu')).toEqual(FOCUS_SCHOOLS.Unairu)
+  it('fromCode maps DE codes to schools', () => {
+    expect(FocusSchool.fromCode('AP_ATTACK')).toBe(FocusSchool.Madurai)
+    expect(FocusSchool.fromCode('AP_DEFENSE')).toBe(FocusSchool.Vazarin)
+    expect(FocusSchool.fromCode('AP_TACTIC')).toBe(FocusSchool.Naramon)
+    expect(FocusSchool.fromCode('AP_POWER')).toBe(FocusSchool.Zenurik)
+    expect(FocusSchool.fromCode('AP_WARD')).toBe(FocusSchool.Unairu)
+  })
+
+  it('fromCode returns null for unknown codes', () => {
+    expect(FocusSchool.fromCode('UNKNOWN')).toBe(null)
+    expect(FocusSchool.fromCode('')).toBe(null)
   })
 })

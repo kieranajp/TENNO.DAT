@@ -1,4 +1,5 @@
 import { eq, sql, and } from 'drizzle-orm'
+import { PLANET_ORDER } from '@warframe-tracker/shared'
 import type { DrizzleDb } from './connection'
 import { nodes, playerNodes } from './schema'
 import type { Node, NodeCompletion } from '../../../domain/entities/node'
@@ -115,18 +116,7 @@ export class DrizzleNodeRepository implements NodeRepository {
     let totalCompletedXP = 0
     let totalXP = 0
 
-    // Define planet order for consistent display
-    const planetOrder = [
-      'Earth', 'Venus', 'Mercury', 'Mars', 'Phobos', 'Void', 'Ceres',
-      'Jupiter', 'Europa', 'Saturn', 'Uranus', 'Neptune', 'Pluto',
-      'Sedna', 'Eris', 'Kuva Fortress', 'Lua', 'Deimos', 'Zariman',
-      'Duviri', 'Höllvania',
-      // Railjack Proxima regions
-      'Earth Proxima', 'Venus Proxima', 'Saturn Proxima',
-      'Neptune Proxima', 'Pluto Proxima', 'Veil Proxima'
-    ]
-
-    for (const planetName of planetOrder) {
+    for (const planetName of PLANET_ORDER) {
       const nodesList = planetMap.get(planetName)
       if (!nodesList || nodesList.length === 0) continue
 
@@ -152,7 +142,7 @@ export class DrizzleNodeRepository implements NodeRepository {
 
     // Add any remaining planets not in the order list
     for (const [planetName, nodesList] of Array.from(planetMap.entries())) {
-      if (planetOrder.includes(planetName)) continue
+      if ((PLANET_ORDER as readonly string[]).includes(planetName)) continue
 
       const completed = nodesList.filter(n => n.completed).length
       const total = nodesList.length

@@ -1,21 +1,8 @@
+import { FocusSchool, MasteryState, type ItemAcquisitionData } from '@warframe-tracker/shared';
+
+export { FocusSchool, MasteryState, type ItemAcquisitionData };
+
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
-
-// Three-state mastery for rank 40 items
-export type MasteryState = 'unmastered' | 'mastered_30' | 'mastered_40';
-
-// Focus school mapping with lens icons
-export const FOCUS_SCHOOLS: Record<string, { name: string; color: string; imageName: string }> = {
-	Madurai: { name: 'Madurai', color: '#ff6b35', imageName: 'madurai-lens-e675bac31e.png' },
-	Vazarin: { name: 'Vazarin', color: '#4ecdc4', imageName: 'vazarin-lens-ae790776d3.png' },
-	Naramon: { name: 'Naramon', color: '#f7dc6f', imageName: 'naramon-lens-7be3563b7d.png' },
-	Zenurik: { name: 'Zenurik', color: '#5dade2', imageName: 'zenurik-lens-0f0eb9c38b.png' },
-	Unairu: { name: 'Unairu', color: '#a569bd', imageName: 'unairu-lens-f251e69759.png' }
-};
-
-export function getFocusSchoolInfo(school: string | null): { name: string; color: string; imageName: string } | null {
-	if (!school) return null;
-	return FOCUS_SCHOOLS[school] ?? null;
-}
 
 export interface LoadoutItem {
 	id: number;
@@ -73,25 +60,7 @@ export interface MasteryItem {
 	masteryState: MasteryState;
 }
 
-// Item details with acquisition data
-export interface ItemAcquisitionData {
-	drops: Array<{
-		location: string;
-		chance: number;
-		rarity: string;
-	}>;
-	components: Array<{
-		name: string;
-		drops: Array<{
-			location: string;
-			chance: number;
-		}>;
-	}>;
-	introduced?: {
-		name: string | null;
-		date: string | null;
-	} | null;
-}
+// ItemAcquisitionData is now imported from @warframe-tracker/shared
 
 export interface ItemDetails {
 	id: number;

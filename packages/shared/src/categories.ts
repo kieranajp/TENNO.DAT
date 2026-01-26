@@ -365,3 +365,31 @@ export const GLOBAL_MAX_RANK_OVERRIDES: MaxRankOverride[] = [
     reason: 'Paracesis caps at rank 40',
   },
 ]
+
+/**
+ * Mastery XP configuration by category type.
+ * Frame-types give more XP per rank than weapon-types.
+ */
+export const MASTERY_CONFIG = {
+  frame: { xpMultiplier: 1000, xpPerRank: 200 },
+  weapon: { xpMultiplier: 500, xpPerRank: 100 },
+} as const
+
+/**
+ * Get the XP multiplier for a category.
+ * Used in formula: XP = multiplier × rank²
+ */
+export function getXpMultiplier(category: string): number {
+  return CATEGORIES[category]?.isFrameType
+    ? MASTERY_CONFIG.frame.xpMultiplier
+    : MASTERY_CONFIG.weapon.xpMultiplier
+}
+
+/**
+ * Get the mastery XP earned per rank for a category.
+ */
+export function getXpPerRank(category: string): number {
+  return CATEGORIES[category]?.isFrameType
+    ? MASTERY_CONFIG.frame.xpPerRank
+    : MASTERY_CONFIG.weapon.xpPerRank
+}

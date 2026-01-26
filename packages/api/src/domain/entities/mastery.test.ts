@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
+import { MasteryState } from '@warframe-tracker/shared'
 import {
   getMasteredXp,
   getRank30Xp,
   getRankFromXp,
   getMasteryStateFromRank,
-  getMasteryState,
   getMasteryContribution,
   getMRThreshold,
   calculateMR,
@@ -114,43 +114,32 @@ describe('getRankFromXp', () => {
 
 describe('getMasteryStateFromRank', () => {
   describe('for maxRank 30 items', () => {
-    it('returns unmastered for rank < 30', () => {
-      expect(getMasteryStateFromRank(0, 30)).toBe('unmastered')
-      expect(getMasteryStateFromRank(15, 30)).toBe('unmastered')
-      expect(getMasteryStateFromRank(29, 30)).toBe('unmastered')
+    it('returns Unmastered for rank < 30', () => {
+      expect(getMasteryStateFromRank(0, 30)).toBe(MasteryState.Unmastered)
+      expect(getMasteryStateFromRank(15, 30)).toBe(MasteryState.Unmastered)
+      expect(getMasteryStateFromRank(29, 30)).toBe(MasteryState.Unmastered)
     })
 
-    it('returns mastered_30 for rank >= 30', () => {
-      expect(getMasteryStateFromRank(30, 30)).toBe('mastered_30')
+    it('returns Mastered30 for rank >= 30', () => {
+      expect(getMasteryStateFromRank(30, 30)).toBe(MasteryState.Mastered30)
     })
   })
 
   describe('for maxRank 40 items', () => {
-    it('returns unmastered for rank < 30', () => {
-      expect(getMasteryStateFromRank(0, 40)).toBe('unmastered')
-      expect(getMasteryStateFromRank(29, 40)).toBe('unmastered')
+    it('returns Unmastered for rank < 30', () => {
+      expect(getMasteryStateFromRank(0, 40)).toBe(MasteryState.Unmastered)
+      expect(getMasteryStateFromRank(29, 40)).toBe(MasteryState.Unmastered)
     })
 
-    it('returns mastered_30 for rank 30-39', () => {
-      expect(getMasteryStateFromRank(30, 40)).toBe('mastered_30')
-      expect(getMasteryStateFromRank(35, 40)).toBe('mastered_30')
-      expect(getMasteryStateFromRank(39, 40)).toBe('mastered_30')
+    it('returns Mastered30 for rank 30-39', () => {
+      expect(getMasteryStateFromRank(30, 40)).toBe(MasteryState.Mastered30)
+      expect(getMasteryStateFromRank(35, 40)).toBe(MasteryState.Mastered30)
+      expect(getMasteryStateFromRank(39, 40)).toBe(MasteryState.Mastered30)
     })
 
-    it('returns mastered_40 for rank >= 40', () => {
-      expect(getMasteryStateFromRank(40, 40)).toBe('mastered_40')
+    it('returns Mastered40 for rank >= 40', () => {
+      expect(getMasteryStateFromRank(40, 40)).toBe(MasteryState.Mastered40)
     })
-  })
-})
-
-describe('getMasteryState', () => {
-  it('derives state from XP via rank calculation', () => {
-    // Frame at rank 30 XP
-    expect(getMasteryState(900000, 'Warframes', 30)).toBe('mastered_30')
-    // Frame below rank 30 XP
-    expect(getMasteryState(800000, 'Warframes', 30)).toBe('unmastered')
-    // Weapon at rank 40 XP
-    expect(getMasteryState(800000, 'Primary', 40)).toBe('mastered_40')
   })
 })
 

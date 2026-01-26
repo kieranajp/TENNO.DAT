@@ -1,32 +1,14 @@
-import { writeFileSync } from 'node:fs'
-import type { Platform } from '../../domain/entities/player'
+import { FocusSchool, Platform } from '@warframe-tracker/shared'
 import type { ProfileApi, ProfileData, Loadout, Intrinsics, MissionCompletion } from '../../domain/ports/profile-api'
 import { createLogger } from '../logger'
 
 const log = createLogger('DeProfileApi')
 
-// PC redirects to api.warframe.com/cdn, others still use content-*.warframe.com/dynamic
-const PLATFORM_URLS: Record<Platform, string> = {
-  pc: 'https://api.warframe.com/cdn',
-  ps: 'https://content-ps4.warframe.com/dynamic',
-  xbox: 'https://content-xb1.warframe.com/dynamic',
-  switch: 'https://content-swi.warframe.com/dynamic',
-}
-
-const FOCUS_SCHOOLS: Record<string, string> = {
-  'AP_ATTACK': 'Madurai',
-  'AP_DEFENSE': 'Vazarin',
-  'AP_TACTIC': 'Naramon',
-  'AP_POWER': 'Zenurik',
-  'AP_WARD': 'Unairu',
-}
-
 export class DeProfileApi implements ProfileApi {
   async fetch(playerId: string, platform: Platform): Promise<ProfileData> {
-    const baseUrl = PLATFORM_URLS[platform]
-    const url = `${baseUrl}/getProfileViewingData.php?playerId=${playerId}`
+    const url = platform.profileUrl(playerId)
 
-    log.info('Fetching profile', { playerId, platform, url })
+    log.info('Fetching profile', { playerId, platform: platform.id, url })
 
     const response = await fetch(url)
 
@@ -44,11 +26,6 @@ export class DeProfileApi implements ProfileApi {
     }
 
     const data = await response.json()
-
-    // Dump full response to file for debugging
-    const dumpPath = '/tmp/claude/de-profile-response.json'
-    writeFileSync(dumpPath, JSON.stringify(data, null, 2))
-    log.debug('Response dumped', { path: dumpPath })
 
     // XP data is in Results[0].LoadOutInventory.XPInfo, NOT top-level XpComponents
     const xpInfo = data.Results?.[0]?.LoadOutInventory?.XPInfo ?? []
@@ -96,7 +73,7 @@ export class DeProfileApi implements ProfileApi {
       primary: loadOutInventory?.LongGuns?.[0]?.ItemType ?? null,
       secondary: loadOutInventory?.Pistols?.[0]?.ItemType ?? null,
       melee: loadOutInventory?.Melee?.[0]?.ItemType ?? null,
-      focusSchool: focusSchoolCode ? (FOCUS_SCHOOLS[focusSchoolCode] ?? focusSchoolCode) : null,
+      focusSchool: focusSchoolCode ? (FocusSchool.fromCode(focusSchoolCode)?.name ?? focusSchoolCode) : null,
     }
   }
 

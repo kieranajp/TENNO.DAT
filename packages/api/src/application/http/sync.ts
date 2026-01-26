@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
+import { Platform } from '@warframe-tracker/shared'
 import type { Container } from '../../infrastructure/bootstrap/container'
-import type { Platform } from '../../domain/entities/player'
 import { getRankFromXp } from '../../domain/entities/mastery'
 import { createLogger } from '../../infrastructure/logger'
 
@@ -15,10 +15,15 @@ export function syncRoutes(container: Container) {
   })
 
   router.post('/settings', async (c) => {
-    const { playerId, platform } = await c.req.json<{
+    const { playerId, platform: platformId } = await c.req.json<{
       playerId: string
-      platform: Platform
+      platform: string
     }>()
+
+    const platform = Platform.fromId(platformId)
+    if (!platform) {
+      return c.json({ error: `Invalid platform: ${platformId}` }, 400)
+    }
 
     await container.playerRepo.saveSettings(playerId, platform)
     return c.json({ success: true })
@@ -32,9 +37,14 @@ export function syncRoutes(container: Container) {
     }
 
     try {
-      log.info('Starting sync', { playerId: settings.playerId, platform: settings.platform })
+      const platform = Platform.fromId(settings.platform as string)
+      if (!platform) {
+        return c.json({ error: `Invalid platform in settings: ${settings.platform}` }, 400)
+      }
 
-      const profile = await container.profileApi.fetch(settings.playerId, settings.platform as Platform)
+      log.info('Starting sync', { playerId: settings.playerId, platform: platform.id })
+
+      const profile = await container.profileApi.fetch(settings.playerId, platform)
 
       if (profile.displayName) {
         await container.playerRepo.updateDisplayName(settings.playerId, profile.displayName)
