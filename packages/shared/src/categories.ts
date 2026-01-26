@@ -345,7 +345,7 @@ export const GLOBAL_EXCLUSIONS: SeedingRule[] = [
         item.uniqueName?.includes('OperatorAmplifiers') ||
         item.uniqueName?.includes('SUModular')) &&
       !(/\/Tips?\//.test(item.uniqueName) || // Zaw strikes (Tip or Tips)
-        item.uniqueName?.includes('/Barrel/')), // Kitgun chambers & Amp prisms
+        /\/Barrel\/|Barrel$/.test(item.uniqueName)), // Kitgun chambers & Amp prisms (incl Mote)
     reason: 'Non-primary modular parts (grips, links, braces)',
   },
 ]

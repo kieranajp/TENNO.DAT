@@ -355,6 +355,19 @@ describe('SeedingRules', () => {
       category: 'Misc',
     }
 
+    // Plague Zaws use /Tips/ (plural) instead of /Tip/
+    const plagueKeewar = {
+      uniqueName: '/Lotus/Weapons/Ostron/Melee/ModularMeleeInfested/Tips/InfestedTipTwo',
+      name: 'Plague Keewar',
+      category: 'Melee',
+    }
+
+    const plagueKripath = {
+      uniqueName: '/Lotus/Weapons/Ostron/Melee/ModularMeleeInfested/Tips/InfestedTipOne',
+      name: 'Plague Kripath',
+      category: 'Melee',
+    }
+
     // Zaw grips - SHOULD be excluded
     const peye = {
       uniqueName: '/Lotus/Weapons/Ostron/ModularMelee/Grip/OstronGrip1',
@@ -378,6 +391,18 @@ describe('SeedingRules', () => {
       expect(SeedingRules.detectCategory(dokrahm)).toBe('Zaw')
     })
 
+    it('includes Plague Zaws with /Tips/ path (Plague Keewar)', () => {
+      // Plague Zaws use /Tips/ (plural) instead of /Tip/ (singular)
+      // This tests the regex /\/Tips?\// in both detector and global exclusions
+      expect(SeedingRules.isGloballyExcluded(plagueKeewar)).toBe(false)
+      expect(SeedingRules.detectCategory(plagueKeewar)).toBe('Zaw')
+    })
+
+    it('includes Plague Zaws with /Tips/ path (Plague Kripath)', () => {
+      expect(SeedingRules.isGloballyExcluded(plagueKripath)).toBe(false)
+      expect(SeedingRules.detectCategory(plagueKripath)).toBe('Zaw')
+    })
+
     it('excludes Zaw grips (Peye)', () => {
       expect(SeedingRules.isGloballyExcluded(peye)).toBe(true)
     })
@@ -399,6 +424,15 @@ describe('SeedingRules', () => {
       uniqueName: '/Lotus/Weapons/Sentients/OperatorAmplifiers/Set2/Barrel/SentAmpBarrel2A',
       name: 'Klamora Prism',
       category: 'Misc',
+    }
+
+    // Mote Prism (starter amp) - SHOULD be included
+    // Special case: uniqueName ends with "Barrel" instead of having "/Barrel/" in path
+    const motePrism = {
+      uniqueName: '/Lotus/Weapons/Sentients/OperatorAmplifiers/SentTrainingAmplifier/SentAmpTrainingBarrel',
+      name: 'Mote Prism',
+      category: 'Misc',
+      masterable: false,
     }
 
     // Sirocco (special Drifter amp) - SHOULD be included
@@ -429,6 +463,13 @@ describe('SeedingRules', () => {
 
     it('includes Amp prisms (Klamora)', () => {
       expect(SeedingRules.detectCategory(klamora)).toBe('Amp')
+    })
+
+    it('includes Mote Prism (starter amp with special uniqueName pattern)', () => {
+      // Mote Prism uniqueName ends with "Barrel" instead of having "/Barrel/"
+      // This tests the regex /\/Barrel\/|Barrel$/ in global exclusions
+      expect(SeedingRules.isGloballyExcluded(motePrism)).toBe(false)
+      expect(SeedingRules.detectCategory(motePrism)).toBe('Amp')
     })
 
     it('includes Sirocco (Drifter amp)', () => {
