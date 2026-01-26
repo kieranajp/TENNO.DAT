@@ -5,7 +5,9 @@
     "dev": "tsx watch src/application/index.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/infrastructure/persistence/drizzle/migrate.ts",
-    "db:seed": "tsx src/infrastructure/persistence/drizzle/seed.ts"
+    "db:seed": "pnpm db:seed-items && pnpm db:seed-nodes",
+    "db:seed-items": "tsx src/infrastructure/persistence/drizzle/seed.ts",
+    "db:seed-nodes": "tsx src/infrastructure/persistence/drizzle/seed-nodes.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.8.0",

@@ -123,10 +123,10 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
     sortOrder: 6,
     seeding: {
       detector: (item) =>
-        item.uniqueName?.includes('ModularMelee') && item.uniqueName?.includes('/Tip/'),
+        item.uniqueName?.includes('ModularMelee') && /\/Tips?\//.test(item.uniqueName),
       include: [
         {
-          matcher: /ModularMelee.*\/Tip\//,
+          matcher: /ModularMelee.*\/Tips?\//,
           reason: 'Zaw strikes (primary parts only)',
         },
       ],
@@ -344,8 +344,8 @@ export const GLOBAL_EXCLUSIONS: SeedingRule[] = [
       (item.uniqueName?.includes('ModularMelee') ||
         item.uniqueName?.includes('OperatorAmplifiers') ||
         item.uniqueName?.includes('SUModular')) &&
-      !(item.uniqueName?.includes('/Tip/') || // Zaw strikes
-        item.uniqueName?.includes('/Barrel/')), // Kitgun chambers & Amp prisms
+      !(/\/Tips?\//.test(item.uniqueName) || // Zaw strikes (Tip or Tips)
+        /\/Barrel\/|Barrel$/.test(item.uniqueName)), // Kitgun chambers & Amp prisms (incl Mote)
     reason: 'Non-primary modular parts (grips, links, braces)',
   },
 ]
