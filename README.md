@@ -115,7 +115,26 @@ pnpm test:e2e:update-snapshots   # Update baseline screenshots
 pnpm test:e2e:ui                 # Interactive UI mode
 ```
 
-Visual tests capture screenshots of all pages and compare against baselines.
+Visual tests capture screenshots of all pages at multiple viewports and compare against committed baselines.
+
+#### Workflow for SASS/CSS Refactors
+
+1. **Before changes** - Run `pnpm test:e2e` to confirm tests pass against current baselines
+2. **Make changes** - Edit your SASS/CSS files
+3. **Check for regressions** - Run `pnpm test:e2e` again
+   - Tests will fail if any visual differences are detected
+   - Check `packages/web/test-results/` for diff images showing what changed
+4. **Review changes** - If the visual changes are intentional, update baselines:
+   ```bash
+   pnpm test:e2e:update-snapshots
+   ```
+5. **Commit baselines** - Include the updated screenshots in your commit
+
+#### Troubleshooting
+
+- **Tests fail with "snapshot doesn't exist"** - Run `pnpm test:e2e:update-snapshots` to create missing baselines
+- **Flaky tests** - The config allows 2% pixel difference to handle anti-aliasing variations
+- **Debug mode** - Use `pnpm test:e2e:ui` for an interactive browser to step through tests
 
 ### CI
 
