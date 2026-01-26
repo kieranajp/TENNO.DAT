@@ -1,51 +1,77 @@
 /**
- * Focus school configuration - single source of truth.
- * Used by API for code-to-name conversion and web for UI display.
+ * Focus school value object - single source of truth.
+ * Encapsulates DE's internal codes, friendly names, and UI metadata.
  */
+export class FocusSchool {
+  private static readonly byCode = new Map<string, FocusSchool>()
+  private static readonly byName = new Map<string, FocusSchool>()
 
-/**
- * DE's internal codes for focus schools (from profile API response).
- */
-export const FOCUS_SCHOOL_CODES = {
-  AP_ATTACK: 'Madurai',
-  AP_DEFENSE: 'Vazarin',
-  AP_TACTIC: 'Naramon',
-  AP_POWER: 'Zenurik',
-  AP_WARD: 'Unairu',
-} as const
+  static readonly Madurai = new FocusSchool('Madurai', 'AP_ATTACK', '#ff6b35', 'madurai-lens-e675bac31e.png')
+  static readonly Vazarin = new FocusSchool('Vazarin', 'AP_DEFENSE', '#4ecdc4', 'vazarin-lens-ae790776d3.png')
+  static readonly Naramon = new FocusSchool('Naramon', 'AP_TACTIC', '#f7dc6f', 'naramon-lens-7be3563b7d.png')
+  static readonly Zenurik = new FocusSchool('Zenurik', 'AP_POWER', '#5dade2', 'zenurik-lens-0f0eb9c38b.png')
+  static readonly Unairu = new FocusSchool('Unairu', 'AP_WARD', '#a569bd', 'unairu-lens-f251e69759.png')
 
-export type FocusSchoolCode = keyof typeof FOCUS_SCHOOL_CODES
-export type FocusSchoolName = (typeof FOCUS_SCHOOL_CODES)[FocusSchoolCode]
+  private constructor(
+    readonly name: string,
+    readonly code: string,
+    readonly color: string,
+    readonly imageName: string
+  ) {
+    FocusSchool.byCode.set(code, this)
+    FocusSchool.byName.set(name, this)
+  }
 
-/**
- * Focus school UI metadata (colors, lens images).
- */
-export const FOCUS_SCHOOLS: Record<
-  FocusSchoolName,
-  { name: FocusSchoolName; color: string; imageName: string }
-> = {
-  Madurai: { name: 'Madurai', color: '#ff6b35', imageName: 'madurai-lens-e675bac31e.png' },
-  Vazarin: { name: 'Vazarin', color: '#4ecdc4', imageName: 'vazarin-lens-ae790776d3.png' },
-  Naramon: { name: 'Naramon', color: '#f7dc6f', imageName: 'naramon-lens-7be3563b7d.png' },
-  Zenurik: { name: 'Zenurik', color: '#5dade2', imageName: 'zenurik-lens-0f0eb9c38b.png' },
-  Unairu: { name: 'Unairu', color: '#a569bd', imageName: 'unairu-lens-f251e69759.png' },
-} as const
+  /** Get all focus schools */
+  static all(): FocusSchool[] {
+    return [
+      FocusSchool.Madurai,
+      FocusSchool.Vazarin,
+      FocusSchool.Naramon,
+      FocusSchool.Zenurik,
+      FocusSchool.Unairu,
+    ]
+  }
 
-/**
- * Convert DE's internal focus school code to friendly name.
- * Used when parsing profile API responses.
- */
-export function getFocusSchoolFromCode(code: string): FocusSchoolName | null {
-  return FOCUS_SCHOOL_CODES[code as FocusSchoolCode] ?? null
+  /** Look up by DE's internal code (e.g., 'AP_ATTACK' → Madurai) */
+  static fromCode(code: string): FocusSchool | null {
+    return FocusSchool.byCode.get(code) ?? null
+  }
+
+  /** Look up by friendly name (e.g., 'Madurai') */
+  static fromName(name: string): FocusSchool | null {
+    return FocusSchool.byName.get(name) ?? null
+  }
+
+  /** Serialize for API responses */
+  toJSON() {
+    return { name: this.name, color: this.color, imageName: this.imageName }
+  }
 }
 
-/**
- * Get focus school UI info (color, image) from friendly name.
- * Used for displaying focus school in the UI.
- */
+// Backwards-compatible exports
+export type FocusSchoolName = 'Madurai' | 'Vazarin' | 'Naramon' | 'Zenurik' | 'Unairu'
+export type FocusSchoolCode = 'AP_ATTACK' | 'AP_DEFENSE' | 'AP_TACTIC' | 'AP_POWER' | 'AP_WARD'
+
+/** @deprecated Use FocusSchool.fromCode() */
+export function getFocusSchoolFromCode(code: string): FocusSchoolName | null {
+  return FocusSchool.fromCode(code)?.name as FocusSchoolName | null
+}
+
+/** @deprecated Use FocusSchool.fromName() */
 export function getFocusSchoolInfo(
   name: string | null
-): (typeof FOCUS_SCHOOLS)[FocusSchoolName] | null {
+): { name: string; color: string; imageName: string } | null {
   if (!name) return null
-  return FOCUS_SCHOOLS[name as FocusSchoolName] ?? null
+  const school = FocusSchool.fromName(name)
+  return school ? school.toJSON() : null
 }
+
+/** @deprecated Use FocusSchool.Madurai etc. directly */
+export const FOCUS_SCHOOLS = {
+  Madurai: FocusSchool.Madurai.toJSON(),
+  Vazarin: FocusSchool.Vazarin.toJSON(),
+  Naramon: FocusSchool.Naramon.toJSON(),
+  Zenurik: FocusSchool.Zenurik.toJSON(),
+  Unairu: FocusSchool.Unairu.toJSON(),
+} as const
