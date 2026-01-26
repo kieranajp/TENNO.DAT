@@ -1,4 +1,3 @@
-import { writeFileSync } from 'node:fs'
 import { getFocusSchoolFromCode } from '@warframe-tracker/shared'
 import type { Platform } from '../../domain/entities/player'
 import type { ProfileApi, ProfileData, Loadout, Intrinsics, MissionCompletion } from '../../domain/ports/profile-api'
@@ -37,11 +36,6 @@ export class DeProfileApi implements ProfileApi {
     }
 
     const data = await response.json()
-
-    // Dump full response to file for debugging
-    const dumpPath = '/tmp/claude/de-profile-response.json'
-    writeFileSync(dumpPath, JSON.stringify(data, null, 2))
-    log.debug('Response dumped', { path: dumpPath })
 
     // XP data is in Results[0].LoadOutInventory.XPInfo, NOT top-level XpComponents
     const xpInfo = data.Results?.[0]?.LoadOutInventory?.XPInfo ?? []
