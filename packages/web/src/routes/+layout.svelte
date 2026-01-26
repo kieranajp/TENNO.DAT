@@ -192,5 +192,7 @@
 		flex: 1
 		padding: 1.5rem
 		overflow-y: auto
+		overflow-x: hidden
 		background: $kim-terminal-light
+		min-width: 0
 </style>

@@ -313,6 +313,8 @@
 		padding: 0.5rem
 		transition: all 0.15s
 		cursor: pointer
+		min-width: 0
+		overflow: hidden
 
 		&:hover
 			border-color: $kim-accent
