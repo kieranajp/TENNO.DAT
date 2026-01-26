@@ -111,8 +111,9 @@ export class SeedingRules {
    * Falls back to maxLevelCap from item data or 30.
    */
   static getMaxRank(item: any, category: string): number {
-    // Check category-specific overrides
     const config = CATEGORIES[category]
+
+    // Check category-specific overrides for individual items
     if (config?.seeding?.maxRankOverrides) {
       for (const override of config.seeding.maxRankOverrides) {
         if (this.matches(item, override.matcher)) {
@@ -121,11 +122,16 @@ export class SeedingRules {
       }
     }
 
-    // Check global overrides
+    // Check global overrides (Kuva, Tenet, Paracesis)
     for (const override of GLOBAL_MAX_RANK_OVERRIDES) {
       if (this.matches(item, override.matcher)) {
         return override.maxRank
       }
+    }
+
+    // Check category default maxRank
+    if (config?.seeding?.defaultMaxRank) {
+      return config.seeding.defaultMaxRank
     }
 
     // Use maxLevelCap from @wfcd/items if available

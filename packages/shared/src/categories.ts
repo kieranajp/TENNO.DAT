@@ -42,6 +42,8 @@ export interface CategoryConfig {
     include?: SeedingRule[]
     /** Items to explicitly exclude from this category */
     exclude?: SeedingRule[]
+    /** Default maxRank for all items in this category (overrides the global default of 30) */
+    defaultMaxRank?: number
     /** Override maxRank for specific items in this category */
     maxRankOverrides?: MaxRankOverride[]
   }
@@ -236,13 +238,7 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
     sortOrder: 14,
     seeding: {
       detector: (item) => item.name === 'Bonewidow' || item.name === 'Voidrig',
-      maxRankOverrides: [
-        {
-          matcher: (item) => item.name === 'Bonewidow' || item.name === 'Voidrig',
-          maxRank: 40,
-          reason: 'Necramechs cap at rank 40',
-        },
-      ],
+      defaultMaxRank: 40,
     },
   },
   Vehicles: {
