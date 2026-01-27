@@ -8,6 +8,7 @@ import {
   CATEGORIES,
   GLOBAL_EXCLUSIONS,
   GLOBAL_MAX_RANK_OVERRIDES,
+  PRIME_OVERRIDES,
 } from './categories'
 
 /**
@@ -48,6 +49,15 @@ export class SeedingRules {
    */
   static isGloballyExcluded(item: any): boolean {
     return this.matchesAny(item, GLOBAL_EXCLUSIONS)
+  }
+
+  /**
+   * Check if an item should be marked as Prime.
+   * Uses library flag first, then checks overrides for items missing the flag.
+   */
+  static isPrime(item: any): boolean {
+    if (item.isPrime) return true
+    return this.matchesAny(item, PRIME_OVERRIDES)
   }
 
   /**
