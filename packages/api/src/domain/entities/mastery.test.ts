@@ -12,268 +12,165 @@ import {
 } from './mastery'
 
 describe('getMasteredXp', () => {
-  describe('for frame-type categories (1000 multiplier)', () => {
-    it('calculates rank 30 Warframe XP', () => {
-      expect(getMasteredXp('Warframes', 30)).toBe(900000) // 1000 × 30²
-    })
-
-    it('calculates rank 40 Warframe XP', () => {
-      expect(getMasteredXp('Warframes', 40)).toBe(1600000) // 1000 × 40²
-    })
-
-    it('calculates Pets XP (frame-type)', () => {
-      expect(getMasteredXp('Pets', 30)).toBe(900000)
-    })
-
-    it('calculates Necramechs XP (frame-type)', () => {
-      expect(getMasteredXp('Necramechs', 40)).toBe(1600000)
-    })
-
-    it('calculates Vehicles XP (K-Drives, Plexus - frame-type)', () => {
-      // K-Drives and Plexus use 1000 multiplier like Warframes
-      expect(getMasteredXp('Vehicles', 30)).toBe(900000)
-    })
-  })
-
-  describe('for weapon-type categories (500 multiplier)', () => {
-    it('calculates rank 30 Primary XP', () => {
-      expect(getMasteredXp('Primary', 30)).toBe(450000) // 500 × 30²
-    })
-
-    it('calculates rank 40 Primary XP (Kuva/Tenet)', () => {
-      expect(getMasteredXp('Primary', 40)).toBe(800000) // 500 × 40²
-    })
-
-    it('calculates Melee XP', () => {
-      expect(getMasteredXp('Melee', 30)).toBe(450000)
-    })
-
-    it('calculates Secondary XP', () => {
-      expect(getMasteredXp('Secondary', 30)).toBe(450000)
-    })
+  it.each([
+    // Frame-type (1000 multiplier)
+    ['Warframes', 30, 900000],
+    ['Warframes', 40, 1600000],
+    ['Pets', 30, 900000],
+    ['Necramechs', 40, 1600000],
+    ['Vehicles', 30, 900000], // K-Drives, Plexus
+    // Weapon-type (500 multiplier)
+    ['Primary', 30, 450000],
+    ['Primary', 40, 800000], // Kuva/Tenet
+    ['Melee', 30, 450000],
+    ['Secondary', 30, 450000],
+  ])('%s at rank %d = %d XP', (category, rank, expectedXp) => {
+    expect(getMasteredXp(category, rank)).toBe(expectedXp)
   })
 })
 
 describe('getRank30Xp', () => {
-  it('returns 900,000 for frame-type categories', () => {
-    expect(getRank30Xp('Warframes')).toBe(900000)
-    expect(getRank30Xp('Pets')).toBe(900000)
-    expect(getRank30Xp('Sentinels')).toBe(900000)
-    expect(getRank30Xp('Vehicles')).toBe(900000) // K-Drives, Plexus
-  })
-
-  it('returns 450,000 for weapon-type categories', () => {
-    expect(getRank30Xp('Primary')).toBe(450000)
-    expect(getRank30Xp('Secondary')).toBe(450000)
-    expect(getRank30Xp('Melee')).toBe(450000)
+  it.each([
+    // Frame-type: 900,000
+    ['Warframes', 900000],
+    ['Pets', 900000],
+    ['Sentinels', 900000],
+    ['Vehicles', 900000],
+    // Weapon-type: 450,000
+    ['Primary', 450000],
+    ['Secondary', 450000],
+    ['Melee', 450000],
+  ])('%s = %d XP', (category, expected) => {
+    expect(getRank30Xp(category)).toBe(expected)
   })
 })
 
 describe('getRankFromXp', () => {
-  describe('for frame-type categories', () => {
-    it('returns 0 for 0 XP', () => {
-      expect(getRankFromXp(0, 'Warframes', 30)).toBe(0)
-    })
-
-    it('returns correct rank for partial XP', () => {
-      // rank = floor(sqrt(xp / 1000))
-      expect(getRankFromXp(10000, 'Warframes', 30)).toBe(3) // sqrt(10) = 3.16
-      expect(getRankFromXp(100000, 'Warframes', 30)).toBe(10) // sqrt(100) = 10
-      expect(getRankFromXp(250000, 'Warframes', 30)).toBe(15) // sqrt(250) = 15.8
-    })
-
-    it('caps at maxRank 30', () => {
-      expect(getRankFromXp(900000, 'Warframes', 30)).toBe(30)
-      expect(getRankFromXp(1000000, 'Warframes', 30)).toBe(30)
-    })
-
-    it('caps at maxRank 40', () => {
-      expect(getRankFromXp(1600000, 'Warframes', 40)).toBe(40)
-      expect(getRankFromXp(2000000, 'Warframes', 40)).toBe(40)
+  describe('frame-type categories', () => {
+    // rank = floor(sqrt(xp / 1000))
+    it.each([
+      [0, 30, 0],
+      [10000, 30, 3],   // sqrt(10) = 3.16
+      [100000, 30, 10], // sqrt(100) = 10
+      [250000, 30, 15], // sqrt(250) = 15.8
+      [900000, 30, 30],
+      [1000000, 30, 30], // Capped
+      [1600000, 40, 40],
+      [2000000, 40, 40], // Capped
+    ])('Warframes: %d XP (max %d) = rank %d', (xp, maxRank, expectedRank) => {
+      expect(getRankFromXp(xp, 'Warframes', maxRank)).toBe(expectedRank)
     })
   })
 
-  describe('for weapon-type categories', () => {
-    it('returns correct rank for partial XP', () => {
-      // rank = floor(sqrt(xp / 500))
-      expect(getRankFromXp(5000, 'Primary', 30)).toBe(3) // sqrt(10) = 3.16
-      expect(getRankFromXp(50000, 'Primary', 30)).toBe(10) // sqrt(100) = 10
-    })
-
-    it('caps at maxRank 30', () => {
-      expect(getRankFromXp(450000, 'Primary', 30)).toBe(30)
-      expect(getRankFromXp(500000, 'Primary', 30)).toBe(30)
-    })
-
-    it('caps at maxRank 40', () => {
-      expect(getRankFromXp(800000, 'Primary', 40)).toBe(40)
-      expect(getRankFromXp(1000000, 'Primary', 40)).toBe(40)
+  describe('weapon-type categories', () => {
+    // rank = floor(sqrt(xp / 500))
+    it.each([
+      [5000, 30, 3],    // sqrt(10) = 3.16
+      [50000, 30, 10],  // sqrt(100) = 10
+      [450000, 30, 30],
+      [500000, 30, 30], // Capped
+      [800000, 40, 40],
+      [1000000, 40, 40], // Capped
+    ])('Primary: %d XP (max %d) = rank %d', (xp, maxRank, expectedRank) => {
+      expect(getRankFromXp(xp, 'Primary', maxRank)).toBe(expectedRank)
     })
   })
 })
 
 describe('getMasteryStateFromRank', () => {
-  describe('for maxRank 30 items', () => {
-    it('returns Unmastered for rank < 30', () => {
-      expect(getMasteryStateFromRank(0, 30)).toBe(MasteryState.Unmastered)
-      expect(getMasteryStateFromRank(15, 30)).toBe(MasteryState.Unmastered)
-      expect(getMasteryStateFromRank(29, 30)).toBe(MasteryState.Unmastered)
-    })
-
-    it('returns Mastered30 for rank >= 30', () => {
-      expect(getMasteryStateFromRank(30, 30)).toBe(MasteryState.Mastered30)
-    })
-  })
-
-  describe('for maxRank 40 items', () => {
-    it('returns Unmastered for rank < 30', () => {
-      expect(getMasteryStateFromRank(0, 40)).toBe(MasteryState.Unmastered)
-      expect(getMasteryStateFromRank(29, 40)).toBe(MasteryState.Unmastered)
-    })
-
-    it('returns Mastered30 for rank 30-39', () => {
-      expect(getMasteryStateFromRank(30, 40)).toBe(MasteryState.Mastered30)
-      expect(getMasteryStateFromRank(35, 40)).toBe(MasteryState.Mastered30)
-      expect(getMasteryStateFromRank(39, 40)).toBe(MasteryState.Mastered30)
-    })
-
-    it('returns Mastered40 for rank >= 40', () => {
-      expect(getMasteryStateFromRank(40, 40)).toBe(MasteryState.Mastered40)
-    })
+  it.each([
+    // maxRank 30 items
+    [0, 30, MasteryState.Unmastered],
+    [15, 30, MasteryState.Unmastered],
+    [29, 30, MasteryState.Unmastered],
+    [30, 30, MasteryState.Mastered30],
+    // maxRank 40 items
+    [0, 40, MasteryState.Unmastered],
+    [29, 40, MasteryState.Unmastered],
+    [30, 40, MasteryState.Mastered30],
+    [35, 40, MasteryState.Mastered30],
+    [39, 40, MasteryState.Mastered30],
+    [40, 40, MasteryState.Mastered40],
+  ])('rank %d (max %d) = %s', (rank, maxRank, expectedState) => {
+    expect(getMasteryStateFromRank(rank, maxRank)).toBe(expectedState)
   })
 })
 
 describe('getMasteryContribution', () => {
-  describe('for frame-type categories (200 per rank)', () => {
-    it('returns 0 for 0 XP', () => {
-      expect(getMasteryContribution(0, 'Warframes', 30)).toBe(0)
-    })
-
-    it('returns correct contribution for rank 30', () => {
-      expect(getMasteryContribution(900000, 'Warframes', 30)).toBe(6000) // 30 × 200
-    })
-
-    it('returns correct contribution for rank 40', () => {
-      expect(getMasteryContribution(1600000, 'Warframes', 40)).toBe(8000) // 40 × 200
-    })
-
-    it('returns contribution capped at maxRank', () => {
-      expect(getMasteryContribution(2000000, 'Warframes', 30)).toBe(6000) // capped at 30
-    })
-
-    it('returns correct contribution for Vehicles (K-Drives)', () => {
-      // K-Drives are frame-type: 200 MR per rank
-      expect(getMasteryContribution(900000, 'Vehicles', 30)).toBe(6000) // 30 × 200
-    })
-  })
-
-  describe('for weapon-type categories (100 per rank)', () => {
-    it('returns correct contribution for rank 30', () => {
-      expect(getMasteryContribution(450000, 'Primary', 30)).toBe(3000) // 30 × 100
-    })
-
-    it('returns correct contribution for rank 40', () => {
-      expect(getMasteryContribution(800000, 'Primary', 40)).toBe(4000) // 40 × 100
-    })
+  it.each([
+    // Frame-type (200 per rank)
+    [0, 'Warframes', 30, 0],
+    [900000, 'Warframes', 30, 6000],    // 30 × 200
+    [1600000, 'Warframes', 40, 8000],   // 40 × 200
+    [2000000, 'Warframes', 30, 6000],   // Capped at 30
+    [900000, 'Vehicles', 30, 6000],     // K-Drives: 30 × 200
+    // Weapon-type (100 per rank)
+    [450000, 'Primary', 30, 3000],      // 30 × 100
+    [800000, 'Primary', 40, 4000],      // 40 × 100
+  ])('%d XP in %s (max %d) = %d contribution', (xp, category, maxRank, expected) => {
+    expect(getMasteryContribution(xp, category, maxRank)).toBe(expected)
   })
 })
 
 describe('getMRThreshold', () => {
-  describe('for MR 1-30 (2500 × mr²)', () => {
-    it('returns 0 for MR 0', () => {
-      expect(getMRThreshold(0)).toBe(0)
-    })
-
-    it('returns correct threshold for MR 1', () => {
-      expect(getMRThreshold(1)).toBe(2500)
-    })
-
-    it('returns correct threshold for MR 10', () => {
-      expect(getMRThreshold(10)).toBe(250000) // 2500 × 100
-    })
-
-    it('returns correct threshold for MR 30', () => {
-      expect(getMRThreshold(30)).toBe(2250000) // 2500 × 900
-    })
-  })
-
-  describe('for Legendary ranks (31+)', () => {
-    it('returns correct threshold for L1 (MR 31)', () => {
-      expect(getMRThreshold(31)).toBe(2397500) // 2,250,000 + 147,500
-    })
-
-    it('returns correct threshold for L2 (MR 32)', () => {
-      expect(getMRThreshold(32)).toBe(2545000) // 2,250,000 + 2 × 147,500
-    })
-
-    it('returns correct threshold for L5 (MR 35)', () => {
-      expect(getMRThreshold(35)).toBe(2987500) // 2,250,000 + 5 × 147,500
-    })
+  it.each([
+    // MR 1-30: 2500 × mr²
+    [0, 0],
+    [1, 2500],
+    [10, 250000],
+    [30, 2250000],
+    // Legendary ranks (31+): base + (mr - 30) × 147,500
+    [31, 2397500],
+    [32, 2545000],
+    [35, 2987500],
+  ])('MR %d = %d XP threshold', (mr, expected) => {
+    expect(getMRThreshold(mr)).toBe(expected)
   })
 })
 
 describe('intrinsicsToXP', () => {
-  it('returns 0 for 0 levels', () => {
-    expect(intrinsicsToXP(0)).toBe(0)
-  })
-
-  it('returns 1500 per level', () => {
-    expect(intrinsicsToXP(1)).toBe(1500)
-    expect(intrinsicsToXP(10)).toBe(15000)
-    expect(intrinsicsToXP(100)).toBe(150000)
+  it.each([
+    [0, 0],
+    [1, 1500],
+    [10, 15000],
+    [100, 150000],
+  ])('%d levels = %d XP', (levels, expected) => {
+    expect(intrinsicsToXP(levels)).toBe(expected)
   })
 })
 
 describe('calculateMR', () => {
-  describe('for regular ranks (0-30)', () => {
-    it('returns MR 0 for 0 XP', () => {
-      const result = calculateMR(0)
-      expect(result.rank).toBe(0)
-      expect(result.current).toBe(0)
-      expect(result.next).toBe(2500)
-    })
-
-    it('returns correct MR and progress', () => {
-      // XP at halfway between MR 10 and MR 11
-      // MR 10 threshold: 250,000
-      // MR 11 threshold: 302,500
-      const midpoint = 250000 + (302500 - 250000) / 2 // 276,250
-      const result = calculateMR(midpoint)
-      expect(result.rank).toBe(10)
-      expect(result.current).toBe(250000)
-      expect(result.next).toBe(302500)
-      expect(result.progress).toBeCloseTo(50, 0)
-    })
-
-    it('returns MR 30 at threshold', () => {
-      const result = calculateMR(2250000)
-      expect(result.rank).toBe(30)
-    })
+  it('returns MR 0 for 0 XP', () => {
+    const result = calculateMR(0)
+    expect(result).toMatchObject({ rank: 0, current: 0, next: 2500 })
   })
 
-  describe('for legendary ranks (31+)', () => {
-    it('returns L1 (MR 31) for XP above MR 30', () => {
-      const result = calculateMR(2300000)
-      expect(result.rank).toBe(30) // Still 30 until 2,397,500
-    })
+  it('returns correct MR and progress at midpoint', () => {
+    // Midpoint between MR 10 (250,000) and MR 11 (302,500)
+    const midpoint = 250000 + (302500 - 250000) / 2
+    const result = calculateMR(midpoint)
+    expect(result.rank).toBe(10)
+    expect(result.current).toBe(250000)
+    expect(result.next).toBe(302500)
+    expect(result.progress).toBeCloseTo(50, 0)
+  })
 
-    it('returns L1 (MR 31) at threshold', () => {
-      const result = calculateMR(2397500)
-      expect(result.rank).toBe(31)
-    })
+  it('handles MR 30 threshold', () => {
+    expect(calculateMR(2250000).rank).toBe(30)
+  })
 
-    it('returns correct progress for legendary ranks', () => {
-      // Midpoint between L1 and L2
-      const midpoint = 2397500 + 147500 / 2 // 2,471,250
-      const result = calculateMR(midpoint)
-      expect(result.rank).toBe(31)
-      expect(result.progress).toBeCloseTo(50, 0)
-    })
+  it('handles legendary ranks', () => {
+    expect(calculateMR(2300000).rank).toBe(30) // Still 30 until 2,397,500
+    expect(calculateMR(2397500).rank).toBe(31) // L1
+
+    // Midpoint between L1 and L2
+    const midpoint = 2397500 + 147500 / 2
+    const result = calculateMR(midpoint)
+    expect(result.rank).toBe(31)
+    expect(result.progress).toBeCloseTo(50, 0)
   })
 
   it('handles very large XP values', () => {
-    // Very high legendary rank
-    const result = calculateMR(10000000)
-    expect(result.rank).toBeGreaterThan(50)
+    expect(calculateMR(10000000).rank).toBeGreaterThan(50)
   })
 })
