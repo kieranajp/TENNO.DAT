@@ -1,0 +1,132 @@
+// Card and item styles
+
+.category-card
+  background: white
+  border: $border-width solid $kim-border
+  padding: 0.75rem
+  box-shadow: $shadow-sm
+  transition: all $transition-base ease
+  cursor: pointer
+
+  &:hover
+    box-shadow: none
+    transform: translate(2px, 2px)
+
+    .category-title
+      color: $kim-accent
+
+  .category-icon
+    color: $kim-accent
+    font-size: $font-size-xl
+
+  .category-title
+    font-weight: bold
+    text-transform: uppercase
+    transition: color $transition-base
+
+  .category-subtitle
+    font-family: $font-family-monospace
+    font-size: $font-size-xs
+    color: $gray-500
+    text-transform: uppercase
+
+  .category-percent
+    font-family: $font-family-monospace
+    font-size: $font-size-lg
+    font-weight: bold
+    color: $kim-border
+
+  .category-stats
+    font-family: $font-family-monospace
+    font-size: $font-size-xs
+    color: $gray-500
+
+.loadout-item
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  padding: 0.5rem
+  background: $gray-100
+  border: 1px solid $gray-300
+  transition: border-color $transition-base
+  cursor: pointer
+
+  &:hover
+    border-color: $kim-accent
+
+  .loadout-image
+    width: $icon-size-lg
+    height: $icon-size-lg
+    min-width: $icon-size-lg
+    background: $gray-300
+    border: 1px solid $gray-400
+    overflow: hidden
+    display: flex
+    align-items: center
+    justify-content: center
+
+    img
+      width: 100%
+      height: 100%
+      object-fit: contain
+      image-rendering: pixelated
+
+  .loadout-info
+    flex: 1
+    min-width: 0
+
+  .loadout-type
+    font-size: $font-size-xs
+    font-weight: bold
+    text-transform: uppercase
+    color: $kim-accent
+
+  .loadout-name
+    font-family: $font-family-monospace
+    font-size: 1rem
+    line-height: 1.2
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+  .loadout-status
+    font-size: $font-size-xxs
+    color: $gray-500
+    display: flex
+    align-items: center
+    gap: 0.25rem
+
+    .status-dot
+      width: 6px
+      height: 6px
+      border-radius: 50%
+      background: $success
+
+      &.status-gold
+        background: $warning
+
+      &.status-incomplete
+        background: $kim-accent
+
+    .rank-display
+      font-family: $font-family-monospace
+      font-size: $font-size-xxs
+
+      &.rank-incomplete
+        color: $kim-accent
+        font-weight: 500
+
+.item-image
+  width: $icon-size-xl
+  height: $icon-size-xl
+  object-fit: contain
+  background: $gray-200
+  border: 1px solid $gray-400
+  image-rendering: pixelated
+
+  &.placeholder
+    display: flex
+    align-items: center
+    justify-content: center
+    color: $gray-400
+    font-size: $font-size-xs

@@ -257,7 +257,7 @@
 		display: flex
 		align-items: center
 		justify-content: center
-		z-index: 1000
+		z-index: $zindex-overlay
 		padding: 1rem
 
 	.modal-content
@@ -294,18 +294,18 @@
 		align-items: center
 		padding: 1rem
 		background: $gray-800
-		border: 2px solid $kim-border
+		border: $border-width solid $kim-border
 		margin-bottom: 1rem
 
 	.preview-img
-		width: 128px
-		height: 128px
+		width: $icon-size-xxl
+		height: $icon-size-xxl
 		object-fit: contain
 		image-rendering: pixelated
 
 	.preview-placeholder
-		width: 128px
-		height: 128px
+		width: $icon-size-xxl
+		height: $icon-size-xxl
 		display: flex
 		align-items: center
 		justify-content: center
@@ -313,7 +313,7 @@
 		color: $gray-400
 
 		.material-icons
-			font-size: 3rem
+			font-size: $font-size-xxl
 
 	.item-badges
 		display: flex
@@ -323,9 +323,9 @@
 		justify-content: center
 
 	.badge
-		font-size: 0.7rem
+		font-size: $font-size-xxs
 		padding: 0.125rem 0.5rem
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		text-transform: uppercase
 
 	.badge-category
@@ -361,27 +361,27 @@
 			display: flex
 			align-items: center
 			gap: 0.5rem
-			font-size: 0.875rem
-			font-family: 'Share Tech Mono', monospace
+			font-size: $font-size-sm
+			font-family: $font-family-monospace
 			color: $kim-accent
 			margin: 0 0 0.75rem 0
 			text-transform: uppercase
 
 			.material-icons
-				font-size: 1.1rem
+				font-size: $font-size-base
 
 	.info-row
 		display: flex
 		justify-content: space-between
 		align-items: center
 		padding: 0.25rem 0
-		font-size: 0.875rem
+		font-size: $font-size-sm
 
 	.info-label
 		color: $gray-500
 
 	.info-value
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 
 		&.platinum
 			color: $info
@@ -393,8 +393,8 @@
 			margin-bottom: 0
 
 	.component-name
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 		color: $kim-border
 		margin-bottom: 0.25rem
 		text-transform: uppercase
@@ -416,7 +416,7 @@
 		color: $gray-700
 
 	.drop-chance
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		color: $success
 
 	.resource-list
@@ -428,7 +428,7 @@
 		display: flex
 		justify-content: space-between
 		align-items: center
-		font-size: 0.875rem
+		font-size: $font-size-sm
 		padding: 0.25rem 0.5rem
 		background: $gray-150
 
@@ -436,6 +436,6 @@
 		color: $gray-700
 
 	.resource-quantity
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		color: $info
 </style>

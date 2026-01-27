@@ -61,7 +61,16 @@ $font-family-sans-serif: 'VT323', monospace
 $font-family-monospace: 'Share Tech Mono', monospace
 $font-family-base: $font-family-sans-serif
 
+// Font sizes (Bootstrap overrides + custom)
 $font-size-base: 1.1rem
+$font-size-sm: 0.875rem          // Bootstrap override - secondary text, labels
+$font-size-xs: 0.75rem           // Custom - small stats, help text
+$font-size-xxs: 0.7rem           // Custom - badges, tiny text
+$font-size-lg: 1.5rem            // Bootstrap override - large display text
+$font-size-xl: 2rem              // Custom - icons
+$font-size-xxl: 3rem             // Custom - large icons
+$small-font-size: $font-size-xs  // Bootstrap override
+
 $h1-font-size: 1.5rem
 $h2-font-size: 1.25rem
 $h3-font-size: 1.1rem
@@ -83,3 +92,36 @@ $btn-border-width: 1px
 $progress-height: 1.25rem
 $progress-bg: $gray-300
 $progress-bar-bg: $kim-border
+
+// ===========================================
+// Custom Design Tokens
+// ===========================================
+
+// Border widths
+$border-width: 2px
+$border-width-thick: 4px
+
+// Box shadows (retro offset style)
+$shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.2)
+$shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.25)
+$shadow-inset: inset 2px 2px 0 rgba(0, 0, 0, 0.1)
+
+// Letter spacing
+$letter-spacing-wide: 0.05em
+$letter-spacing-wider: 0.1em
+
+// Transitions
+$transition-fast: 0.1s
+$transition-base: 0.15s
+$transition-slow: 0.2s
+
+// Z-index scale
+$zindex-noise: 999
+$zindex-overlay: 1000
+
+// Common sizing
+$icon-size-sm: 16px
+$icon-size-md: 20px
+$icon-size-lg: 48px
+$icon-size-xl: 64px
+$icon-size-xxl: 128px

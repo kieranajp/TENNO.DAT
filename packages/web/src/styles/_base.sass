@@ -1,0 +1,25 @@
+// Base styles - body, scrollbar, material icons
+
+body
+  background-image: url('/kim-background.jpeg')
+  background-size: cover
+  background-position: center
+  background-attachment: fixed
+  min-height: 100vh
+
+// Custom scrollbar
+\::-webkit-scrollbar
+  width: 12px
+  background: $kim-terminal-dark
+
+\::-webkit-scrollbar-thumb
+  background: $kim-title
+  border: $border-width solid $kim-terminal-dark
+
+\::-webkit-scrollbar-thumb:hover
+  background: lighten($kim-title, 10%)
+
+// Material Icons sizing helper
+.material-icons
+  font-size: inherit
+  vertical-align: middle

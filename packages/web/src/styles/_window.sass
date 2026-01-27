@@ -1,0 +1,49 @@
+// Window frame and title bar styles
+
+.window-frame
+  border: $border-width solid $kim-border-dark
+  box-shadow: $shadow-md
+  background: $kim-terminal-light
+
+.title-bar
+  background: linear-gradient(90deg, $kim-title 0%, darken($kim-title, 8%) 100%)
+  border-bottom: $border-width solid $kim-border-dark
+  padding: 0.25rem 0.5rem
+  display: flex
+  justify-content: space-between
+  align-items: center
+  user-select: none
+
+  .title-text
+    font-weight: bold
+    color: black
+    text-transform: uppercase
+    letter-spacing: $letter-spacing-wide
+
+  .window-controls
+    display: flex
+    gap: 0.25rem
+
+    button
+      width: $icon-size-md
+      height: $icon-size-md
+      display: flex
+      align-items: center
+      justify-content: center
+      border: 1px solid black
+      background: $kim-border
+      color: white
+      font-size: $font-size-xs
+      cursor: pointer
+      transition: background $transition-fast
+
+      &:hover
+        background: darken($kim-border, 10%)
+
+      &.close-btn
+        background: $kim-accent
+        &:hover
+          background: darken($kim-accent, 10%)
+
+      &:active
+        transform: translateY(1px)
