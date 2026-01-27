@@ -74,6 +74,60 @@
 					</div>
 				</div>
 
+				<!-- Personal Stats (shown first if you've used the item) -->
+				{#if item.personalStats && item.personalStats.kills > 0}
+					<div class="acquisition-section">
+						<h4>
+							<span class="material-icons">analytics</span>
+							PERSONAL STATS
+						</h4>
+
+						{#if item.personalStats.fired !== null && item.personalStats.hits !== null}
+							{@const accuracy = formatAccuracy(item.personalStats.hits, item.personalStats.fired)}
+							{#if accuracy}
+								<div class="info-row">
+									<span class="info-label">Accuracy</span>
+									<span class="info-value"
+										>{accuracy} ({item.personalStats.hits.toLocaleString()} / {item.personalStats.fired.toLocaleString()})</span
+									>
+								</div>
+							{/if}
+						{/if}
+
+						<div class="info-row">
+							<span class="info-label">Kills</span>
+							<span class="info-value">{item.personalStats.kills.toLocaleString()}</span>
+						</div>
+
+						{#if item.personalStats.headshots > 0}
+							{@const headshotPct = (
+								(item.personalStats.headshots / item.personalStats.kills) *
+								100
+							).toFixed(1)}
+							<div class="info-row">
+								<span class="info-label">Headshots</span>
+								<span class="info-value"
+									>{item.personalStats.headshots.toLocaleString()} ({headshotPct}%)</span
+								>
+							</div>
+						{/if}
+
+						{#if item.personalStats.equipTime > 0}
+							<div class="info-row">
+								<span class="info-label">Time Equipped</span>
+								<span class="info-value">{formatEquipTime(item.personalStats.equipTime)}</span>
+							</div>
+						{/if}
+
+						{#if item.personalStats.assists > 0}
+							<div class="info-row">
+								<span class="info-label">Assists</span>
+								<span class="info-value">{item.personalStats.assists.toLocaleString()}</span>
+							</div>
+						{/if}
+					</div>
+				{/if}
+
 				<!-- Market Info -->
 				{#if item.marketCost}
 					<div class="acquisition-section">
@@ -188,60 +242,6 @@
 							<span class="info-label">Mastery Rank</span>
 							<span class="info-value">MR {item.masteryReq}</span>
 						</div>
-					</div>
-				{/if}
-
-				<!-- Personal Stats -->
-				{#if item.personalStats && item.personalStats.kills > 0}
-					<div class="acquisition-section">
-						<h4>
-							<span class="material-icons">analytics</span>
-							PERSONAL STATS
-						</h4>
-
-						{#if item.personalStats.fired !== null && item.personalStats.hits !== null}
-							{@const accuracy = formatAccuracy(item.personalStats.hits, item.personalStats.fired)}
-							{#if accuracy}
-								<div class="info-row">
-									<span class="info-label">Accuracy</span>
-									<span class="info-value"
-										>{accuracy} ({item.personalStats.hits.toLocaleString()} / {item.personalStats.fired.toLocaleString()})</span
-									>
-								</div>
-							{/if}
-						{/if}
-
-						<div class="info-row">
-							<span class="info-label">Kills</span>
-							<span class="info-value">{item.personalStats.kills.toLocaleString()}</span>
-						</div>
-
-						{#if item.personalStats.headshots > 0}
-							{@const headshotPct = (
-								(item.personalStats.headshots / item.personalStats.kills) *
-								100
-							).toFixed(1)}
-							<div class="info-row">
-								<span class="info-label">Headshots</span>
-								<span class="info-value"
-									>{item.personalStats.headshots.toLocaleString()} ({headshotPct}%)</span
-								>
-							</div>
-						{/if}
-
-						{#if item.personalStats.equipTime > 0}
-							<div class="info-row">
-								<span class="info-label">Time Equipped</span>
-								<span class="info-value">{formatEquipTime(item.personalStats.equipTime)}</span>
-							</div>
-						{/if}
-
-						{#if item.personalStats.assists > 0}
-							<div class="info-row">
-								<span class="info-label">Assists</span>
-								<span class="info-value">{item.personalStats.assists.toLocaleString()}</span>
-							</div>
-						{/if}
 					</div>
 				{/if}
 			</div>

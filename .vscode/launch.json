@@ -34,7 +34,15 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["db:seed"],
       "cwd": "${workspaceFolder}",
-    }
+    },
+    {
+      "name": "Update snapshots",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["test:e2e:update-snapshots"],
+      "cwd": "${workspaceFolder}/packages/web",
+    },
   ],
   "compounds": [
     {
