@@ -4,6 +4,7 @@ export interface Node {
   name: string
   planet: string
   nodeType: 'mission' | 'junction' | 'railjack'
+  missionType: string | null
   masteryXp: number
 }
 

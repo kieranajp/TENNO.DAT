@@ -164,7 +164,8 @@
 									<span class="node-name">{node.name}</span>
 									<span class="node-type">
 										{node.nodeType === 'junction' ? 'Junction' :
-										 node.nodeType === 'railjack' ? 'Railjack' : 'Mission'}
+										 node.nodeType === 'railjack' ? `Railjack ${node.missionType || ''}`.trim() :
+										 node.missionType || 'Mission'}
 									</span>
 								</div>
 								<div class="node-xp">
@@ -252,9 +253,13 @@
 		margin-left: 0.25rem
 
 	.planets-list
-		display: flex
-		flex-direction: column
+		display: grid
+		grid-template-columns: 1fr
 		gap: 0.75rem
+		align-items: start
+
+		@media (min-width: 992px)
+			grid-template-columns: repeat(2, 1fr)
 
 	.planet-card
 		overflow: hidden

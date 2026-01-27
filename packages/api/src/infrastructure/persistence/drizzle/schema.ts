@@ -136,6 +136,7 @@ export const nodes = pgTable('nodes', {
   name: varchar('name', { length: 100 }).notNull(),
   planet: varchar('planet', { length: 50 }).notNull(),
   nodeType: varchar('node_type', { length: 20 }).notNull(), // mission, junction, railjack
+  missionType: varchar('mission_type', { length: 50 }), // Capture, Defense, Survival, etc.
   masteryXp: integer('mastery_xp').notNull(),
 })
 

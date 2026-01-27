@@ -180,6 +180,7 @@ export interface NodeWithCompletion {
 	name: string;
 	planet: string;
 	nodeType: 'mission' | 'junction' | 'railjack';
+	missionType: string | null;
 	masteryXp: number;
 	completed: boolean;
 }

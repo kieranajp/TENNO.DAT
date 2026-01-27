@@ -12,11 +12,11 @@ interface FrameHubNode {
   xp?: number
 }
 
-// Warframestat node structure (for Railjack)
+// Warframestat node structure (has mission type info)
 interface WarframestatNode {
   value: string
   enemy?: string
-  type?: string
+  type?: string // Mission type: Capture, Defense, Survival, etc.
 }
 
 // Junction XP is always 1000
@@ -65,28 +65,41 @@ function parseRailjackPlanet(value: string): string {
 }
 
 async function seedNodes() {
+  // Fetch warframestat data first (has mission types for all nodes)
+  log.info('Fetching nodes from warframestat...')
+  const warframestatResponse = await fetch('https://api.warframestat.us/solNodes/')
+  if (!warframestatResponse.ok) {
+    throw new Error(`Failed to fetch warframestat nodes: ${warframestatResponse.status}`)
+  }
+  const warframestatData = await warframestatResponse.json() as Record<string, WarframestatNode>
+
   log.info('Fetching nodes from FrameHub...')
 
-  // Fetch curated node data from FrameHub
+  // Fetch curated node data from FrameHub (has XP values)
   const frameHubResponse = await fetch('https://raw.githubusercontent.com/Paroxity/FrameHub/main/src/resources/nodes.json')
   if (!frameHubResponse.ok) {
     throw new Error(`Failed to fetch FrameHub nodes: ${frameHubResponse.status}`)
   }
   const frameHubData = await frameHubResponse.json() as Record<string, Record<string, FrameHubNode>>
 
-  // Build mission nodes from FrameHub (excludes ClanNodes automatically by filtering SolNode prefix)
-  const missionNodes: Array<{ nodeKey: string; name: string; planet: string; nodeType: 'mission'; masteryXp: number }> = []
+  // Build mission nodes from FrameHub, enriched with mission types from warframestat
+  const missionNodes: Array<{ nodeKey: string; name: string; planet: string; nodeType: 'mission'; missionType: string | null; masteryXp: number }> = []
 
   for (const [planet, nodes] of Object.entries(frameHubData)) {
     for (const [nodeKey, node] of Object.entries(nodes)) {
       // Only include SolNodes (skip ClanNodes which are Dark Sector)
       if (!nodeKey.startsWith('SolNode')) continue
 
+      // Get mission type from warframestat if available
+      const wsNode = warframestatData[nodeKey]
+      const missionType = wsNode?.type || null
+
       missionNodes.push({
         nodeKey,
         name: node.name,
         planet,
         nodeType: 'mission',
+        missionType,
         masteryXp: node.xp ?? DEFAULT_NODE_XP,
       })
     }
@@ -94,14 +107,7 @@ async function seedNodes() {
 
   log.info(`FrameHub: ${missionNodes.length} mission nodes`)
 
-  // Fetch Railjack nodes from warframestat (CrewBattleNodes)
-  log.info('Fetching Railjack nodes from warframestat...')
-  const warframestatResponse = await fetch('https://api.warframestat.us/solNodes/')
-  if (!warframestatResponse.ok) {
-    throw new Error(`Failed to fetch warframestat nodes: ${warframestatResponse.status}`)
-  }
-  const warframestatData = await warframestatResponse.json() as Record<string, WarframestatNode>
-
+  // Build Railjack nodes from warframestat (CrewBattleNodes)
   const railjackNodes = Object.entries(warframestatData)
     .filter(([key]) => key.startsWith('CrewBattleNode'))
     .map(([key, node]) => ({
@@ -109,17 +115,19 @@ async function seedNodes() {
       name: node.value.replace(/\s*\([^)]+\)\s*$/, '').trim(),
       planet: parseRailjackPlanet(node.value),
       nodeType: 'railjack' as const,
+      missionType: node.type || null,
       masteryXp: RAILJACK_NODE_XP,
     }))
 
   log.info(`Warframestat: ${railjackNodes.length} Railjack nodes`)
 
-  // Add hardcoded junctions
+  // Add hardcoded junctions (no mission type)
   const junctionNodes = JUNCTIONS.map(j => ({
     nodeKey: j.key,
     name: j.name,
     planet: j.planet,
     nodeType: 'junction' as const,
+    missionType: null,
     masteryXp: JUNCTION_XP,
   }))
 
