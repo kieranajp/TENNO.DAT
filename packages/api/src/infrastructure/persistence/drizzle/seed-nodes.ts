@@ -1,5 +1,12 @@
 import { db, schema } from './connection'
 import { createLogger } from '../../logger'
+import {
+  parseRailjackPlanet,
+  JUNCTION_XP,
+  DEFAULT_NODE_XP,
+  RAILJACK_NODE_XP,
+  JUNCTIONS,
+} from './seed-utils'
 
 const log = createLogger('SeedNodes')
 
@@ -17,51 +24,6 @@ interface WarframestatNode {
   value: string
   enemy?: string
   type?: string // Mission type: Capture, Defense, Survival, etc.
-}
-
-// Junction XP is always 1000
-const JUNCTION_XP = 1000
-
-// Default XP for nodes without explicit XP (FrameHub uses ~24 for most)
-const DEFAULT_NODE_XP = 24
-
-// Railjack nodes give 69 XP each (based on FrameHub data pattern)
-const RAILJACK_NODE_XP = 69
-
-// Junctions (not in any API, must be hardcoded)
-const JUNCTIONS: Array<{ key: string; name: string; planet: string }> = [
-  { key: 'EarthToVenusJunction', name: 'Venus Junction', planet: 'Earth' },
-  { key: 'VenusToMercuryJunction', name: 'Mercury Junction', planet: 'Venus' },
-  { key: 'EarthToMarsJunction', name: 'Mars Junction', planet: 'Earth' },
-  { key: 'MarsToPhobosJunction', name: 'Phobos Junction', planet: 'Mars' },
-  { key: 'MarsToCeresJunction', name: 'Ceres Junction', planet: 'Mars' },
-  { key: 'CeresToJupiterJunction', name: 'Jupiter Junction', planet: 'Ceres' },
-  { key: 'JupiterToEuropaJunction', name: 'Europa Junction', planet: 'Jupiter' },
-  { key: 'JupiterToSaturnJunction', name: 'Saturn Junction', planet: 'Jupiter' },
-  { key: 'SaturnToUranusJunction', name: 'Uranus Junction', planet: 'Saturn' },
-  { key: 'UranusToNeptuneJunction', name: 'Neptune Junction', planet: 'Uranus' },
-  { key: 'NeptuneToPlutoJunction', name: 'Pluto Junction', planet: 'Neptune' },
-  { key: 'ErisToSednaJunction', name: 'Sedna Junction', planet: 'Eris' },
-  { key: 'PlutoToErisJunction', name: 'Eris Junction', planet: 'Pluto' },
-]
-
-// Railjack proxima regions for grouping
-const RAILJACK_REGIONS: Record<string, string> = {
-  'Earth': 'Earth Proxima',
-  'Venus': 'Venus Proxima',
-  'Saturn': 'Saturn Proxima',
-  'Neptune': 'Neptune Proxima',
-  'Pluto': 'Pluto Proxima',
-  'Veil': 'Veil Proxima',
-}
-
-/**
- * Parse Railjack planet from value like "Mordo Cluster (Saturn)" -> "Saturn Proxima"
- */
-function parseRailjackPlanet(value: string): string {
-  const match = value.match(/\(([^)]+)\)/)
-  const planet = match ? match[1] : 'Unknown'
-  return RAILJACK_REGIONS[planet] || `${planet} Proxima`
 }
 
 async function seedNodes() {
