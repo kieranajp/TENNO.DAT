@@ -273,6 +273,28 @@ describe('SeedingRules', () => {
     })
   })
 
+  describe('isPrime', () => {
+    it('returns true for items with isPrime flag', () => {
+      const frostPrime = { uniqueName: '/Lotus/Powersuits/Frost/FrostPrime', name: 'Frost Prime', isPrime: true }
+      expect(SeedingRules.isPrime(frostPrime)).toBe(true)
+    })
+
+    it('returns false for non-prime items', () => {
+      const frost = { uniqueName: '/Lotus/Powersuits/Frost/Frost', name: 'Frost', isPrime: false }
+      expect(SeedingRules.isPrime(frost)).toBe(false)
+    })
+
+    it('returns true for Venari Prime despite missing isPrime flag', () => {
+      const venariPrime = { uniqueName: '/Lotus/Powersuits/Khora/Kavat/KhoraPrimeKavatPowerSuit', name: 'Venari Prime' }
+      expect(SeedingRules.isPrime(venariPrime)).toBe(true)
+    })
+
+    it('returns false for regular Venari', () => {
+      const venari = { uniqueName: '/Lotus/Powersuits/Khora/Kavat/KhoraKavatPowerSuit', name: 'Venari' }
+      expect(SeedingRules.isPrime(venari)).toBe(false)
+    })
+  })
+
   describe('Railjack Plexus Documentation', () => {
     // The Plexus must be manually added because @wfcd/items doesn't include it
     const plexus = { uniqueName: '/Lotus/Types/Game/CrewShip/RailJack/DefaultHarness', name: 'Plexus', category: 'Vehicles', maxRank: 30 }

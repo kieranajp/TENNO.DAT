@@ -76,7 +76,7 @@ async function seed() {
         uniqueName: String(item.uniqueName ?? ''),
         name: String(item.name ?? ''),
         category,
-        isPrime: Boolean(item.isPrime ?? false),
+        isPrime: SeedingRules.isPrime(item),
         masteryReq: getMasteryReq(item),
         maxRank: SeedingRules.getMaxRank(item, category),
         imageName: item.imageName ? String(item.imageName) : null,

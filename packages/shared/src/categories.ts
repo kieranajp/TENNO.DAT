@@ -363,6 +363,16 @@ export const GLOBAL_MAX_RANK_OVERRIDES: MaxRankOverride[] = [
 ]
 
 /**
+ * Items that should be marked as Prime but aren't by the library.
+ */
+export const PRIME_OVERRIDES: SeedingRule[] = [
+  {
+    matcher: '/Lotus/Powersuits/Khora/Kavat/KhoraPrimeKavatPowerSuit',
+    reason: 'Venari Prime not marked as prime by wfcd library',
+  },
+]
+
+/**
  * Mastery XP configuration by category type.
  * Frame-types give more XP per rank than weapon-types.
  */
