@@ -71,8 +71,11 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          # Stash the new snapshots, checkout branch, then restore them
+          git stash --include-untracked
           git fetch origin feature/auth
           git checkout feature/auth
+          git stash pop || true
           git add packages/web/e2e/visual-regression.spec.ts-snapshots/
           git diff --staged --quiet || git commit -m "chore: update visual regression snapshots [skip ci]"
           git push origin feature/auth
