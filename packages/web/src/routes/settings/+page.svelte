@@ -179,8 +179,8 @@
 		display: flex
 		align-items: center
 		gap: 0.5rem
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 		margin-bottom: 0.5rem
 		color: $gray-700
 
@@ -197,11 +197,11 @@
 		align-items: flex-start
 		gap: 0.5rem
 		margin-top: 0.5rem
-		font-size: 0.75rem
+		font-size: $font-size-xs
 		color: $gray-500
 
 		.material-icons
-			font-size: 0.875rem
+			font-size: $font-size-sm
 			flex-shrink: 0
 			margin-top: 0.125rem
 
@@ -226,24 +226,12 @@
 		align-items: center
 		gap: 0.25rem
 		color: $success
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 		text-transform: uppercase
 
 		.material-icons
 			font-size: 1rem
-
-	.spinner
-		width: 16px
-		height: 16px
-		border: 2px solid rgba(255, 255, 255, 0.3)
-		border-top-color: white
-		border-radius: 50%
-		animation: spin 1s linear infinite
-
-	@keyframes spin
-		to
-			transform: rotate(360deg)
 
 	// Info Panel
 	.info-grid
@@ -260,14 +248,14 @@
 		border: 1px solid $gray-300
 
 	.info-label
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.75rem
+		font-family: $font-family-monospace
+		font-size: $font-size-xs
 		color: $gray-500
 		text-transform: uppercase
 
 	.info-value
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 
 	.status-online
 		color: $success
@@ -277,7 +265,7 @@
 
 	// Help Panel
 	.help-content
-		font-size: 0.875rem
+		font-size: $font-size-sm
 		line-height: 1.6
 
 		p
@@ -293,7 +281,7 @@
 		code
 			background: $gray-200
 			padding: 0.125rem 0.375rem
-			font-family: 'Share Tech Mono', monospace
+			font-family: $font-family-monospace
 			font-size: 0.8rem
 
 	.help-note

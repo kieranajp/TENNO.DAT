@@ -1,0 +1,41 @@
+// Filter tabs and filter bar styles (shared across pages)
+
+.filter-tabs
+  display: flex
+  gap: 0.5rem
+
+  .filter-tab
+    padding: 0.25rem 0.75rem
+    font-family: $font-family-monospace
+    font-size: $font-size-sm
+    border: 1px solid $kim-border
+    background: $gray-200
+    color: $gray-700
+    cursor: pointer
+    transition: all $transition-fast
+
+    &:hover
+      background: $gray-300
+
+    &.active
+      background: $kim-accent
+      color: white
+      border-color: black
+
+// Shared filter bar layout (used in mastery and starchart pages)
+.filter-bar
+  padding: 0
+
+.filter-bar-content
+  padding: 0.75rem
+  display: flex
+  flex-wrap: wrap
+  gap: 0.75rem
+  align-items: center
+  justify-content: space-between
+
+.filter-section
+  display: flex
+  flex-wrap: wrap
+  gap: 0.75rem
+  align-items: center

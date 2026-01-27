@@ -1,0 +1,24 @@
+// Button styles
+
+.btn-retro
+  background: $kim-border
+  color: white
+  border: $border-width solid black
+  border-bottom-width: $border-width-thick
+  border-right-width: $border-width-thick
+  font-family: $font-family-monospace
+  text-transform: uppercase
+  letter-spacing: $letter-spacing-wide
+  transition: all $transition-fast
+
+  &:hover
+    background: $kim-accent
+    color: white
+
+  &:active
+    border-bottom-width: $border-width
+    border-right-width: $border-width
+    transform: translate(2px, 2px)
+
+  &.btn-accent
+    background: $kim-accent

@@ -218,23 +218,6 @@
 {/if}
 
 <style lang="sass">
-	.filter-bar
-		padding: 0
-
-	.filter-bar-content
-		padding: 0.75rem
-		display: flex
-		flex-wrap: wrap
-		gap: 0.75rem
-		align-items: center
-		justify-content: space-between
-
-	.filter-section
-		display: flex
-		flex-wrap: wrap
-		gap: 0.75rem
-		align-items: center
-
 	.category-select
 		padding: 0.25rem 0.5rem
 		min-width: 160px
@@ -243,8 +226,8 @@
 		display: flex
 		align-items: center
 		gap: 0.5rem
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 		cursor: pointer
 		user-select: none
 		text-transform: uppercase
@@ -255,7 +238,7 @@
 		.checkmark
 			width: 18px
 			height: 18px
-			border: 2px solid $kim-border
+			border: $border-width solid $kim-border
 			background: white
 			display: flex
 			align-items: center
@@ -284,8 +267,8 @@
 		justify-content: space-between
 		align-items: center
 		margin-bottom: 1rem
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 
 	.results-count
 		color: $kim-border
@@ -306,12 +289,12 @@
 
 	.item-card
 		background: white
-		border: 2px solid $kim-border
+		border: $border-width solid $kim-border
 		display: flex
 		align-items: center
 		gap: 0.75rem
 		padding: 0.5rem
-		transition: all 0.15s
+		transition: all $transition-base
 		cursor: pointer
 		min-width: 0
 		overflow: hidden
@@ -338,16 +321,16 @@
 		flex-shrink: 0
 
 	.item-img
-		width: 48px
-		height: 48px
+		width: $icon-size-lg
+		height: $icon-size-lg
 		object-fit: contain
 		background: $gray-200
 		border: 1px solid $gray-400
 		image-rendering: pixelated
 
 	.item-img-placeholder
-		width: 48px
-		height: 48px
+		width: $icon-size-lg
+		height: $icon-size-lg
 		background: $gray-200
 		border: 1px solid $gray-400
 		display: flex
@@ -360,8 +343,8 @@
 		min-width: 0
 
 	.item-name
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 		white-space: nowrap
 		overflow: hidden
 		text-overflow: ellipsis
@@ -374,7 +357,7 @@
 		margin-top: 0.25rem
 
 	.item-category
-		font-size: 0.7rem
+		font-size: $font-size-xxs
 		color: $gray-500
 		text-transform: uppercase
 
@@ -392,8 +375,8 @@
 		flex-shrink: 0
 
 	.rank-progress
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.7rem
+		font-family: $font-family-monospace
+		font-size: $font-size-xxs
 		color: $gray-500
 		white-space: nowrap
 
@@ -418,7 +401,7 @@
 			background: $warning
 
 			.material-icons
-				font-size: 1.1rem
+				font-size: $font-size-base
 
 	.loading-state
 		display: flex
@@ -426,7 +409,7 @@
 		align-items: center
 		justify-content: center
 		padding: 4rem
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		text-transform: uppercase
 		color: $gray-500
 
@@ -439,22 +422,18 @@
 		animation: spin 1s linear infinite
 		margin-bottom: 1rem
 
-	@keyframes spin
-		to
-			transform: rotate(360deg)
-
 	.empty-state
 		display: flex
 		flex-direction: column
 		align-items: center
 		justify-content: center
 		padding: 4rem
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		text-transform: uppercase
 		color: $gray-500
 
 		.material-icons
-			font-size: 3rem
+			font-size: $font-size-xxl
 			margin-bottom: 1rem
 			opacity: 0.5
 
@@ -465,5 +444,5 @@
 		display: flex
 		align-items: center
 		justify-content: center
-		z-index: 999
+		z-index: $zindex-noise
 </style>

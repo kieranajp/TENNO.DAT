@@ -1,0 +1,95 @@
+// Panel, header bar, and status bar styles
+
+.kim-panel
+  border: $border-width solid $kim-border
+  background: white
+  box-shadow: $shadow-sm
+
+  .panel-header
+    background: $kim-title
+    padding: 0.25rem 0.5rem
+    border-bottom: 1px solid $kim-border
+    text-align: center
+
+    h2, h3, h4, h5, h6
+      margin: 0
+      font-weight: bold
+      color: black
+      text-transform: uppercase
+      letter-spacing: $letter-spacing-wide
+
+  .panel-body
+    padding: 1rem
+
+.header-bar
+  background: $kim-terminal-light
+  border: $border-width solid $kim-border-dark
+  box-shadow: $shadow-md
+  padding: 0.25rem 0.5rem
+  display: flex
+  justify-content: space-between
+  align-items: center
+  user-select: none
+  margin-bottom: 1.5rem
+
+  .header-logo
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    font-weight: bold
+    letter-spacing: $letter-spacing-wider
+    text-transform: uppercase
+    color: $kim-border
+
+    .logo-accent
+      color: $kim-accent
+
+  .header-controls
+    display: flex
+    align-items: center
+    gap: 1rem
+    font-family: $font-family-monospace
+    font-size: $font-size-sm
+
+    .user-badge
+      padding: 0.25rem 0.5rem
+      background: white
+      border: 1px solid $kim-border
+      box-shadow: $shadow-inset
+
+    .header-btn
+      padding: 0.25rem
+      border: 1px solid transparent
+      background: transparent
+      cursor: pointer
+      transition: all $transition-fast
+
+      &:hover
+        background: $kim-title
+        border-color: $kim-border
+
+.status-bar
+  background: $kim-terminal-light
+  border-top: $border-width solid $gray-400
+  padding: 0.25rem 0.5rem
+  display: flex
+  justify-content: space-between
+  align-items: center
+  font-family: $font-family-monospace
+  font-size: $font-size-xs
+  text-transform: uppercase
+
+  .status-indicator
+    display: flex
+    align-items: center
+    gap: 0.25rem
+
+    .status-dot
+      width: 8px
+      height: 8px
+      border-radius: 50%
+      background: $success
+      animation: pulse 2s infinite
+
+  .status-info
+    color: $gray-500

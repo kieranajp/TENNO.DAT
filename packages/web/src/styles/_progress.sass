@@ -1,0 +1,25 @@
+// Progress bar styles
+
+.progress-retro
+  height: 1.25rem
+  background: $gray-300
+  border: 1px solid $gray-500
+  border-radius: 0
+  overflow: hidden
+  position: relative
+
+  .progress-bar
+    height: 100%
+    background: $kim-border
+    border-radius: 0
+    position: relative
+
+    &::after
+      content: ''
+      position: absolute
+      inset: 0
+      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==")
+      opacity: 0.3
+
+  &.progress-accent .progress-bar
+    background: $kim-accent

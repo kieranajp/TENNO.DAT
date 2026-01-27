@@ -180,33 +180,20 @@
 {/if}
 
 <style lang="sass">
-	.filter-bar
-		padding: 0
-
-	.filter-bar-content
-		padding: 0.75rem
-		display: flex
-		flex-wrap: wrap
-		gap: 0.75rem
-		align-items: center
-		justify-content: space-between
-
+	// Override shared filter-section gap for this page
 	.filter-section
-		display: flex
-		flex-wrap: wrap
 		gap: 1rem
-		align-items: center
 
 	.mode-toggle
 		display: flex
 		align-items: center
 		gap: 0.5rem
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 
 	.mode-label
 		color: $gray-500
-		transition: color 0.2s
+		transition: color $transition-slow
 
 		&.active
 			color: $kim-accent
@@ -216,11 +203,11 @@
 		width: 48px
 		height: 24px
 		background: $gray-300
-		border: 2px solid $kim-border
+		border: $border-width solid $kim-border
 		border-radius: 12px
 		position: relative
 		cursor: pointer
-		transition: all 0.2s
+		transition: all $transition-slow
 
 		&.active
 			background: $kim-accent
@@ -230,11 +217,11 @@
 			position: absolute
 			top: 2px
 			left: 2px
-			width: 16px
-			height: 16px
+			width: $icon-size-sm
+			height: $icon-size-sm
 			background: white
 			border-radius: 50%
-			transition: transform 0.2s
+			transition: transform $transition-slow
 
 		&.active .toggle-knob
 			transform: translateX(24px)
@@ -247,7 +234,7 @@
 		display: flex
 		align-items: baseline
 		gap: 0.25rem
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 
 	.stat-value
 		color: $kim-accent
@@ -260,7 +247,7 @@
 		color: $gray-500
 
 	.stat-label
-		font-size: 0.75rem
+		font-size: $font-size-xs
 		color: $gray-400
 		margin-left: 0.25rem
 
@@ -280,7 +267,7 @@
 		cursor: pointer
 		background: $gray-150
 		border-bottom: 1px solid $gray-300
-		transition: background 0.15s
+		transition: background $transition-base
 
 		&:hover
 			background: $gray-200
@@ -295,7 +282,7 @@
 		color: $kim-border
 
 	.planet-name
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		font-size: 1rem
 		font-weight: bold
 		color: $gray-700
@@ -306,8 +293,8 @@
 		gap: 0.75rem
 
 	.progress-text
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 		color: $kim-border
 		min-width: 50px
 		text-align: right
@@ -339,7 +326,7 @@
 		gap: 0.75rem
 		padding: 0.5rem 1rem
 		border-bottom: 1px solid $gray-200
-		transition: background 0.15s
+		transition: background $transition-base
 
 		&:last-child
 			border-bottom: none
@@ -376,21 +363,21 @@
 		min-width: 0
 
 	.node-name
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 		text-transform: uppercase
 		white-space: nowrap
 		overflow: hidden
 		text-overflow: ellipsis
 
 	.node-type
-		font-size: 0.75rem
+		font-size: $font-size-xs
 		color: $gray-500
 		text-transform: capitalize
 
 	.node-xp
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.75rem
+		font-family: $font-family-monospace
+		font-size: $font-size-xs
 		color: $kim-border
 		flex-shrink: 0
 
@@ -400,7 +387,7 @@
 		align-items: center
 		justify-content: center
 		padding: 4rem
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		text-transform: uppercase
 		color: $gray-500
 
@@ -413,22 +400,18 @@
 		animation: spin 1s linear infinite
 		margin-bottom: 1rem
 
-	@keyframes spin
-		to
-			transform: rotate(360deg)
-
 	.empty-state
 		display: flex
 		flex-direction: column
 		align-items: center
 		justify-content: center
 		padding: 4rem
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		text-transform: uppercase
 		color: $gray-500
 
 		.material-icons
-			font-size: 3rem
+			font-size: $font-size-xxl
 			margin-bottom: 1rem
 			opacity: 0.5
 </style>

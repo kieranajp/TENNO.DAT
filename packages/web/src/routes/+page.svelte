@@ -258,13 +258,13 @@
 <style lang="sass">
 	.error-panel
 		background: $danger-bg
-		border: 2px solid $kim-accent
+		border: $border-width solid $kim-accent
 		padding: 0.75rem 1rem
 		display: flex
 		align-items: center
 		gap: 0.5rem
 		color: $kim-accent
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		text-transform: uppercase
 
 	.dashboard-grid
@@ -301,7 +301,7 @@
 		margin-bottom: 0.75rem
 
 		.material-icons
-			font-size: 3rem
+			font-size: $font-size-xxl
 			color: $gray-500
 
 		.mastery-rank-icon
@@ -310,13 +310,13 @@
 			object-fit: contain
 
 	.mastery-rank
-		font-size: 1.5rem
-		font-family: 'Share Tech Mono', monospace
+		font-size: $font-size-lg
+		font-family: $font-family-monospace
 		color: $kim-border
 
 		.rank-title
 			display: block
-			font-size: 0.875rem
+			font-size: $font-size-sm
 			color: $kim-accent
 			text-transform: uppercase
 			margin-top: 0.25rem
@@ -327,13 +327,13 @@
 	.xp-label
 		display: flex
 		justify-content: space-between
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.875rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
 		margin-bottom: 0.25rem
 
 	.xp-subtext
-		font-family: 'Share Tech Mono', monospace
-		font-size: 0.75rem
+		font-family: $font-family-monospace
+		font-size: $font-size-xs
 		color: $gray-500
 		margin-top: 0.25rem
 		text-align: right
@@ -345,7 +345,7 @@
 		align-items: center
 		justify-content: center
 		gap: 0.5rem
-		font-size: 1.1rem
+		font-size: $font-size-base
 
 		&:disabled
 			opacity: 0.7
@@ -353,10 +353,10 @@
 
 	.last-sync
 		margin-top: 0.75rem
-		font-size: 0.75rem
+		font-size: $font-size-xs
 		color: $gray-500
 		text-align: center
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 
 	// Loadout
 	.loadout-body
@@ -370,7 +370,7 @@
 
 	.loadout-chevron
 		color: $gray-400
-		transition: color 0.15s
+		transition: color $transition-base
 
 	.loadout-item.clickable:hover .loadout-chevron
 		color: $kim-accent
@@ -412,7 +412,7 @@
 		align-items: center
 		justify-content: center
 		padding: 4rem
-		font-family: 'Share Tech Mono', monospace
+		font-family: $font-family-monospace
 		text-transform: uppercase
 		color: $gray-500
 
@@ -424,10 +424,6 @@
 		border-radius: 50%
 		animation: spin 1s linear infinite
 
-	@keyframes spin
-		to
-			transform: rotate(360deg)
-
 	.loading-overlay
 		position: fixed
 		inset: 0
@@ -435,5 +431,5 @@
 		display: flex
 		align-items: center
 		justify-content: center
-		z-index: 999
+		z-index: $zindex-noise
 </style>

@@ -1,0 +1,39 @@
+// Input and search styles
+
+.input-retro
+  background: $gray-100
+  border: $border-width solid $kim-border
+  border-style: inset
+  font-family: $font-family-monospace
+  text-transform: uppercase
+
+  &:focus
+    outline: none
+    border-color: $kim-accent
+    box-shadow: none
+
+.search-retro
+  display: flex
+  align-items: center
+  background: $gray-100
+  border: $border-width solid $kim-border
+  border-style: inset
+  padding: 0 0.5rem
+
+  .search-icon
+    color: $gray-500
+    font-size: 1rem
+
+  input
+    border: none
+    background: transparent
+    font-family: $font-family-monospace
+    text-transform: uppercase
+    padding: 0.25rem 0.5rem
+    width: 100%
+
+    &::placeholder
+      color: $gray-400
+
+    &:focus
+      outline: none
