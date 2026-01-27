@@ -45,8 +45,8 @@ describe('Starchart Routes', () => {
             xpEarned: 800,
             xpTotal: 1000,
             nodes: [
-              { key: 'Earth1', name: 'Cervantes', planet: 'Earth', missionType: 'Spy', masteryXP: 100, completed: true },
-              { key: 'Earth2', name: 'E Prime', planet: 'Earth', missionType: 'Exterminate', masteryXP: 100, completed: true },
+              { id: 1, nodeKey: 'SolNode1', name: 'Cervantes', planet: 'Earth', nodeType: 'mission' as const, missionType: 'Spy', masteryXp: 100, completed: true },
+              { id: 2, nodeKey: 'SolNode2', name: 'E Prime', planet: 'Earth', nodeType: 'mission' as const, missionType: 'Exterminate', masteryXp: 100, completed: true },
             ],
           },
         ],

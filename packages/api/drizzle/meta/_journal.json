@@ -64,6 +64,13 @@
       "when": 1769600000000,
       "tag": "0008_add_weapon_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1769700000000,
+      "tag": "0009_add_node_mission_type",
+      "breakpoints": true
     }
   ]
 }

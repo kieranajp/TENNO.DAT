@@ -43,7 +43,7 @@ describe('Mastery Routes', () => {
       ]
 
       const mockLoadout = {
-        warframe: { id: 1, name: 'Frost', imageName: 'frost.png', category: 'Warframes', maxRank: 30, rank: 30, masteryState: MasteryState.MASTERED_30 },
+        warframe: { id: 1, name: 'Frost', imageName: 'frost.png', category: 'Warframes', maxRank: 30, rank: 30, masteryState: MasteryState.Mastered30 },
         primary: null,
         secondary: null,
         melee: null,
@@ -63,7 +63,11 @@ describe('Mastery Routes', () => {
 
       expect(body.categories).toEqual(mockCategories)
       expect(body.totals).toEqual({ total: 150, mastered: 125 })
-      expect(body.loadout).toEqual(mockLoadout)
+      // MasteryState serializes to just its ID via toJSON()
+      expect(body.loadout).toEqual({
+        ...mockLoadout,
+        warframe: { ...mockLoadout.warframe, masteryState: mockLoadout.warframe!.masteryState.id }
+      })
       expect(body.displayName).toBe('TestUser')
       expect(body.masteryRank).toBeDefined()
       expect(body.masteryRank.equipmentXP).toBe(500000)
@@ -132,7 +136,7 @@ describe('Mastery Routes', () => {
           vaulted: null,
           xp: 900000,
           rank: 30,
-          masteryState: MasteryState.MASTERED_30,
+          masteryState: MasteryState.Mastered30
         },
       ]
 
@@ -143,7 +147,11 @@ describe('Mastery Routes', () => {
 
       expect(res.status).toBe(200)
       const body = await res.json()
-      expect(body).toEqual(mockItems)
+      // MasteryState serializes to just its ID via toJSON()
+      expect(body).toEqual(mockItems.map(item => ({
+        ...item,
+        masteryState: item.masteryState.id
+      })))
     })
 
     it('passes category filter to repository', async () => {

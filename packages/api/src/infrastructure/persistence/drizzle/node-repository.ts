@@ -18,6 +18,7 @@ export class DrizzleNodeRepository implements NodeRepository {
         name: row.name,
         planet: row.planet,
         nodeType: row.nodeType as 'mission' | 'junction' | 'railjack',
+        missionType: row.missionType,
         masteryXp: row.masteryXp,
       })
     }
@@ -84,6 +85,7 @@ export class DrizzleNodeRepository implements NodeRepository {
         name: nodes.name,
         planet: nodes.planet,
         nodeType: nodes.nodeType,
+        missionType: nodes.missionType,
         masteryXp: nodes.masteryXp,
         completes: playerNodes.completes,
       })
@@ -108,6 +110,7 @@ export class DrizzleNodeRepository implements NodeRepository {
         name: row.name,
         planet: row.planet,
         nodeType: row.nodeType as 'mission' | 'junction' | 'railjack',
+        missionType: row.missionType,
         masteryXp: row.masteryXp,
         completed: (row.completes ?? 0) > 0,
       }

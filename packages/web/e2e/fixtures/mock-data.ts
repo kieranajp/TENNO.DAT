@@ -34,7 +34,7 @@ export const mockMasterySummary: MasterySummary = {
       category: 'Warframes',
       maxRank: 30,
       rank: 30,
-      masteryState: MasteryState.MASTERED_30,
+      masteryState: MasteryState.Mastered30,
     },
     primary: {
       id: 2,
@@ -43,7 +43,7 @@ export const mockMasterySummary: MasterySummary = {
       category: 'Primary',
       maxRank: 30,
       rank: 30,
-      masteryState: MasteryState.MASTERED_30,
+      masteryState: MasteryState.Mastered30,
     },
     secondary: {
       id: 3,
@@ -52,7 +52,7 @@ export const mockMasterySummary: MasterySummary = {
       category: 'Secondary',
       maxRank: 40,
       rank: 40,
-      masteryState: MasteryState.MASTERED_40,
+      masteryState: MasteryState.Mastered40,
     },
     melee: {
       id: 4,
@@ -91,7 +91,7 @@ export const mockMasteryItems: MasteryItem[] = [
     vaulted: false,
     xp: 6000,
     rank: 30,
-    masteryState: MasteryState.MASTERED_30,
+    masteryState: MasteryState.Mastered30,
   },
   {
     id: 2,
@@ -105,7 +105,7 @@ export const mockMasteryItems: MasteryItem[] = [
     vaulted: null,
     xp: 6000,
     rank: 30,
-    masteryState: MasteryState.MASTERED_30,
+    masteryState: MasteryState.Mastered30,
   },
   {
     id: 3,
@@ -147,7 +147,7 @@ export const mockMasteryItems: MasteryItem[] = [
     vaulted: false,
     xp: 3000,
     rank: 30,
-    masteryState: MasteryState.MASTERED_30,
+    masteryState: MasteryState.Mastered30,
   },
   {
     id: 6,
