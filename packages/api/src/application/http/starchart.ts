@@ -1,5 +1,9 @@
 import { Hono } from 'hono'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import { createLogger } from '../../infrastructure/logger'
+import { handleRouteError, noPlayerConfigured } from './errors'
+
+const log = createLogger('Starchart')
 
 export function starchartRoutes(container: Container) {
   const router = new Hono()
@@ -9,13 +13,17 @@ export function starchartRoutes(container: Container) {
     const settings = await container.playerRepo.getSettings()
 
     if (!settings) {
-      return c.json({ error: 'No player configured' }, 400)
+      return noPlayerConfigured(c, log)
     }
 
-    const steelPath = c.req.query('steelPath') === 'true'
-    const progress = await container.nodeRepo.getNodesWithCompletion(settings.playerId, steelPath)
+    try {
+      const steelPath = c.req.query('steelPath') === 'true'
+      const progress = await container.nodeRepo.getNodesWithCompletion(settings.playerId, steelPath)
 
-    return c.json(progress)
+      return c.json(progress)
+    } catch (error) {
+      return handleRouteError(c, log, error, 'Failed to fetch star chart progress')
+    }
   })
 
   return router

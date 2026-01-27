@@ -3,6 +3,7 @@ import { Platform } from '@warframe-tracker/shared'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import { getRankFromXp } from '../../domain/entities/mastery'
 import { createLogger } from '../../infrastructure/logger'
+import { handleRouteError, noPlayerConfigured } from './errors'
 
 const log = createLogger('Sync')
 
@@ -10,30 +11,40 @@ export function syncRoutes(container: Container) {
   const router = new Hono()
 
   router.get('/settings', async (c) => {
-    const settings = await container.playerRepo.getSettings()
-    return c.json(settings)
+    try {
+      const settings = await container.playerRepo.getSettings()
+      return c.json(settings)
+    } catch (error) {
+      return handleRouteError(c, log, error, 'Failed to fetch settings')
+    }
   })
 
   router.post('/settings', async (c) => {
-    const { playerId, platform: platformId } = await c.req.json<{
-      playerId: string
-      platform: string
-    }>()
+    try {
+      const { playerId, platform: platformId } = await c.req.json<{
+        playerId: string
+        platform: string
+      }>()
 
-    const platform = Platform.fromId(platformId)
-    if (!platform) {
-      return c.json({ error: `Invalid platform: ${platformId}` }, 400)
+      const platform = Platform.fromId(platformId)
+      if (!platform) {
+        log.warn('Invalid platform', { platformId })
+        return c.json({ error: `Invalid platform: ${platformId}` }, 400)
+      }
+
+      await container.playerRepo.saveSettings(playerId, platform)
+      log.info('Settings saved', { playerId, platform: platform.id })
+      return c.json({ success: true })
+    } catch (error) {
+      return handleRouteError(c, log, error, 'Failed to save settings')
     }
-
-    await container.playerRepo.saveSettings(playerId, platform)
-    return c.json({ success: true })
   })
 
   router.post('/profile', async (c) => {
     const settings = await container.playerRepo.getSettings()
 
     if (!settings) {
-      return c.json({ error: 'No player settings configured' }, 400)
+      return noPlayerConfigured(c, log)
     }
 
     try {
@@ -149,9 +160,7 @@ export function syncRoutes(container: Container) {
         nodesSynced: nodeCompletions.length,
       })
     } catch (error) {
-      log.error('Sync failed', error instanceof Error ? error : undefined)
-      const message = error instanceof Error ? error.message : 'Failed to sync profile'
-      return c.json({ error: message }, 500)
+      return handleRouteError(c, log, error, 'Failed to sync profile')
     }
   })
 

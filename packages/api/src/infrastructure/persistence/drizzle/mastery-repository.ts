@@ -8,26 +8,26 @@ export class DrizzleMasteryRepository implements MasteryRepository {
   constructor(private db: DrizzleDb) {}
 
   async upsertMany(records: Omit<MasteryRecord, 'id' | 'syncedAt'>[]): Promise<void> {
-    for (const record of records) {
-      await this.db
-        .insert(playerMastery)
-        .values(record)
-        .onConflictDoUpdate({
-          target: [playerMastery.playerId, playerMastery.itemId],
-          set: {
-            xp: sql`excluded.xp`,
-            rank: sql`excluded.rank`,
-            syncedAt: new Date(),
-            // Update stats on sync
-            fired: sql`excluded.fired`,
-            hits: sql`excluded.hits`,
-            kills: sql`excluded.kills`,
-            headshots: sql`excluded.headshots`,
-            equipTime: sql`excluded.equip_time`,
-            assists: sql`excluded.assists`,
-          },
-        })
-    }
+    if (records.length === 0) return
+
+    // Batch upsert - single query instead of N queries
+    await this.db
+      .insert(playerMastery)
+      .values(records)
+      .onConflictDoUpdate({
+        target: [playerMastery.playerId, playerMastery.itemId],
+        set: {
+          xp: sql`excluded.xp`,
+          rank: sql`excluded.rank`,
+          syncedAt: new Date(),
+          fired: sql`excluded.fired`,
+          hits: sql`excluded.hits`,
+          kills: sql`excluded.kills`,
+          headshots: sql`excluded.headshots`,
+          equipTime: sql`excluded.equip_time`,
+          assists: sql`excluded.assists`,
+        },
+      })
   }
 
   async getSummary(playerId: string): Promise<MasterySummary[]> {
