@@ -29,7 +29,12 @@ jobs:
         run: pnpm install
 
       - name: Run unit tests
-        run: pnpm test
+        run: pnpm test:coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   e2e-tests:
     runs-on: ubuntu-latest

@@ -5,7 +5,9 @@ dist/
 .env.local
 *.log
 .DS_Store
+coverage/
 
+# Claude sandbox spam
 .gitconfig
 .bash_profile
 .bashrc
