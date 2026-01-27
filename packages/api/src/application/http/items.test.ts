@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { itemsRoutes } from './items'
-import { createMockContainer } from '../../test-utils'
+import { createMockContainer, createMockAuthMiddleware, mockAuth } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
 
 describe('Items Routes', () => {
@@ -11,6 +11,8 @@ describe('Items Routes', () => {
   beforeEach(() => {
     container = createMockContainer()
     app = new Hono()
+    // Add mock auth middleware before routes
+    app.use('*', createMockAuthMiddleware(mockAuth))
     app.route('/items', itemsRoutes(container))
   })
 
@@ -101,6 +103,7 @@ describe('Items Routes', () => {
     it('includes personal stats when player is configured', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: null,

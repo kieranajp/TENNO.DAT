@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { starchartRoutes } from './starchart'
-import { createMockContainer } from '../../test-utils'
+import { createMockContainer, createMockAuthMiddleware, mockAuth } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
 
 describe('Starchart Routes', () => {
@@ -11,6 +11,8 @@ describe('Starchart Routes', () => {
   beforeEach(() => {
     container = createMockContainer()
     app = new Hono()
+    // Add mock auth middleware before routes
+    app.use('*', createMockAuthMiddleware(mockAuth))
     app.route('/starchart', starchartRoutes(container))
   })
 
@@ -28,6 +30,7 @@ describe('Starchart Routes', () => {
     it('returns star chart progress for normal mode by default', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: null,
@@ -72,6 +75,7 @@ describe('Starchart Routes', () => {
     it('returns steel path progress when steelPath=true', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: null,
@@ -102,6 +106,7 @@ describe('Starchart Routes', () => {
     it('treats steelPath=false explicitly as normal mode', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: null,
