@@ -6,6 +6,8 @@
 	import { goto } from '$app/navigation';
 	import { getCurrentUser, logout, ApiError, type AuthUser } from '$lib/api';
 	import { auth } from '$lib/stores/auth';
+	import SettingsDialog from '$lib/components/SettingsDialog.svelte';
+	import SystemInfoDialog from '$lib/components/SystemInfoDialog.svelte';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -14,6 +16,8 @@
 	let isMinimized = $state(false);
 	let showTechrot = $state(false);
 	let isGlitching = $state(false);
+	let showSettingsDialog = $state(false);
+	let showSystemInfoDialog = $state(false);
 
 	// Auth state from store subscription
 	let authUser = $state<AuthUser | null>(null);
@@ -130,8 +134,7 @@
 	const navItems = [
 		{ href: '/', label: 'Dashboard' },
 		{ href: '/mastery', label: 'Mastery' },
-		{ href: '/starchart', label: 'Star Chart' },
-		{ href: '/settings', label: 'Settings' }
+		{ href: '/starchart', label: 'Star Chart' }
 	];
 
 	// Auth pages (login/onboarding) render without the app chrome
@@ -193,11 +196,13 @@
 				<span>KIM OS v19.99 // <span class="logo-accent">TENNO.DAT</span></span>
 			</div>
 			<div class="header-controls">
-				<div class="user-badge d-none d-md-block">USER: {username.toUpperCase()}</div>
+				<button class="user-badge d-none d-md-flex" onclick={() => showSystemInfoDialog = true} title="System Info">
+					USER: {username.toUpperCase()}
+				</button>
 				<div class="d-none d-md-block">{currentTime}</div>
-				<a href="/settings" class="header-btn" title="Settings">
+				<button class="header-btn" onclick={() => showSettingsDialog = true} title="Settings">
 					<span class="material-icons">settings</span>
-				</a>
+				</button>
 				<button class="header-btn" onclick={handleLogout} title="Logout">
 					<span class="material-icons">logout</span>
 				</button>
@@ -257,6 +262,15 @@
 			</footer>
 		</main>
 	</div>
+
+	<!-- Dialogs -->
+	{#if showSettingsDialog}
+		<SettingsDialog onClose={() => showSettingsDialog = false} />
+	{/if}
+
+	{#if showSystemInfoDialog}
+		<SystemInfoDialog onClose={() => showSystemInfoDialog = false} />
+	{/if}
 {/if}
 
 <style lang="sass">
