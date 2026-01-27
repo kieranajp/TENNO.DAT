@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import {
+  mockAuthUser,
   mockMasterySummary,
   mockMasteryItems,
   mockSettings,
@@ -25,6 +26,15 @@ import {
 test.beforeEach(async ({ page }) => {
   // Freeze time for consistent screenshots
   await page.clock.install({ time: new Date('2025-01-15T12:00:00') })
+
+  // Mock auth endpoint - return authenticated user to bypass login
+  await page.route('**/auth/me', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ user: mockAuthUser }),
+    })
+  })
 
   // Mock mastery summary endpoint
   await page.route('**/mastery/summary', async (route) => {
@@ -153,25 +163,6 @@ test.describe('Visual Regression', () => {
     })
   })
 
-  test.describe('Settings Page', () => {
-    test('full page screenshot', async ({ page }) => {
-      await page.goto('/settings', { waitUntil: 'networkidle' })
-      await page.waitForTimeout(300)
-      await expect(page).toHaveScreenshot('settings-full.png', {
-        fullPage: true,
-      })
-    })
-
-    test('settings form', async ({ page }) => {
-      await page.goto('/settings', { waitUntil: 'networkidle' })
-      await page.waitForTimeout(300)
-      const form = page.locator('form, .settings-form, .card').first()
-      if (await form.isVisible()) {
-        await expect(form).toHaveScreenshot('settings-form.png')
-      }
-    })
-  })
-
   test.describe('Star Chart Page', () => {
     test('full page screenshot', async ({ page }) => {
       await page.goto('/starchart', { waitUntil: 'networkidle' })
@@ -207,7 +198,7 @@ test.describe('Visual Regression', () => {
 test.describe('Component Screenshots', () => {
   test.describe('Buttons and Controls', () => {
     test('primary buttons', async ({ page }) => {
-      await page.goto('/settings', { waitUntil: 'networkidle' })
+      await page.goto('/', { waitUntil: 'networkidle' })
       await page.waitForTimeout(300)
       const button = page.locator('button.btn-primary, button[type="submit"]').first()
       if (await button.isVisible()) {

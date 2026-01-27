@@ -8,8 +8,19 @@ import type {
   MasteryItem,
   PlayerSettings,
   StarChartProgress,
+  AuthUser,
 } from '../../src/lib/api'
 import { MasteryState } from '@warframe-tracker/shared'
+
+export const mockAuthUser: AuthUser = {
+  id: 1,
+  steamId: '76561198012345678',
+  steamDisplayName: 'TestTenno',
+  steamAvatarUrl: null,
+  playerId: 'TestTenno',
+  platform: 'pc',
+  onboardingComplete: true,
+}
 
 export const mockMasterySummary: MasterySummary = {
   categories: [
