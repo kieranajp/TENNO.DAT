@@ -4,6 +4,7 @@ import { db, schema } from './connection'
 import { WFCD_CATEGORIES, SeedingRules } from '@warframe-tracker/shared'
 import { createLogger } from '../../logger'
 import { seedResources, getResourceMaps } from './seed-resources'
+import { isCraftedPart, getMasteryReq, extractComponents, extractDrops } from './seed-utils'
 
 const log = createLogger('Seed')
 
@@ -44,92 +45,6 @@ interface RawItem {
   rawDrops: Array<{ location: string; chance: number; rarity: string }>
 }
 
-// Crafted parts that should always go to item_components, not resources
-const CRAFTED_PART_NAMES = new Set([
-  'blueprint',
-  'chassis',
-  'neuroptics',
-  'systems',
-  'harness',
-  'wings',
-  'carapace',
-  'cerebrum',
-  'barrel',
-  'receiver',
-  'stock',
-  'blade',
-  'hilt',
-  'handle',
-  'grip',
-  'string',
-  'upper limb',
-  'lower limb',
-  'guard',
-  'pouch',
-  'stars',
-  'disc',
-  'ornament',
-  'link',
-  'chain',
-  'head',
-  'motor',
-  'casing',
-  'core',
-  'prime blueprint',
-  'prime chassis',
-  'prime neuroptics',
-  'prime systems',
-  'prime barrel',
-  'prime receiver',
-  'prime stock',
-  'prime blade',
-  'prime hilt',
-  'prime handle',
-  'prime grip',
-  'prime string',
-  'prime upper limb',
-  'prime lower limb',
-  'prime guard',
-  'prime pouch',
-  'prime stars',
-  'prime disc',
-  'prime ornament',
-  'prime link',
-  'prime chain',
-  'prime head',
-  'prime motor',
-  'prime casing',
-  'prime core',
-  'prime harness',
-  'prime wings',
-  'prime carapace',
-  'prime cerebrum',
-  'set',
-])
-
-/**
- * Determine if a component is a crafted part (not a resource).
- * Crafted parts have relics drops, ducats value, or are known crafted types.
- */
-function isCraftedPart(comp: { name: string; drops?: any[]; ducats?: number; tradable?: boolean }): boolean {
-  const nameLower = comp.name.toLowerCase()
-
-  // Check if it's a known crafted part type
-  if (CRAFTED_PART_NAMES.has(nameLower)) return true
-
-  // Check if it ends with common crafted part suffixes
-  const craftedSuffixes = ['blueprint', 'chassis', 'neuroptics', 'systems', 'harness', 'wings', 'carapace', 'cerebrum']
-  if (craftedSuffixes.some(suffix => nameLower.endsWith(suffix))) return true
-
-  // Components with drops (from relics) are crafted parts
-  if (comp.drops && comp.drops.length > 0) return true
-
-  // Components with ducats value are tradable crafted parts
-  if (comp.ducats && comp.ducats > 0) return true
-
-  return false
-}
-
 async function seed() {
   // First, seed resources table
   log.info('Seeding resources table...')
@@ -144,41 +59,6 @@ async function seed() {
 
   log.info(`Found ${masterableItems.length} masterable items`)
 
-  const getMasteryReq = (item: any): number => {
-    const mr = item.masteryReq
-    if (typeof mr === 'number') return mr
-    if (typeof mr === 'object' && mr !== null) return Number(mr.value ?? mr.mr ?? 0)
-    return 0
-  }
-
-  /**
-   * Extract components with full data from an item.
-   */
-  const getComponents = (item: any) => {
-    return (item.components ?? []).slice(0, 10).map((c: any) => ({
-      name: c.name ?? 'Component',
-      itemCount: typeof c.itemCount === 'number' ? c.itemCount : 1,
-      ducats: typeof c.ducats === 'number' ? c.ducats : undefined,
-      tradable: typeof c.tradable === 'boolean' ? c.tradable : undefined,
-      drops: (c.drops ?? []).slice(0, 5).map((d: any) => ({
-        location: d.location ?? d.place ?? 'Unknown',
-        chance: typeof d.chance === 'number' ? d.chance : 0,
-        rarity: d.rarity ?? undefined,
-      })),
-    }))
-  }
-
-  /**
-   * Extract direct drops from an item.
-   */
-  const getDrops = (item: any) => {
-    return (item.drops ?? []).slice(0, 10).map((d: any) => ({
-      location: d.location ?? d.place ?? 'Unknown',
-      chance: typeof d.chance === 'number' ? d.chance : 0,
-      rarity: d.rarity ?? 'Common',
-    }))
-  }
-
   const itemsToInsert: RawItem[] = masterableItems
     .map((item: any) => {
       // Detect category using declarative rules
@@ -189,8 +69,8 @@ async function seed() {
         return null
       }
 
-      const components = getComponents(item)
-      const drops = getDrops(item)
+      const components = extractComponents(item)
+      const drops = extractDrops(item)
 
       const mapped: RawItem = {
         uniqueName: String(item.uniqueName ?? ''),
