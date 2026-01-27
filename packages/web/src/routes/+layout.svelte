@@ -9,6 +9,27 @@
 
 	let currentTime = $state('');
 	let username = $state('TENNO');
+	let isMinimized = $state(false);
+	let showTechrot = $state(false);
+	let isGlitching = $state(false);
+
+	function handleMinimize() {
+		isMinimized = !isMinimized;
+	}
+
+	function handleClose() {
+		showTechrot = true;
+		setTimeout(() => {
+			showTechrot = false;
+		}, 1500);
+	}
+
+	function handleMaximize() {
+		isGlitching = true;
+		setTimeout(() => {
+			isGlitching = false;
+		}, 500);
+	}
 
 	$effect(() => {
 		const updateClock = () => {
@@ -62,7 +83,15 @@
 <div class="crt-overlay"></div>
 <div class="noise-overlay"></div>
 
-<div class="app-container">
+<!-- Techrot Virus Easter Egg -->
+{#if showTechrot}
+	<div class="techrot-overlay">
+		<img src="/techrot.webp" />
+		<div class="techrot-text">TECHROT DETECTED</div>
+	</div>
+{/if}
+
+<div class="app-container" class:glitching={isGlitching}>
 	<!-- Header Bar -->
 	<header class="header-bar">
 		<div class="header-logo">
@@ -79,7 +108,7 @@
 	</header>
 
 	<!-- Main Window -->
-	<main class="window-frame main-window">
+	<main class="window-frame main-window" class:minimized={isMinimized}>
 		<div class="title-bar">
 			<div class="d-flex align-items-center gap-2">
 				<div class="title-icon"></div>
@@ -98,9 +127,9 @@
 				</span>
 			</div>
 			<div class="window-controls">
-				<button type="button">_</button>
-				<button type="button">□</button>
-				<button type="button" class="close-btn">X</button>
+				<button type="button" onclick={handleMinimize} title="Minimize">_</button>
+				<button type="button" onclick={handleMaximize} title="Maximize">□</button>
+				<button type="button" class="close-btn" onclick={handleClose} title="Close">X</button>
 			</div>
 		</div>
 
@@ -195,4 +224,94 @@
 		overflow-x: hidden
 		background: $kim-terminal-light
 		min-width: 0
+
+	// Easter egg: Minimize to title bar
+	.main-window.minimized
+		flex: 0
+		.nav-tabs-bar,
+		.main-content,
+		.status-bar
+			display: none
+
+	// Easter egg: CRT glitch effect
+	.app-container.glitching
+		animation: glitch 0.5s steps(2) forwards
+
+	@keyframes glitch
+		0%
+			filter: hue-rotate(0deg) saturate(1)
+			transform: translate(0)
+		10%
+			filter: hue-rotate(90deg) saturate(2)
+			transform: translate(-2px, 1px)
+		20%
+			filter: hue-rotate(180deg) saturate(0.5)
+			transform: translate(2px, -1px)
+		30%
+			filter: hue-rotate(270deg) saturate(3)
+			transform: translate(-1px, 2px)
+		40%
+			filter: hue-rotate(45deg) saturate(1.5)
+			transform: translate(1px, -2px)
+		50%
+			clip-path: inset(20% 0 30% 0)
+			filter: hue-rotate(135deg) saturate(2)
+		60%
+			clip-path: inset(50% 0 10% 0)
+			filter: hue-rotate(225deg) saturate(0.8)
+		70%
+			clip-path: inset(10% 0 60% 0)
+			filter: hue-rotate(315deg) saturate(1.2)
+		80%
+			clip-path: none
+			filter: hue-rotate(180deg) saturate(1)
+			transform: translate(0)
+		100%
+			filter: hue-rotate(0deg) saturate(1)
+			transform: translate(0)
+			clip-path: none
+
+	// Easter egg: Techrot virus overlay (CRT green aesthetic)
+	:global(.techrot-overlay)
+		position: fixed
+		inset: 0
+		background: rgba(0, 20, 0, 0.95)
+		z-index: 10000
+		display: flex
+		flex-direction: column
+		align-items: center
+		justify-content: center
+		animation: techrot-flash 0.15s steps(2) infinite
+
+		img
+			width: 200px
+			height: 200px
+			filter: drop-shadow(0 0 20px #00ff00) drop-shadow(0 0 40px #00ff00) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(3)
+			animation: techrot-pulse 0.3s ease-in-out infinite alternate
+
+		.techrot-text
+			margin-top: 2rem
+			font-family: monospace
+			font-size: 2rem
+			color: #00ff00
+			text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00
+			animation: techrot-text-flicker 0.1s steps(2) infinite
+
+	@keyframes techrot-flash
+		0%
+			background: rgba(0, 20, 0, 0.95)
+		50%
+			background: rgba(0, 40, 0, 0.9)
+
+	@keyframes techrot-pulse
+		from
+			transform: scale(1)
+		to
+			transform: scale(1.1)
+
+	@keyframes techrot-text-flicker
+		0%
+			opacity: 1
+		50%
+			opacity: 0.7
 </style>
