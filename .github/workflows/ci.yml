@@ -63,8 +63,19 @@ jobs:
         working-directory: packages/web
 
       - name: Run Playwright tests
-        run: pnpm test:e2e
+        run: pnpm exec playwright test --update-snapshots
         working-directory: packages/web
+
+      - name: Commit new snapshots
+        if: github.event_name == 'pull_request' && always()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add packages/web/e2e/visual-regression.spec.ts-snapshots/
+          git diff --staged --quiet || git commit -m "chore: update visual regression snapshots [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
