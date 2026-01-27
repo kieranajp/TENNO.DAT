@@ -372,6 +372,31 @@ export const MASTERY_CONFIG = {
 } as const
 
 /**
+ * Mastery rank threshold constants.
+ * Used for calculating player mastery rank from total XP.
+ */
+export const MASTERY_RANK_CONFIG = {
+  /** XP coefficient for MR 1-30: threshold = coefficient × MR² */
+  xpPerMRSquared: 2500,
+  /** XP required per legendary rank (MR 31+) */
+  xpPerLegendaryRank: 147500,
+  /** Total XP threshold for MR 30 (transition to legendary ranks) */
+  mr30Threshold: 2250000,
+  /** XP granted per intrinsic level (Railjack/Drifter) */
+  xpPerIntrinsicLevel: 1500,
+} as const
+
+/**
+ * Standard item rank thresholds.
+ */
+export const RANK_THRESHOLDS = {
+  /** Standard max rank for most items */
+  standard: 30,
+  /** Extended max rank for Kuva/Tenet weapons, Necramechs, etc. */
+  extended: 40,
+} as const
+
+/**
  * Get the XP multiplier for a category.
  * Used in formula: XP = multiplier × rank²
  */

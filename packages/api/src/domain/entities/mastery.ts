@@ -1,7 +1,14 @@
-import { getXpMultiplier, getXpPerRank } from '@warframe-tracker/shared'
-import { MasteryState } from '@warframe-tracker/shared'
+import {
+  getXpMultiplier,
+  getXpPerRank,
+  MasteryState,
+  MASTERY_RANK_CONFIG,
+  RANK_THRESHOLDS,
+} from '@warframe-tracker/shared'
 
 export { MasteryState }
+
+const { xpPerMRSquared, xpPerLegendaryRank, mr30Threshold, xpPerIntrinsicLevel } = MASTERY_RANK_CONFIG
 
 /**
  * Calculate XP required for mastery at a given max rank.
@@ -15,7 +22,7 @@ export function getMasteredXp(category: string, maxRank: number): number {
  * Calculate XP threshold for rank 30 (base mastery).
  */
 export function getRank30Xp(category: string): number {
-  return getXpMultiplier(category) * 30 * 30
+  return getXpMultiplier(category) * RANK_THRESHOLDS.standard * RANK_THRESHOLDS.standard
 }
 
 /**
@@ -59,14 +66,14 @@ export function getMasteryContribution(xp: number, category: string, maxRank: nu
 
 /**
  * Get cumulative XP threshold for a mastery rank.
- * MR 1-30: 2500 × mr²
- * Legendary (31+): 2,250,000 + 147,500 × (mr - 30)
+ * MR 1-30: xpPerMRSquared × mr²
+ * Legendary (31+): mr30Threshold + xpPerLegendaryRank × (mr - 30)
  */
 export function getMRThreshold(mr: number): number {
-  if (mr > 30) {
-    return 2250000 + 147500 * (mr - 30)
+  if (mr > RANK_THRESHOLDS.standard) {
+    return mr30Threshold + xpPerLegendaryRank * (mr - RANK_THRESHOLDS.standard)
   }
-  return 2500 * mr * mr
+  return xpPerMRSquared * mr * mr
 }
 
 export interface MasteryRankInfo {
@@ -78,10 +85,10 @@ export interface MasteryRankInfo {
 
 /**
  * Calculate XP from intrinsics.
- * Each intrinsic level gives 1500 mastery XP.
+ * Each intrinsic level gives mastery XP.
  */
 export function intrinsicsToXP(levels: number): number {
-  return levels * 1500
+  return levels * xpPerIntrinsicLevel
 }
 
 /**
@@ -89,10 +96,10 @@ export function intrinsicsToXP(levels: number): number {
  */
 export function calculateMR(totalMasteryXp: number): MasteryRankInfo {
   let rank: number
-  if (totalMasteryXp >= 2250000) {
-    rank = 30 + Math.floor((totalMasteryXp - 2250000) / 147500)
+  if (totalMasteryXp >= mr30Threshold) {
+    rank = RANK_THRESHOLDS.standard + Math.floor((totalMasteryXp - mr30Threshold) / xpPerLegendaryRank)
   } else {
-    rank = Math.floor(Math.sqrt(totalMasteryXp / 2500))
+    rank = Math.floor(Math.sqrt(totalMasteryXp / xpPerMRSquared))
   }
   const current = getMRThreshold(rank)
   const next = getMRThreshold(rank + 1)

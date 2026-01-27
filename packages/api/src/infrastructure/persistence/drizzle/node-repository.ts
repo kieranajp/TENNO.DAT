@@ -25,28 +25,37 @@ export class DrizzleNodeRepository implements NodeRepository {
   }
 
   async upsertCompletions(playerId: string, completions: NodeCompletion[]): Promise<void> {
+    if (completions.length === 0) return
+
     const nodesMap = await this.findAllAsMap()
 
-    for (const completion of completions) {
-      const node = nodesMap.get(completion.nodeKey)
-      if (!node) continue
-
-      await this.db
-        .insert(playerNodes)
-        .values({
+    // Map completions to database records, filtering out unknown nodes
+    const records = completions
+      .map(completion => {
+        const node = nodesMap.get(completion.nodeKey)
+        if (!node) return null
+        return {
           playerId,
           nodeId: node.id,
           completes: completion.completes,
           isSteelPath: completion.isSteelPath,
-        })
-        .onConflictDoUpdate({
-          target: [playerNodes.playerId, playerNodes.nodeId, playerNodes.isSteelPath],
-          set: {
-            completes: sql`excluded.completes`,
-            syncedAt: new Date(),
-          },
-        })
-    }
+        }
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null)
+
+    if (records.length === 0) return
+
+    // Batch upsert - single query instead of N queries
+    await this.db
+      .insert(playerNodes)
+      .values(records)
+      .onConflictDoUpdate({
+        target: [playerNodes.playerId, playerNodes.nodeId, playerNodes.isSteelPath],
+        set: {
+          completes: sql`excluded.completes`,
+          syncedAt: new Date(),
+        },
+      })
   }
 
   async getStarChartMasteryXP(playerId: string): Promise<number> {
