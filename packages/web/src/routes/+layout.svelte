@@ -168,6 +168,22 @@
 {#if isAuthPage}
 	<!-- Auth pages (login/onboarding) render without app chrome -->
 	{@render children()}
+{:else if !authChecked}
+	<!-- Show nothing while checking auth - prevents flash of app chrome -->
+	<div class="auth-loading">
+		<div class="auth-loading-content">
+			<span class="material-icons spinning">sync</span>
+			<span>AUTHENTICATING...</span>
+		</div>
+	</div>
+{:else if !authUser}
+	<!-- Not authenticated - will redirect to login via $effect -->
+	<div class="auth-loading">
+		<div class="auth-loading-content">
+			<span class="material-icons">lock</span>
+			<span>REDIRECTING...</span>
+		</div>
+	</div>
 {:else}
 	<div class="app-container" class:glitching={isGlitching}>
 		<!-- Header Bar -->
@@ -244,6 +260,35 @@
 {/if}
 
 <style lang="sass">
+	.auth-loading
+		min-height: 100vh
+		display: flex
+		align-items: center
+		justify-content: center
+		background: $kim-bg-dark
+
+	.auth-loading-content
+		display: flex
+		align-items: center
+		gap: 0.75rem
+		font-family: $font-family-monospace
+		font-size: $font-size-lg
+		color: $kim-title
+		text-transform: uppercase
+		letter-spacing: $letter-spacing-wide
+
+		.material-icons
+			font-size: 1.5rem
+
+		.spinning
+			animation: spin 1s linear infinite
+
+	@keyframes spin
+		from
+			transform: rotate(0deg)
+		to
+			transform: rotate(360deg)
+
 	.app-container
 		min-height: 100vh
 		padding: 1rem
