@@ -31,4 +31,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV PORT=3000
 
-CMD ["pnpm", "exec", "tsx", "packages/api/src/application/index.ts"]
+CMD ["pnpm", "--filter", "api", "start"]

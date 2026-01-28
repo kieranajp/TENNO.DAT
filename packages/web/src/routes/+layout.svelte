@@ -163,7 +163,7 @@
 <!-- Techrot Virus Easter Egg -->
 {#if showTechrot}
 	<div class="techrot-overlay">
-		<img src="/techrot.webp" />
+		<img src="/techrot.webp" alt="Techrot icon" />
 		<div class="techrot-text">TECHROT DETECTED</div>
 	</div>
 {/if}

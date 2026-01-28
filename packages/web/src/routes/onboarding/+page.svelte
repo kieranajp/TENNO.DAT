@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { saveSettings, getCurrentUser } from '$lib/api';
+	import { saveSettings, getCurrentUser, syncProfile } from '$lib/api';
 	import { auth } from '$lib/stores/auth';
 
 	let playerId = $state('');
@@ -23,6 +23,11 @@
 			// Refresh user data
 			const user = await getCurrentUser();
 			auth.setUser(user);
+
+			// Auto-sync profile on first setup
+			syncProfile().catch(() => {
+				// Ignore sync errors on initial setup - user can retry from dashboard
+			});
 
 			// Navigate to dashboard
 			goto('/');
@@ -121,7 +126,7 @@
 
 					<p><strong>Method 2: Browser Extension</strong></p>
 					<ol>
-						<li>Install the Tenno Tracker browser extension</li>
+						<li>Install the <a href="https://chromewebstore.google.com/detail/tenno-tracker-gid-fetcher/omjafgfifenecjcpfnjhihfbnekoldin" target="_blank" rel="noopener noreferrer">Tenno Tracker browser extension</a></li>
 						<li>Visit your profile on warframe.com</li>
 						<li>The extension will display your Account ID</li>
 					</ol>

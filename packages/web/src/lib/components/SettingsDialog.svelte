@@ -84,7 +84,7 @@
 					/>
 					<div class="form-help">
 						<span class="material-icons">info</span>
-						Find this in your EE.log file or use the Tenno Tracker browser extension.
+						Find this in your EE.log file or use the <a href="https://chromewebstore.google.com/detail/tenno-tracker-gid-fetcher/omjafgfifenecjcpfnjhihfbnekoldin" target="_blank" rel="noopener noreferrer">Tenno Tracker browser extension</a>.
 					</div>
 				</div>
 
