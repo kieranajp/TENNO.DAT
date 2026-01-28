@@ -1,21 +1,39 @@
-de-profile-response.json
+# Dependencies
 node_modules/
-dist/
-.env
-.env.local
-*.log
-.DS_Store
-coverage/
 .pnpm-store/
 
-# Claude sandbox spam
-.gitconfig
-.bash_profile
-.bashrc
-.gitmodules
-.idea
-.mcp.json
-.profile
-.ripgreprc
-.zprofile
-.zshrc
+# Build outputs
+dist/
+.svelte-kit/
+
+# Environment variables
+.env
+.env*
+!.env.example
+!.env.*.example
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# Testing
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+.eslintcache
+
+# Project-specific
+de-profile-response.json

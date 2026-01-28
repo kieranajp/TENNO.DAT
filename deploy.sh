@@ -5,11 +5,11 @@ set -euo pipefail
 TAG="${1:-$(git rev-parse --short HEAD)}"
 NAMESPACE="${NAMESPACE:-apps}"
 
-echo "Deploying TENNO.DAT with tag: sha-$TAG to namespace: $NAMESPACE"
+echo "Deploying tenno with tag: sha-$TAG to namespace: $NAMESPACE"
 
 # Deploy with Helm
 # Secrets should be provided via environment variables
-helm upgrade TENNO.DAT ./charts/TENNO.DAT \
+helm upgrade tenno ./charts/TENNO.DAT \
   --install \
   --namespace "$NAMESPACE" \
   --set api.image.tag="sha-$TAG" \
@@ -17,7 +17,7 @@ helm upgrade TENNO.DAT ./charts/TENNO.DAT \
   --set secrets.DB_USER="${DB_USER:?DB_USER must be set}" \
   --set secrets.DB_PASS="${DB_PASS:?DB_PASS must be set}" \
   --set secrets.DB_NAME="${DB_NAME:?DB_NAME must be set}" \
-  --set secrets.DB_HOST="${DB_HOST:-TENNO.DAT-postgresql}" \
+  --set secrets.DB_HOST="${DB_HOST:-tenno-postgresql}" \
   --set secrets.DB_PORT="${DB_PORT:-5432}" \
   --set secrets.VITE_API_URL="${VITE_API_URL:?VITE_API_URL must be set}"
 

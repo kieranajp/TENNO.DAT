@@ -1,4 +1,4 @@
 apiVersion: v2
-name: TENNO.DAT
+name: tenno
 version: 0.1.0
 appVersion: "latest"
