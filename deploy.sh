@@ -19,6 +19,10 @@ helm upgrade tenno ./charts/TENNO.DAT \
   --set secrets.DB_NAME="${DB_NAME:?DB_NAME must be set}" \
   --set secrets.DB_HOST="${DB_HOST:-tenno-postgresql}" \
   --set secrets.DB_PORT="${DB_PORT:-5432}" \
+  --set secrets.BASE_URL="${BASE_URL:?BASE_URL must be set}" \
+  --set secrets.FRONTEND_URL="${FRONTEND_URL:?FRONTEND_URL must be set}" \
+  --set secrets.CORS_ORIGIN="${CORS_ORIGIN:?CORS_ORIGIN must be set}" \
+  --set secrets.STEAM_API_KEY="${STEAM_API_KEY:-}" \
   --set secrets.VITE_API_URL="${VITE_API_URL:?VITE_API_URL must be set}"
 
 echo "✅ Deployment complete"

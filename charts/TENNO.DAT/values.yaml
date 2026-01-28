@@ -62,11 +62,18 @@ ingress:
 
 secretName: warframe-secrets
 secrets:
-  # Database credentials
+  # Database credentials (used to construct DATABASE_URL)
   DB_USER: ""
   DB_PASS: ""
   DB_NAME: ""
   DB_HOST: ""
   DB_PORT: ""
-  # API URL for web frontend
-  VITE_API_URL: ""
+
+  # API configuration
+  BASE_URL: ""           # Where API is publicly accessible (e.g., https://ordis.kieranajp.uk)
+  FRONTEND_URL: ""       # Where to redirect after auth (e.g., https://tenno.kieranajp.uk)
+  CORS_ORIGIN: ""        # Allowed CORS origin (e.g., https://tenno.kieranajp.uk)
+  STEAM_API_KEY: ""      # Optional Steam API key
+
+  # Web frontend configuration
+  VITE_API_URL: ""       # API URL for web frontend (e.g., https://ordis.kieranajp.uk)

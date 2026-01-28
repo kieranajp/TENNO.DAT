@@ -49,6 +49,9 @@ spec:
         ports:
         - containerPort: {{ .Values.api.service.port }}
           protocol: TCP
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
         envFrom:
         - secretRef:
             name: {{ .Values.secretName }}
