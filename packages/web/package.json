@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:update-snapshots": "playwright test --update-snapshots"
+    "test:e2e:update-snapshots": "playwright test --update-snapshots",
+    "test:e2e:update-snapshots:docker": "docker run --rm -e CI=true -v \"$(pwd)/../..:/work\" -w /work/packages/web mcr.microsoft.com/playwright:v1.52.0-noble sh -c 'npm install -g pnpm && pnpm install --frozen-lockfile && pnpm test:e2e:update-snapshots'"
   },
   "dependencies": {
     "@warframe-tracker/shared": "workspace:*",

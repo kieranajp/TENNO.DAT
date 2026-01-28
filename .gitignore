@@ -6,6 +6,7 @@ dist/
 *.log
 .DS_Store
 coverage/
+.pnpm-store/
 
 # Claude sandbox spam
 .gitconfig
