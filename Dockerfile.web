@@ -20,6 +20,10 @@ RUN pnpm install --frozen-lockfile
 COPY packages/web ./packages/web
 COPY packages/shared ./packages/shared
 
+# Build argument for API URL
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Build SvelteKit app
 RUN pnpm --filter web build
 
