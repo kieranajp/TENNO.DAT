@@ -55,10 +55,16 @@ postgresql:
 
 ingress:
   enabled: true
-  web:
-    host: "tenno.kieranajp.uk"
-  api:
-    host: "ordis.kieranajp.uk"
+  tls:
+    enabled: true
+    certResolver: letsencrypt
+  routes:
+    web:
+      host: "tenno.kieranajp.uk"
+      port: 3000
+    api:
+      host: "ordis.kieranajp.uk"
+      port: 3000
 
 secretName: warframe-secrets
 secrets:

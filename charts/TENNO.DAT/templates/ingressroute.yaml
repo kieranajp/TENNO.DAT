@@ -1,56 +1,29 @@
 {{- if .Values.ingress.enabled }}
-# Web IngressRoute
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: {{ .Release.Name }}-web
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/name: {{ .Chart.Name }}-web
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-spec:
-  entryPoints:
-    - websecure
-  routes:
-  - match: Host(`{{ .Values.ingress.web.host }}`)
-    kind: Rule
-    {{- if .Values.ingress.middlewares }}
-    middlewares:
-    {{- range .Values.ingress.middlewares }}
-    - name: {{ . }}
-      {{- if .namespace }}
-      namespace: {{ .namespace }}
-      {{- end }}
-    {{- end }}
-    {{- end }}
-    services:
-    - name: {{ .Release.Name }}-web
-      port: {{ .Values.web.service.port }}
+{{- range $name, $route := .Values.ingress.routes }}
 ---
-# API IngressRoute
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ .Release.Name }}-api
-  namespace: {{ .Release.Namespace }}
+  name: {{ $.Release.Name }}-{{ $name }}
+  namespace: {{ $.Release.Namespace }}
   labels:
-    app.kubernetes.io/name: {{ .Chart.Name }}-api
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ $.Chart.Name }}-{{ $name }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
 spec:
   entryPoints:
     - websecure
+  {{- if $.Values.ingress.tls.enabled }}
   tls:
-    certResolver: letsencrypt
+    certResolver: {{ $.Values.ingress.tls.certResolver }}
+  {{- end }}
   routes:
-  - match: Host(`{{ .Values.ingress.api.host }}`)
+  - match: Host(`{{ $route.host }}`)
     kind: Rule
-    {{- if .Values.ingress.middlewares }}
+    {{- if $.Values.ingress.middlewares }}
     middlewares:
-    {{- range .Values.ingress.middlewares }}
+    {{- range $.Values.ingress.middlewares }}
     - name: {{ . }}
       {{- if .namespace }}
       namespace: {{ .namespace }}
@@ -58,6 +31,7 @@ spec:
     {{- end }}
     {{- end }}
     services:
-    - name: {{ .Release.Name }}-api
-      port: {{ .Values.api.service.port }}
+    - name: {{ $.Release.Name }}-{{ $name }}
+      port: {{ $route.port }}
+{{- end }}
 {{- end }}
