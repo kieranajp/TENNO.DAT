@@ -10,16 +10,22 @@ const log = createLogger('Sync')
 export function syncRoutes(container: Container) {
   const router = new Hono()
 
+  // Get settings for authenticated user
   router.get('/settings', async (c) => {
+    const auth = c.get('auth')
+
     try {
-      const settings = await container.playerRepo.getSettings()
+      const settings = await container.playerRepo.getSettings(auth.userId)
       return c.json(settings)
     } catch (error) {
       return handleRouteError(c, log, error, 'Failed to fetch settings')
     }
   })
 
+  // Save settings for authenticated user
   router.post('/settings', async (c) => {
+    const auth = c.get('auth')
+
     try {
       const { playerId, platform: platformId } = await c.req.json<{
         playerId: string
@@ -32,8 +38,8 @@ export function syncRoutes(container: Container) {
         return c.json({ error: `Invalid platform: ${platformId}` }, 400)
       }
 
-      await container.playerRepo.saveSettings(playerId, platform)
-      log.info('Settings saved', { playerId, platform: platform.id })
+      await container.playerRepo.saveSettings(auth.userId, playerId, platform)
+      log.info('Settings saved', { userId: auth.userId, playerId, platform: platform.id })
       return c.json({ success: true })
     } catch (error) {
       return handleRouteError(c, log, error, 'Failed to save settings')
@@ -41,24 +47,25 @@ export function syncRoutes(container: Container) {
   })
 
   router.post('/profile', async (c) => {
-    const settings = await container.playerRepo.getSettings()
+    const auth = c.get('auth')
+    const settings = await container.playerRepo.getSettings(auth.userId)
 
-    if (!settings) {
+    if (!settings?.playerId) {
       return noPlayerConfigured(c, log)
     }
 
     try {
-      const platform = Platform.fromId(settings.platform)
+      const platform = Platform.fromId(settings.platform ?? 'pc')
       if (!platform) {
         return c.json({ error: `Invalid platform in settings: ${settings.platform}` }, 400)
       }
 
-      log.info('Starting sync', { playerId: settings.playerId, platform: platform.id })
+      log.info('Starting sync', { userId: auth.userId, playerId: settings.playerId, platform: platform.id })
 
       const profile = await container.profileApi.fetch(settings.playerId, platform)
 
       if (profile.displayName) {
-        await container.playerRepo.updateDisplayName(settings.playerId, profile.displayName)
+        await container.playerRepo.updateDisplayName(auth.userId, profile.displayName)
       }
 
       const itemsMap = await container.itemRepo.findAllAsMap()
@@ -87,7 +94,7 @@ export function syncRoutes(container: Container) {
           const item = itemsMap.get(xp.itemType)!
           const stats = weaponStatsMap.get(xp.itemType)
           return {
-            playerId: settings.playerId,
+            playerId: settings.playerId!,
             itemId: item.id,
             xp: xp.xp,
             rank: getRankFromXp(xp.xp, item.category, item.maxRank),
@@ -102,7 +109,7 @@ export function syncRoutes(container: Container) {
         })
 
       await container.masteryRepo.upsertMany(masteryRecords)
-      await container.playerRepo.updateLastSync(settings.playerId)
+      await container.playerRepo.updateLastSync(auth.userId)
 
       // Resolve loadout uniqueNames to item IDs and persist
       const loadout = profile.loadout
@@ -114,12 +121,12 @@ export function syncRoutes(container: Container) {
         focusSchool: loadout.focusSchool,
       }
 
-      await container.loadoutRepo.upsert(settings.playerId, loadoutData)
+      await container.loadoutRepo.upsert(settings.playerId!, loadoutData)
 
       // Auto-sync intrinsics from profile
       const { intrinsics } = profile
       await container.playerRepo.updateIntrinsics(
-        settings.playerId,
+        auth.userId,
         intrinsics.railjack.total,
         intrinsics.drifter.total
       )
@@ -139,10 +146,11 @@ export function syncRoutes(container: Container) {
           return completions
         })
 
-      await container.nodeRepo.upsertCompletions(settings.playerId, nodeCompletions)
+      await container.nodeRepo.upsertCompletions(settings.playerId!, nodeCompletions)
 
       const masteredCount = masteryRecords.filter(r => r.rank >= 30).length
       log.info('Sync complete', {
+        userId: auth.userId,
         synced: masteryRecords.length,
         mastered: masteredCount,
         nodesSynced: nodeCompletions.length,

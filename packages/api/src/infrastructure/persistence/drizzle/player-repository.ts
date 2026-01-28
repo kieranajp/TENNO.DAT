@@ -8,45 +8,56 @@ import type { PlayerRepository } from '../../../domain/ports/player-repository'
 export class DrizzlePlayerRepository implements PlayerRepository {
   constructor(private db: DrizzleDb) {}
 
-  async getSettings(): Promise<PlayerSettings | null> {
-    const result = await this.db.select().from(playerSettings).limit(1)
+  async getSettings(userId: number): Promise<PlayerSettings | null> {
+    const result = await this.db
+      .select()
+      .from(playerSettings)
+      .where(eq(playerSettings.userId, userId))
+      .limit(1)
     return result[0] ?? null
   }
 
-  async saveSettings(playerId: string, platform: Platform): Promise<void> {
-    const existing = await this.getSettings()
-
-    if (existing) {
-      await this.db
-        .update(playerSettings)
-        .set({ playerId, platform: platform.id })
-        .where(eq(playerSettings.id, existing.id))
-    } else {
-      await this.db.insert(playerSettings).values({ playerId, platform: platform.id })
-    }
+  async getSettingsByPlayerId(playerId: string): Promise<PlayerSettings | null> {
+    const result = await this.db
+      .select()
+      .from(playerSettings)
+      .where(eq(playerSettings.playerId, playerId))
+      .limit(1)
+    return result[0] ?? null
   }
 
-  async updateDisplayName(playerId: string, displayName: string): Promise<void> {
+  async createSettings(userId: number): Promise<void> {
+    await this.db.insert(playerSettings).values({ userId }).onConflictDoNothing()
+  }
+
+  async saveSettings(userId: number, playerId: string, platform: Platform): Promise<void> {
+    await this.db
+      .update(playerSettings)
+      .set({ playerId, platform: platform.id })
+      .where(eq(playerSettings.userId, userId))
+  }
+
+  async updateDisplayName(userId: number, displayName: string): Promise<void> {
     await this.db
       .update(playerSettings)
       .set({ displayName })
-      .where(eq(playerSettings.playerId, playerId))
+      .where(eq(playerSettings.userId, userId))
   }
 
-  async updateLastSync(playerId: string): Promise<void> {
+  async updateLastSync(userId: number): Promise<void> {
     await this.db
       .update(playerSettings)
       .set({ lastSyncAt: new Date() })
-      .where(eq(playerSettings.playerId, playerId))
+      .where(eq(playerSettings.userId, userId))
   }
 
-  async updateIntrinsics(playerId: string, railjack: number, drifter: number): Promise<void> {
+  async updateIntrinsics(userId: number, railjack: number, drifter: number): Promise<void> {
     await this.db
       .update(playerSettings)
       .set({
         railjackIntrinsics: railjack,
         drifterIntrinsics: drifter,
       })
-      .where(eq(playerSettings.playerId, playerId))
+      .where(eq(playerSettings.userId, userId))
   }
 }

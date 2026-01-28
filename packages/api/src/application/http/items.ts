@@ -33,10 +33,11 @@ export function itemsRoutes(container: Container) {
   router.get('/:id', async (c) => {
     try {
       const id = Number(c.req.param('id'))
+      const auth = c.get('auth')
 
       // Get current player settings to include personal stats (optional)
-      const settings = await container.playerRepo.getSettings()
-      const playerId = settings?.playerId
+      const settings = await container.playerRepo.getSettings(auth.userId)
+      const playerId = settings?.playerId ?? undefined
 
       const item = await container.itemRepo.findByIdWithAcquisitionData(id, playerId)
 

@@ -11,9 +11,10 @@ export function masteryRoutes(container: Container) {
 
   // Get mastery progress summary
   router.get('/summary', async (c) => {
-    const settings = await container.playerRepo.getSettings()
+    const auth = c.get('auth')
+    const settings = await container.playerRepo.getSettings(auth.userId)
 
-    if (!settings) {
+    if (!settings?.playerId) {
       return noPlayerConfigured(c, log)
     }
 
@@ -64,9 +65,10 @@ export function masteryRoutes(container: Container) {
 
   // Get items with mastery status
   router.get('/items', async (c) => {
-    const settings = await container.playerRepo.getSettings()
+    const auth = c.get('auth')
+    const settings = await container.playerRepo.getSettings(auth.userId)
 
-    if (!settings) {
+    if (!settings?.playerId) {
       return noPlayerConfigured(c, log)
     }
 

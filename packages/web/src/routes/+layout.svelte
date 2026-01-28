@@ -3,7 +3,11 @@
 	import type { Snippet } from 'svelte';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { getSettings } from '$lib/api';
+	import { goto } from '$app/navigation';
+	import { getCurrentUser, logout, ApiError, type AuthUser } from '$lib/api';
+	import { auth } from '$lib/stores/auth';
+	import SettingsDialog from '$lib/components/SettingsDialog.svelte';
+	import SystemInfoDialog from '$lib/components/SystemInfoDialog.svelte';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -12,6 +16,23 @@
 	let isMinimized = $state(false);
 	let showTechrot = $state(false);
 	let isGlitching = $state(false);
+	let showSettingsDialog = $state(false);
+	let showSystemInfoDialog = $state(false);
+
+	// Auth state from store subscription
+	let authUser = $state<AuthUser | null>(null);
+	let authChecked = $state(false);
+
+	$effect(() => {
+		const unsubscribe = auth.subscribe((state) => {
+			authUser = state.user;
+			authChecked = state.checked;
+			if (state.user?.steamDisplayName) {
+				username = state.user.steamDisplayName;
+			}
+		});
+		return unsubscribe;
+	});
 
 	function handleMinimize() {
 		isMinimized = !isMinimized;
@@ -31,6 +52,17 @@
 		}, 500);
 	}
 
+	async function handleLogout() {
+		try {
+			await logout();
+		} catch (e) {
+			// Logout failed but clear local state anyway
+			console.error('Logout failed:', e);
+		}
+		auth.clear();
+		goto('/login');
+	}
+
 	$effect(() => {
 		const updateClock = () => {
 			const now = new Date();
@@ -46,24 +78,69 @@
 		return () => clearInterval(interval);
 	});
 
-	onMount(async () => {
-		try {
-			const settings = await getSettings();
-			if (settings?.displayName) {
-				// Strip non-printable characters (platform icons etc)
-				username = settings.displayName.replace(/[^\x20-\x7E]/g, '').trim();
+	// Handle auth-based redirects reactively
+	$effect(() => {
+		if (!authChecked) return; // Wait for auth check to complete
+
+		const path = $page.url.pathname;
+		const isLoginPage = path.startsWith('/login');
+		const isOnboardingPage = path.startsWith('/onboarding');
+
+		if (!authUser) {
+			// Not logged in - redirect to login (unless already there)
+			if (!isLoginPage) {
+				goto('/login');
 			}
-		} catch {
-			// Keep default "TENNO"
+			return;
 		}
+
+		// Logged in but needs onboarding
+		if (!authUser.onboardingComplete && !isOnboardingPage) {
+			goto('/onboarding');
+			return;
+		}
+
+		// Logged in and onboarded - redirect away from login/onboarding
+		if (authUser.onboardingComplete && (isLoginPage || isOnboardingPage)) {
+			goto('/');
+		}
+	});
+
+	onMount(async () => {
+		// Global 401 handler - catch expired sessions during navigation
+		const handleUnauthorized = (event: PromiseRejectionEvent) => {
+			if (event.reason instanceof ApiError && event.reason.isUnauthorized) {
+				event.preventDefault();
+				auth.clear();
+				goto('/login');
+			}
+		};
+
+		window.addEventListener('unhandledrejection', handleUnauthorized);
+
+		try {
+			const user = await getCurrentUser();
+			auth.setUser(user);
+		} catch (e) {
+			console.error('Failed to check authentication:', e);
+			auth.setUser(null);
+		}
+
+		return () => {
+			window.removeEventListener('unhandledrejection', handleUnauthorized);
+		};
 	});
 
 	const navItems = [
 		{ href: '/', label: 'Dashboard' },
 		{ href: '/mastery', label: 'Mastery' },
-		{ href: '/starchart', label: 'Star Chart' },
-		{ href: '/settings', label: 'Settings' }
+		{ href: '/starchart', label: 'Star Chart' }
 	];
+
+	// Auth pages (login/onboarding) render without the app chrome
+	let isAuthPage = $derived(
+		$page.url.pathname.startsWith('/login') || $page.url.pathname.startsWith('/onboarding')
+	);
 </script>
 
 <svelte:head>
@@ -91,77 +168,141 @@
 	</div>
 {/if}
 
-<div class="app-container" class:glitching={isGlitching}>
-	<!-- Header Bar -->
-	<header class="header-bar">
-		<div class="header-logo">
-			<span class="material-icons">computer</span>
-			<span>KIM OS v19.99 // <span class="logo-accent">TENNO.DAT</span></span>
+{#if isAuthPage}
+	<!-- Auth pages (login/onboarding) render without app chrome -->
+	{@render children()}
+{:else if !authChecked}
+	<!-- Show nothing while checking auth - prevents flash of app chrome -->
+	<div class="auth-loading">
+		<div class="auth-loading-content">
+			<span class="material-icons spinning">sync</span>
+			<span>AUTHENTICATING...</span>
 		</div>
-		<div class="header-controls">
-			<div class="user-badge d-none d-md-block">USER: {username.toUpperCase()}</div>
-			<div class="d-none d-md-block">{currentTime}</div>
-			<a href="/settings" class="header-btn" title="Settings">
-				<span class="material-icons">settings</span>
-			</a>
+	</div>
+{:else if !authUser}
+	<!-- Not authenticated - will redirect to login via $effect -->
+	<div class="auth-loading">
+		<div class="auth-loading-content">
+			<span class="material-icons">lock</span>
+			<span>REDIRECTING...</span>
 		</div>
-	</header>
-
-	<!-- Main Window -->
-	<main class="window-frame main-window" class:minimized={isMinimized}>
-		<div class="title-bar">
-			<div class="d-flex align-items-center gap-2">
-				<div class="title-icon"></div>
-				<span class="title-text">
-					{#if $page.url.pathname === '/'}
-						MASTERY DASHBOARD.EXE
-					{:else if $page.url.pathname === '/starchart'}
-						STAR CHART.EXE
-					{:else if $page.url.pathname === '/mastery'}
-						MASTERY DATABASE.EXE
-					{:else if $page.url.pathname === '/settings'}
-						SYSTEM CONFIG.EXE
-					{:else}
-						WARFRAME TRACKER
-					{/if}
-				</span>
+	</div>
+{:else}
+	<div class="app-container" class:glitching={isGlitching}>
+		<!-- Header Bar -->
+		<header class="header-bar">
+			<div class="header-logo">
+				<span class="material-icons">computer</span>
+				<span>KIM OS v19.99 // <span class="logo-accent">TENNO.DAT</span></span>
 			</div>
-			<div class="window-controls">
-				<button type="button" onclick={handleMinimize} title="Minimize">_</button>
-				<button type="button" onclick={handleMaximize} title="Maximize">□</button>
-				<button type="button" class="close-btn" onclick={handleClose} title="Close">X</button>
+			<div class="header-controls">
+				<button class="user-badge d-none d-md-flex" onclick={() => showSystemInfoDialog = true} title="System Info">
+					USER: {username.toUpperCase()}
+				</button>
+				<div class="d-none d-md-block">{currentTime}</div>
+				<button class="header-btn" onclick={() => showSettingsDialog = true} title="Settings">
+					<span class="material-icons">settings</span>
+				</button>
+				<button class="header-btn" onclick={handleLogout} title="Logout">
+					<span class="material-icons">logout</span>
+				</button>
 			</div>
-		</div>
+		</header>
 
-		<!-- Navigation Tabs -->
-		<nav class="nav-tabs-bar">
-			{#each navItems as item}
-				<a
-					href={item.href}
-					class="nav-tab"
-					class:active={$page.url.pathname === item.href}
-				>
-					{item.label}
-				</a>
-			{/each}
-		</nav>
-
-		<div class="main-content">
-			{@render children()}
-		</div>
-
-		<!-- Status Bar -->
-		<footer class="status-bar">
-			<div class="status-indicator">
-				<span class="status-dot"></span>
-				<span>SYSTEM: ONLINE</span>
+		<!-- Main Window -->
+		<main class="window-frame main-window" class:minimized={isMinimized}>
+			<div class="title-bar">
+				<div class="d-flex align-items-center gap-2">
+					<div class="title-icon"></div>
+					<span class="title-text">
+						{#if $page.url.pathname === '/'}
+							MASTERY DASHBOARD.EXE
+						{:else if $page.url.pathname === '/starchart'}
+							STAR CHART.EXE
+						{:else if $page.url.pathname === '/mastery'}
+							MASTERY DATABASE.EXE
+						{:else if $page.url.pathname === '/settings'}
+							SYSTEM CONFIG.EXE
+						{:else}
+							WARFRAME TRACKER
+						{/if}
+					</span>
+				</div>
+				<div class="window-controls">
+					<button type="button" onclick={handleMinimize} title="Minimize">_</button>
+					<button type="button" onclick={handleMaximize} title="Maximize">□</button>
+					<button type="button" class="close-btn" onclick={handleClose} title="Close">X</button>
+				</div>
 			</div>
-			<div class="status-info">MEM: 64KB OK</div>
-		</footer>
-	</main>
-</div>
+
+			<!-- Navigation Tabs -->
+			<nav class="nav-tabs-bar">
+				{#each navItems as item}
+					<a
+						href={item.href}
+						class="nav-tab"
+						class:active={$page.url.pathname === item.href}
+					>
+						{item.label}
+					</a>
+				{/each}
+			</nav>
+
+			<div class="main-content">
+				{@render children()}
+			</div>
+
+			<!-- Status Bar -->
+			<footer class="status-bar">
+				<div class="status-indicator">
+					<span class="status-dot"></span>
+					<span>SYSTEM: ONLINE</span>
+				</div>
+				<div class="status-info">MEM: 64KB OK</div>
+			</footer>
+		</main>
+	</div>
+
+	<!-- Dialogs -->
+	{#if showSettingsDialog}
+		<SettingsDialog onClose={() => showSettingsDialog = false} />
+	{/if}
+
+	{#if showSystemInfoDialog}
+		<SystemInfoDialog onClose={() => showSystemInfoDialog = false} />
+	{/if}
+{/if}
 
 <style lang="sass">
+	.auth-loading
+		min-height: 100vh
+		display: flex
+		align-items: center
+		justify-content: center
+		background: $kim-bg-dark
+
+	.auth-loading-content
+		display: flex
+		align-items: center
+		gap: 0.75rem
+		font-family: $font-family-monospace
+		font-size: $font-size-lg
+		color: $kim-title
+		text-transform: uppercase
+		letter-spacing: $letter-spacing-wide
+
+		.material-icons
+			font-size: 1.5rem
+
+		.spinning
+			animation: spin 1s linear infinite
+
+	@keyframes spin
+		from
+			transform: rotate(0deg)
+		to
+			transform: rotate(360deg)
+
 	.app-container
 		min-height: 100vh
 		padding: 1rem

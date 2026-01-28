@@ -359,12 +359,6 @@
 		font-family: $font-family-monospace
 
 	// Loadout
-	.loadout-body
-		padding: 0.5rem
-		display: flex
-		flex-direction: column
-		gap: 0.5rem
-
 	.loadout-item.clickable
 		cursor: pointer
 

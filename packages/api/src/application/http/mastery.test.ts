@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { masteryRoutes } from './mastery'
-import { createMockContainer } from '../../test-utils'
+import { createMockContainer, createMockAuthMiddleware, mockAuth } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import { MasteryState } from '@warframe-tracker/shared'
 
@@ -12,6 +12,8 @@ describe('Mastery Routes', () => {
   beforeEach(() => {
     container = createMockContainer()
     app = new Hono()
+    // Add mock auth middleware before routes
+    app.use('*', createMockAuthMiddleware(mockAuth))
     app.route('/mastery', masteryRoutes(container))
   })
 
@@ -29,6 +31,7 @@ describe('Mastery Routes', () => {
     it('returns mastery summary with categories and totals', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: 'TestUser',
@@ -78,6 +81,7 @@ describe('Mastery Routes', () => {
     it('calculates correct mastery rank from total XP', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: null,
@@ -115,6 +119,7 @@ describe('Mastery Routes', () => {
     it('returns items with mastery status', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: null,
@@ -157,6 +162,7 @@ describe('Mastery Routes', () => {
     it('passes category filter to repository', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: null,
@@ -179,6 +185,7 @@ describe('Mastery Routes', () => {
     it('passes mastered filter to repository', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: null,
@@ -201,6 +208,7 @@ describe('Mastery Routes', () => {
     it('passes unmastered filter to repository', async () => {
       const mockSettings = {
         id: 1,
+        userId: 1,
         playerId: 'test-player',
         platform: 'pc',
         displayName: null,

@@ -2,7 +2,61 @@ import { FocusSchool, MasteryState, type ItemAcquisitionData } from '@warframe-t
 
 export { FocusSchool, MasteryState, type ItemAcquisitionData };
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+export const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+
+// API Error class to distinguish error types
+export class ApiError extends Error {
+	constructor(
+		message: string,
+		public status: number
+	) {
+		super(message);
+		this.name = 'ApiError';
+	}
+
+	get isUnauthorized(): boolean {
+		return this.status === 401;
+	}
+}
+
+async function handleResponse<T>(response: Response): Promise<T> {
+	if (!response.ok) {
+		throw new ApiError(`API request failed: ${response.status}`, response.status);
+	}
+	return response.json();
+}
+
+// Auth types
+export interface AuthUser {
+	id: number;
+	steamId: string;
+	steamDisplayName: string | null;
+	steamAvatarUrl: string | null;
+	playerId: string | null;
+	platform: string;
+	onboardingComplete: boolean;
+}
+
+// Auth functions
+export async function getCurrentUser(): Promise<AuthUser | null> {
+	const response = await fetch(`${API_BASE}/auth/me`, {
+		credentials: 'include'
+	});
+
+	if (!response.ok) {
+		return null;
+	}
+
+	const data = await response.json();
+	return data.user;
+}
+
+export async function logout(): Promise<void> {
+	await fetch(`${API_BASE}/auth/logout`, {
+		method: 'POST',
+		credentials: 'include'
+	});
+}
 
 export interface LoadoutItem {
 	id: number;
@@ -107,11 +161,10 @@ export interface SyncResult {
 }
 
 export async function getMasterySummary(): Promise<MasterySummary> {
-	const res = await fetch(`${API_BASE}/mastery/summary`);
-	if (!res.ok) {
-		throw new Error('Failed to fetch mastery summary');
-	}
-	return res.json();
+	const res = await fetch(`${API_BASE}/mastery/summary`, {
+		credentials: 'include'
+	});
+	return handleResponse(res);
 }
 
 export async function getMasteryItems(params?: {
@@ -124,34 +177,41 @@ export async function getMasteryItems(params?: {
 	if (params?.mastered) searchParams.set('mastered', 'true');
 	if (params?.unmastered) searchParams.set('unmastered', 'true');
 
-	const res = await fetch(`${API_BASE}/mastery/items?${searchParams}`);
-	if (!res.ok) {
-		throw new Error('Failed to fetch mastery items');
-	}
-	return res.json();
+	const res = await fetch(`${API_BASE}/mastery/items?${searchParams}`, {
+		credentials: 'include'
+	});
+	return handleResponse(res);
 }
 
 export async function getSettings(): Promise<PlayerSettings | null> {
-	const res = await fetch(`${API_BASE}/sync/settings`);
-	if (!res.ok) {
+	const res = await fetch(`${API_BASE}/sync/settings`, {
+		credentials: 'include'
+	});
+	if (res.status === 404) {
 		return null;
 	}
-	return res.json();
+	return handleResponse(res);
 }
 
 export async function saveSettings(playerId: string, platform: string): Promise<void> {
 	const res = await fetch(`${API_BASE}/sync/settings`, {
 		method: 'POST',
+		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ playerId, platform })
 	});
-	if (!res.ok) {
-		throw new Error('Failed to save settings');
-	}
+	await handleResponse(res);
 }
 
 export async function syncProfile(): Promise<SyncResult> {
-	const res = await fetch(`${API_BASE}/sync/profile`, { method: 'POST' });
+	const res = await fetch(`${API_BASE}/sync/profile`, {
+		method: 'POST',
+		credentials: 'include'
+	});
+	// 401/403 should throw, but other errors are returned in the response body
+	if (res.status === 401 || res.status === 403) {
+		return handleResponse(res);
+	}
 	return res.json();
 }
 
@@ -166,11 +226,10 @@ export function getMasteryRankIconUrl(rank: number): string {
 }
 
 export async function getItemDetails(id: number): Promise<ItemDetails> {
-	const res = await fetch(`${API_BASE}/items/${id}`);
-	if (!res.ok) {
-		throw new Error('Failed to fetch item details');
-	}
-	return res.json();
+	const res = await fetch(`${API_BASE}/items/${id}`, {
+		credentials: 'include'
+	});
+	return handleResponse(res);
 }
 
 // Star Chart types
@@ -205,11 +264,10 @@ export interface StarChartProgress {
 }
 
 export async function getStarChartNodes(steelPath: boolean = false): Promise<StarChartProgress> {
-	const res = await fetch(`${API_BASE}/starchart/nodes?steelPath=${steelPath}`);
-	if (!res.ok) {
-		throw new Error('Failed to fetch star chart nodes');
-	}
-	return res.json();
+	const res = await fetch(`${API_BASE}/starchart/nodes?steelPath=${steelPath}`, {
+		credentials: 'include'
+	});
+	return handleResponse(res);
 }
 
 /**

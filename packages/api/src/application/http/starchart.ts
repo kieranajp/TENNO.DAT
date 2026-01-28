@@ -10,9 +10,10 @@ export function starchartRoutes(container: Container) {
 
   // Get star chart nodes grouped by planet with completion status
   router.get('/nodes', async (c) => {
-    const settings = await container.playerRepo.getSettings()
+    const auth = c.get('auth')
+    const settings = await container.playerRepo.getSettings(auth.userId)
 
-    if (!settings) {
+    if (!settings?.playerId) {
       return noPlayerConfigured(c, log)
     }
 

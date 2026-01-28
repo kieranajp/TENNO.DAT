@@ -1,6 +1,28 @@
 import { pgTable, serial, varchar, integer, boolean, timestamp, index, unique, jsonb, text, decimal, date } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
+// Users table - Steam authenticated accounts
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  steamId: varchar('steam_id', { length: 20 }).notNull().unique(),
+  steamDisplayName: varchar('steam_display_name', { length: 100 }),
+  steamAvatarUrl: varchar('steam_avatar_url', { length: 255 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  lastLoginAt: timestamp('last_login_at'),
+})
+
+// Sessions table - cookie-based session storage
+export const sessions = pgTable('sessions', {
+  id: varchar('id', { length: 64 }).primaryKey(), // crypto random hex
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  rememberMe: boolean('remember_me').default(false).notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index('sessions_user_id_idx').on(table.userId),
+  expiresAtIdx: index('sessions_expires_at_idx').on(table.expiresAt),
+}))
+
 export const items = pgTable('items', {
   id: serial('id').primaryKey(),
   uniqueName: varchar('unique_name', { length: 255 }).notNull().unique(),
@@ -90,8 +112,9 @@ export const componentDropsRelations = relations(componentDrops, ({ one }) => ({
 
 export const playerSettings = pgTable('player_settings', {
   id: serial('id').primaryKey(),
-  playerId: varchar('player_id', { length: 50 }).notNull().unique(),
-  platform: varchar('platform', { length: 10 }).notNull().default('pc'),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  playerId: varchar('player_id', { length: 50 }), // Nullable until onboarding complete
+  platform: varchar('platform', { length: 10 }).default('pc'),
   displayName: varchar('display_name', { length: 100 }),
   lastSyncAt: timestamp('last_sync_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
