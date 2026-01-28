@@ -153,9 +153,11 @@ describe('Mastery Routes', () => {
       expect(res.status).toBe(200)
       const body = await res.json()
       // MasteryState serializes to just its ID via toJSON()
+      // Items now include wishlisted field from wishlist repo
       expect(body).toEqual(mockItems.map(item => ({
         ...item,
-        masteryState: item.masteryState.id
+        masteryState: item.masteryState.id,
+        wishlisted: false
       })))
     })
 
