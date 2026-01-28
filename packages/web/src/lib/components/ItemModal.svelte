@@ -1,13 +1,39 @@
 <script lang="ts">
-	import { getImageUrl, formatBuildTime, type ItemDetails } from '$lib/api';
+	import { getImageUrl, formatBuildTime, toggleWishlist, isItemWishlisted, type ItemDetails } from '$lib/api';
 
 	let {
 		item,
-		onClose
+		onClose,
+		onWishlistToggle
 	}: {
 		item: ItemDetails | null;
 		onClose: () => void;
+		onWishlistToggle?: (itemId: number, newState: boolean) => void;
 	} = $props();
+
+	let wishlisted = $state(false);
+	let togglingWishlist = $state(false);
+
+	// Load wishlist state when item changes
+	$effect(() => {
+		if (item) {
+			isItemWishlisted(item.id).then((state) => {
+				wishlisted = state;
+			});
+		}
+	});
+
+	async function handleWishlistToggle() {
+		if (!item || togglingWishlist) return;
+		togglingWishlist = true;
+		try {
+			const newState = await toggleWishlist(item.id);
+			wishlisted = newState;
+			onWishlistToggle?.(item.id, newState);
+		} finally {
+			togglingWishlist = false;
+		}
+	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
@@ -72,6 +98,15 @@
 							<span class="badge badge-rank40">RANK {item.maxRank}</span>
 						{/if}
 					</div>
+					<button
+						class="wishlist-toggle"
+						class:active={wishlisted}
+						onclick={handleWishlistToggle}
+						disabled={togglingWishlist}
+					>
+						<span class="material-icons">{wishlisted ? 'star' : 'star_border'}</span>
+						{wishlisted ? 'WISHLISTED' : 'ADD TO WISHLIST'}
+					</button>
 				</div>
 
 				<!-- Personal Stats (shown first if you've used the item) -->
@@ -321,6 +356,36 @@
 		gap: 0.5rem
 		margin-top: 0.75rem
 		justify-content: center
+
+	.wishlist-toggle
+		display: flex
+		align-items: center
+		gap: 0.25rem
+		padding: 0.25rem 0.5rem
+		background: transparent
+		border: 1px solid $gray-500
+		color: $gray-300
+		font-family: $font-family-monospace
+		font-size: $font-size-xxs
+		cursor: pointer
+		transition: all $transition-base
+		margin-top: 0.75rem
+
+		&:hover
+			border-color: $wishlist
+			color: $wishlist
+
+		&.active
+			border-color: $wishlist
+			color: $wishlist
+			background: rgba($wishlist, 0.1)
+
+		&:disabled
+			opacity: 0.5
+			cursor: not-allowed
+
+		.material-icons
+			font-size: 1rem
 
 	.badge
 		font-size: $font-size-xxs

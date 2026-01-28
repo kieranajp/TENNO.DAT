@@ -2,9 +2,10 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getMasteryItems, getItemDetails, getImageUrl, type MasteryItem, type ItemDetails } from '$lib/api';
+	import { getMasteryItems, getItemDetails, toggleWishlist, type MasteryItem, type ItemDetails } from '$lib/api';
 	import { CATEGORY_ORDER } from '$lib/categories';
 	import ItemModal from '$lib/components/ItemModal.svelte';
+	import ItemCard from '$lib/components/ItemCard.svelte';
 
 	let items: MasteryItem[] = $state([]);
 	let loading = $state(true);
@@ -15,6 +16,15 @@
 	let filter: 'all' | 'mastered' | 'unmastered' = $state('all');
 	let search = $state('');
 	let showPrime = $state(true);
+	let showWishlistedOnly = $state(false);
+
+	function sortByWishlist(itemList: MasteryItem[]): MasteryItem[] {
+		return [...itemList].sort((a, b) => {
+			if (a.wishlisted && !b.wishlisted) return -1;
+			if (!a.wishlisted && b.wishlisted) return 1;
+			return a.name.localeCompare(b.name);
+		});
+	}
 
 	async function loadItems() {
 		loading = true;
@@ -50,11 +60,14 @@
 	});
 
 	let filteredItems = $derived(
-		items.filter((item) => {
-			if (search && !item.name.toLowerCase().includes(search.toLowerCase())) return false;
-			if (!showPrime && item.isPrime) return false;
-			return true;
-		})
+		sortByWishlist(
+			items.filter((item) => {
+				if (search && !item.name.toLowerCase().includes(search.toLowerCase())) return false;
+				if (!showPrime && item.isPrime) return false;
+				if (showWishlistedOnly && !item.wishlisted) return false;
+				return true;
+			})
+		)
 	);
 
 	function setFilter(newFilter: 'all' | 'mastered' | 'unmastered') {
@@ -75,6 +88,17 @@
 
 	function closeItemModal() {
 		selectedItem = null;
+	}
+
+	async function handleWishlistToggle(event: MouseEvent, item: MasteryItem) {
+		event.stopPropagation(); // Don't open modal
+		const newState = await toggleWishlist(item.id);
+		// Update local state
+		items = items.map((i) => (i.id === item.id ? { ...i, wishlisted: newState } : i));
+	}
+
+	function handleModalWishlistToggle(itemId: number, newState: boolean) {
+		items = items.map((i) => (i.id === itemId ? { ...i, wishlisted: newState } : i));
 	}
 </script>
 
@@ -125,6 +149,12 @@
 				<span class="checkmark"></span>
 				SHOW PRIME
 			</label>
+
+			<label class="checkbox-retro checkbox-wishlist">
+				<input type="checkbox" bind:checked={showWishlistedOnly} />
+				<span class="checkmark checkmark-star"></span>
+				WISHLISTED
+			</label>
 		</div>
 
 		<div class="search-retro">
@@ -149,54 +179,11 @@
 
 	<div class="items-grid">
 		{#each filteredItems as item}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div
-				class="item-card"
-				class:mastered={item.masteryState === 'mastered_30'}
-				class:mastered-full={item.masteryState === 'mastered_40'}
+			<ItemCard
+				{item}
 				onclick={() => openItemModal(item.id)}
-			>
-				<div class="item-image-container">
-					{#if getImageUrl(item.imageName)}
-						<img
-							src={getImageUrl(item.imageName)}
-							alt={item.name}
-							class="item-img"
-							loading="lazy"
-						/>
-					{:else}
-						<div class="item-img-placeholder">
-							<span class="material-icons">help_outline</span>
-						</div>
-					{/if}
-				</div>
-				<div class="item-details">
-					<div class="item-name" title={item.name}>{item.name}</div>
-					<div class="item-meta">
-						<span class="item-category">{item.category}</span>
-						{#if item.isPrime}
-							<span class="item-prime">PRIME</span>
-						{/if}
-					</div>
-				</div>
-				<div class="item-rank-display">
-					{#if item.masteryState === 'mastered_40'}
-						<div class="item-mastered item-mastered-full">
-							<span class="material-icons">check_circle</span>
-						</div>
-					{:else if item.masteryState === 'mastered_30'}
-						{#if item.maxRank > 30}
-							<span class="rank-progress">{item.rank ?? 0}/{item.maxRank}</span>
-						{/if}
-						<div class="item-mastered">
-							<span class="material-icons">check</span>
-						</div>
-					{:else if (item.rank ?? 0) > 0}
-						<span class="rank-progress rank-incomplete">{item.rank}/{item.maxRank}</span>
-					{/if}
-				</div>
-			</div>
+				onWishlistToggle={(e) => handleWishlistToggle(e, item)}
+			/>
 		{/each}
 	</div>
 
@@ -209,7 +196,7 @@
 {/if}
 
 <!-- Item Detail Modal -->
-<ItemModal item={selectedItem} onClose={closeItemModal} />
+<ItemModal item={selectedItem} onClose={closeItemModal} onWishlistToggle={handleModalWishlistToggle} />
 
 {#if loadingItem}
 	<div class="loading-overlay">
@@ -257,6 +244,16 @@
 		&:hover .checkmark
 			border-color: $kim-accent
 
+		&.checkbox-wishlist
+			.checkmark-star
+				border-color: $wishlist
+
+				&::after
+					background: $wishlist
+
+			&:hover .checkmark-star
+				border-color: $wishlist
+
 	.search-retro
 		flex: 1
 		min-width: 200px
@@ -286,122 +283,6 @@
 
 		@media (min-width: 1024px)
 			grid-template-columns: repeat(4, 1fr)
-
-	.item-card
-		background: white
-		border: $border-width solid $kim-border
-		display: flex
-		align-items: center
-		gap: 0.75rem
-		padding: 0.5rem
-		transition: all $transition-base
-		cursor: pointer
-		min-width: 0
-		overflow: hidden
-
-		&:hover
-			border-color: $kim-accent
-			background: $danger-bg
-
-		&.mastered
-			opacity: 0.6
-
-			&:hover
-				opacity: 1
-
-		&.mastered-full
-			opacity: 0.7
-			border-color: $warning
-			background: $warning-bg
-
-			&:hover
-				opacity: 1
-
-	.item-image-container
-		flex-shrink: 0
-
-	.item-img
-		width: $icon-size-lg
-		height: $icon-size-lg
-		object-fit: contain
-		background: $gray-200
-		border: 1px solid $gray-400
-		image-rendering: pixelated
-
-	.item-img-placeholder
-		width: $icon-size-lg
-		height: $icon-size-lg
-		background: $gray-200
-		border: 1px solid $gray-400
-		display: flex
-		align-items: center
-		justify-content: center
-		color: $gray-400
-
-	.item-details
-		flex: 1
-		min-width: 0
-
-	.item-name
-		font-family: $font-family-monospace
-		font-size: $font-size-sm
-		white-space: nowrap
-		overflow: hidden
-		text-overflow: ellipsis
-		text-transform: uppercase
-
-	.item-meta
-		display: flex
-		gap: 0.5rem
-		align-items: center
-		margin-top: 0.25rem
-
-	.item-category
-		font-size: $font-size-xxs
-		color: $gray-500
-		text-transform: uppercase
-
-	.item-prime
-		font-size: 0.65rem
-		background: $warning-bg-soft
-		color: $warning-text
-		padding: 0 0.25rem
-		border: 1px solid $warning
-
-	.item-rank-display
-		display: flex
-		align-items: center
-		gap: 0.25rem
-		flex-shrink: 0
-
-	.rank-progress
-		font-family: $font-family-monospace
-		font-size: $font-size-xxs
-		color: $gray-500
-		white-space: nowrap
-
-		&.rank-incomplete
-			color: $kim-accent
-			font-weight: 500
-
-	.item-mastered
-		flex-shrink: 0
-		width: 24px
-		height: 24px
-		background: $success
-		color: white
-		display: flex
-		align-items: center
-		justify-content: center
-
-		.material-icons
-			font-size: 1rem
-
-		&.item-mastered-full
-			background: $warning
-
-			.material-icons
-				font-size: $font-size-base
 
 	.loading-state
 		display: flex

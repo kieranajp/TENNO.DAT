@@ -78,6 +78,13 @@
       "when": 1769800000000,
       "tag": "0010_add_users_and_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1769900000000,
+      "tag": "0011_add_player_wishlist",
+      "breakpoints": true
     }
   ]
 }
