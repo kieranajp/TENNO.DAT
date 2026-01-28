@@ -58,6 +58,13 @@ export function createMockContainer(): Container {
       deleteExpired: vi.fn(),
       deleteAllForUser: vi.fn(),
     },
+    wishlistRepo: {
+      getWishlistedItemIds: vi.fn().mockResolvedValue([]),
+      isWishlisted: vi.fn(),
+      add: vi.fn(),
+      remove: vi.fn(),
+      toggle: vi.fn(),
+    },
     profileApi: {
       fetch: vi.fn(),
     },

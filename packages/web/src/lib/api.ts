@@ -112,6 +112,7 @@ export interface MasteryItem {
 	xp: number | null;
 	rank: number | null;
 	masteryState: MasteryState;
+	wishlisted: boolean;
 }
 
 // ItemAcquisitionData is now imported from @warframe-tracker/shared
@@ -286,4 +287,30 @@ export function formatBuildTime(seconds: number | null): string | null {
 		return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
 	}
 	return `${minutes}m`;
+}
+
+// Wishlist API functions
+export async function getWishlistItemIds(): Promise<number[]> {
+	const response = await fetch(`${API_BASE}/wishlist`, {
+		credentials: 'include'
+	});
+	const data = await handleResponse<{ itemIds: number[] }>(response);
+	return data.itemIds;
+}
+
+export async function toggleWishlist(itemId: number): Promise<boolean> {
+	const response = await fetch(`${API_BASE}/wishlist/${itemId}/toggle`, {
+		method: 'POST',
+		credentials: 'include'
+	});
+	const data = await handleResponse<{ wishlisted: boolean }>(response);
+	return data.wishlisted;
+}
+
+export async function isItemWishlisted(itemId: number): Promise<boolean> {
+	const response = await fetch(`${API_BASE}/wishlist/${itemId}`, {
+		credentials: 'include'
+	});
+	const data = await handleResponse<{ wishlisted: boolean }>(response);
+	return data.wishlisted;
 }

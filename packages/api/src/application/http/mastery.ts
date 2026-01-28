@@ -73,13 +73,30 @@ export function masteryRoutes(container: Container) {
     }
 
     try {
-      const items = await container.masteryRepo.getItemsWithMastery(settings.playerId, {
-        category: c.req.query('category') || undefined,
-        masteredOnly: c.req.query('mastered') === 'true',
-        unmasteredOnly: c.req.query('unmastered') === 'true',
-      })
+      const [items, wishlistedIds] = await Promise.all([
+        container.masteryRepo.getItemsWithMastery(settings.playerId, {
+          category: c.req.query('category') || undefined,
+          masteredOnly: c.req.query('mastered') === 'true',
+          unmasteredOnly: c.req.query('unmastered') === 'true',
+        }),
+        container.wishlistRepo.getWishlistedItemIds(settings.playerId),
+      ])
 
-      return c.json(items)
+      const wishlistedSet = new Set(wishlistedIds)
+
+      // Add wishlisted flag and sort: wishlisted first, then by name
+      const itemsWithWishlist = items
+        .map(item => ({
+          ...item,
+          wishlisted: wishlistedSet.has(item.id),
+        }))
+        .sort((a, b) => {
+          if (a.wishlisted && !b.wishlisted) return -1
+          if (!a.wishlisted && b.wishlisted) return 1
+          return a.name.localeCompare(b.name)
+        })
+
+      return c.json(itemsWithWishlist)
     } catch (error) {
       return handleRouteError(c, log, error, 'Failed to fetch mastery items')
     }

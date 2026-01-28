@@ -10,6 +10,7 @@ import { itemsRoutes } from './http/items'
 import { masteryRoutes } from './http/mastery'
 import { syncRoutes } from './http/sync'
 import { starchartRoutes } from './http/starchart'
+import { wishlistRoutes } from './http/wishlist'
 import { createAuthMiddleware, createOnboardingMiddleware } from './http/middleware/auth'
 
 const log = createLogger('Server')
@@ -42,12 +43,15 @@ app.use('/mastery/*', authMiddleware, onboardingMiddleware)
 app.use('/items/:id', authMiddleware, onboardingMiddleware)
 app.use('/starchart', authMiddleware, onboardingMiddleware)
 app.use('/starchart/*', authMiddleware, onboardingMiddleware)
+app.use('/wishlist', authMiddleware, onboardingMiddleware)
+app.use('/wishlist/*', authMiddleware, onboardingMiddleware)
 
 // Route definitions
 app.route('/items', itemsRoutes(container))
 app.route('/mastery', masteryRoutes(container))
 app.route('/sync', syncRoutes(container))
 app.route('/starchart', starchartRoutes(container))
+app.route('/wishlist', wishlistRoutes(container))
 
 const port = Number(process.env.PORT) || 3000
 

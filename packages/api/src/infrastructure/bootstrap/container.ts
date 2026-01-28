@@ -6,6 +6,7 @@ import { DrizzleLoadoutRepository } from '../persistence/drizzle/loadout-reposit
 import { DrizzleNodeRepository } from '../persistence/drizzle/node-repository'
 import { DrizzleUserRepository } from '../persistence/drizzle/user-repository'
 import { DrizzleSessionRepository } from '../persistence/drizzle/session-repository'
+import { DrizzleWishlistRepository } from '../persistence/drizzle/wishlist-repository'
 import { DeProfileApi } from '../external/de-profile-api'
 import type { ItemRepository } from '../../domain/ports/item-repository'
 import type { PlayerRepository } from '../../domain/ports/player-repository'
@@ -14,6 +15,7 @@ import type { LoadoutRepository } from '../../domain/ports/loadout-repository'
 import type { NodeRepository } from '../../domain/ports/node-repository'
 import type { UserRepository } from '../../domain/ports/user-repository'
 import type { SessionRepository } from '../../domain/ports/session-repository'
+import type { WishlistRepository } from '../../domain/ports/wishlist-repository'
 import type { ProfileApi } from '../../domain/ports/profile-api'
 
 export interface Container {
@@ -24,6 +26,7 @@ export interface Container {
   nodeRepo: NodeRepository
   userRepo: UserRepository
   sessionRepo: SessionRepository
+  wishlistRepo: WishlistRepository
   profileApi: ProfileApi
 }
 
@@ -36,6 +39,7 @@ export function createContainer(): Container {
     nodeRepo: new DrizzleNodeRepository(db),
     userRepo: new DrizzleUserRepository(db),
     sessionRepo: new DrizzleSessionRepository(db),
+    wishlistRepo: new DrizzleWishlistRepository(db),
     profileApi: new DeProfileApi(),
   }
 }

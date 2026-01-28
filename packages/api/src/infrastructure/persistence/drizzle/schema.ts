@@ -174,6 +174,17 @@ export const playerNodes = pgTable('player_nodes', {
   playerNodeUnique: unique().on(table.playerId, table.nodeId, table.isSteelPath),
 }))
 
+// Player wishlist - items they want to farm/build
+export const playerWishlist = pgTable('player_wishlist', {
+  id: serial('id').primaryKey(),
+  playerId: varchar('player_id', { length: 50 }).notNull(),
+  itemId: integer('item_id').notNull().references(() => items.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+  playerItemIdx: index('player_wishlist_player_item_idx').on(table.playerId, table.itemId),
+  playerItemUnique: unique('player_wishlist_unique').on(table.playerId, table.itemId),
+}))
+
 // Resources table (materials needed for crafting)
 export const resources = pgTable('resources', {
   id: serial('id').primaryKey(),
