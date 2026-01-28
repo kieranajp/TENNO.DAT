@@ -82,7 +82,7 @@
 
 			<div class="mode-toggle">
 				<span class="mode-label" class:active={!steelPath}>Normal</span>
-				<button class="toggle-switch" class:active={steelPath} onclick={toggleMode}>
+				<button class="toggle-switch" aria-label="Toggle Steel Path" class:active={steelPath} onclick={toggleMode}>
 					<span class="toggle-knob"></span>
 				</button>
 				<span class="mode-label" class:active={steelPath}>Steel Path</span>
