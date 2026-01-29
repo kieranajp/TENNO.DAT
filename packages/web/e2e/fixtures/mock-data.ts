@@ -103,6 +103,7 @@ export const mockMasteryItems: MasteryItem[] = [
     xp: 6000,
     rank: 30,
     masteryState: MasteryState.Mastered30,
+    wishlisted: false,
   },
   {
     id: 2,
@@ -117,6 +118,7 @@ export const mockMasteryItems: MasteryItem[] = [
     xp: 6000,
     rank: 30,
     masteryState: MasteryState.Mastered30,
+    wishlisted: false,
   },
   {
     id: 3,
@@ -131,6 +133,7 @@ export const mockMasteryItems: MasteryItem[] = [
     xp: 4500,
     rank: 22,
     masteryState: MasteryState.UNMASTERED,
+    wishlisted: true, // Pre-wishlisted for testing
   },
   {
     id: 4,
@@ -145,6 +148,7 @@ export const mockMasteryItems: MasteryItem[] = [
     xp: null,
     rank: null,
     masteryState: MasteryState.UNMASTERED,
+    wishlisted: true, // Pre-wishlisted for testing
   },
   {
     id: 5,
@@ -159,6 +163,7 @@ export const mockMasteryItems: MasteryItem[] = [
     xp: 3000,
     rank: 30,
     masteryState: MasteryState.Mastered30,
+    wishlisted: false,
   },
   {
     id: 6,
@@ -173,6 +178,7 @@ export const mockMasteryItems: MasteryItem[] = [
     xp: 8000,
     rank: 40,
     masteryState: MasteryState.MASTERED_40,
+    wishlisted: false,
   },
   {
     id: 7,
@@ -187,6 +193,7 @@ export const mockMasteryItems: MasteryItem[] = [
     xp: 7000,
     rank: 35,
     masteryState: MasteryState.UNMASTERED,
+    wishlisted: false,
   },
   {
     id: 8,
@@ -201,8 +208,12 @@ export const mockMasteryItems: MasteryItem[] = [
     xp: null,
     rank: null,
     masteryState: MasteryState.UNMASTERED,
+    wishlisted: false,
   },
 ]
+
+// Wishlist state tracking for tests - items 3 and 4 are wishlisted by default
+export const mockWishlistedIds: number[] = [3, 4]
 
 export const mockSettings: PlayerSettings = {
   id: 1,
