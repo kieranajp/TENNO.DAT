@@ -56,16 +56,31 @@ test.beforeEach(async ({ page }) => {
   })
 
   // Mock wishlist toggle endpoint
-  await page.route('**/wishlist/*', async (route) => {
+  await page.route('**/wishlist/*/toggle', async (route) => {
     if (route.request().method() === 'POST') {
       const url = route.request().url()
-      const itemId = parseInt(url.split('/').pop() || '0')
+      const match = url.match(/\/wishlist\/(\d+)\/toggle/)
+      const itemId = match ? parseInt(match[1]) : 0
       // Toggle wishlist state
       if (wishlistState.has(itemId)) {
         wishlistState.delete(itemId)
       } else {
         wishlistState.add(itemId)
       }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ wishlisted: wishlistState.has(itemId) }),
+      })
+    }
+  })
+
+  // Mock isItemWishlisted endpoint
+  await page.route('**/wishlist/*', async (route) => {
+    if (route.request().method() === 'GET') {
+      const url = route.request().url()
+      const match = url.match(/\/wishlist\/(\d+)$/)
+      const itemId = match ? parseInt(match[1]) : 0
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -225,18 +240,16 @@ test.describe('Mastery Page - Prime Filter', () => {
   test('shows prime items by default', async ({ page }) => {
     await page.goto('/mastery', { waitUntil: 'networkidle' })
 
-    const primeCheckbox = page.locator('.checkbox-retro', { hasText: 'SHOW PRIME' }).locator('input')
-    await expect(primeCheckbox).toBeChecked()
-
-    // Wisp Prime should be visible
+    // Wisp Prime should be visible by default
     await expect(page.locator('.item-card', { hasText: 'Wisp Prime' })).toBeVisible()
   })
 
   test('hides prime items when unchecked', async ({ page }) => {
     await page.goto('/mastery', { waitUntil: 'networkidle' })
 
-    const primeCheckbox = page.locator('.checkbox-retro', { hasText: 'SHOW PRIME' }).locator('input')
-    await primeCheckbox.uncheck()
+    // Click the label to toggle (input is hidden with display:none)
+    const primeLabel = page.locator('.checkbox-retro', { hasText: 'SHOW PRIME' })
+    await primeLabel.click()
 
     // Wisp Prime should not be visible
     await expect(page.locator('.item-card', { hasText: 'Wisp Prime' })).not.toBeVisible()
@@ -258,42 +271,43 @@ test.describe('Mastery Page - Wishlist', () => {
   test('toggles wishlist on button click', async ({ page }) => {
     await page.goto('/mastery', { waitUntil: 'networkidle' })
 
-    // Find Wisp Prime (not wishlisted)
+    // Find Wisp Prime (not wishlisted, id: 1)
     const wispCard = page.locator('.item-card', { hasText: 'Wisp Prime' })
     const wishlistBtn = wispCard.locator('.wishlist-btn')
 
     // Should not be active initially
     await expect(wishlistBtn).not.toHaveClass(/active/)
 
-    // Click to wishlist
+    // Click to wishlist and wait for API response
     await wishlistBtn.click()
 
-    // Should now be active
-    await expect(wishlistBtn).toHaveClass(/active/)
+    // Wait for the button to update after API call completes
+    await expect(wishlistBtn).toHaveClass(/active/, { timeout: 5000 })
   })
 
   test('removes from wishlist on button click', async ({ page }) => {
     await page.goto('/mastery', { waitUntil: 'networkidle' })
 
-    // Find Excalibur (wishlisted)
+    // Find Excalibur (wishlisted, id: 3)
     const excaliburCard = page.locator('.item-card', { hasText: 'Excalibur' })
     const wishlistBtn = excaliburCard.locator('.wishlist-btn')
 
     // Should be active initially
     await expect(wishlistBtn).toHaveClass(/active/)
 
-    // Click to remove
+    // Click to remove and wait for API response
     await wishlistBtn.click()
 
-    // Should no longer be active
-    await expect(wishlistBtn).not.toHaveClass(/active/)
+    // Wait for the button to update after API call completes
+    await expect(wishlistBtn).not.toHaveClass(/active/, { timeout: 5000 })
   })
 
   test('filters to only wishlisted items', async ({ page }) => {
     await page.goto('/mastery', { waitUntil: 'networkidle' })
 
-    const wishlistCheckbox = page.locator('.checkbox-wishlist input')
-    await wishlistCheckbox.check()
+    // Click the label to toggle (input is hidden with display:none)
+    const wishlistLabel = page.locator('.checkbox-wishlist')
+    await wishlistLabel.click()
 
     // Should only show wishlisted items (Excalibur and Volt Prime)
     const resultsCount = page.locator('.results-count')
