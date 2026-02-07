@@ -159,19 +159,18 @@ test.describe('Star Chart Page - Planet Cards', () => {
   test('displays planet progress cards', async ({ page }) => {
     await page.goto('/starchart', { waitUntil: 'networkidle' })
 
-    // Should show Earth planet card
-    const earthCard = page.locator('.planet-card, [class*="planet"]', { hasText: 'Earth' })
+    // Should show Earth planet card (text is uppercase)
+    const earthCard = page.locator('.planet-card', { hasText: 'EARTH' })
     await expect(earthCard).toBeVisible()
   })
 
   test('shows completion percentage', async ({ page }) => {
     await page.goto('/starchart', { waitUntil: 'networkidle' })
 
-    // Earth is 100% complete (15/15)
-    const earthCard = page.locator('.planet-card, [class*="planet"]', { hasText: 'Earth' })
-    if (await earthCard.isVisible()) {
-      await expect(earthCard).toContainText(/15/)
-    }
+    // Earth is 100% complete (15/15) - check progress text
+    const earthCard = page.locator('.planet-card', { hasText: 'EARTH' })
+    const progressText = earthCard.locator('.progress-text')
+    await expect(progressText).toContainText('15/15')
   })
 })
 
@@ -179,10 +178,10 @@ test.describe('Star Chart Page - Summary Stats', () => {
   test('displays total progress', async ({ page }) => {
     await page.goto('/starchart', { waitUntil: 'networkidle' })
 
-    // Summary should show 35/45 nodes
-    const summary = page.locator('.summary, .progress-summary, [class*="summary"]')
-    if (await summary.isVisible()) {
-      await expect(summary).toContainText(/35/)
-    }
+    // Summary shows 35/45 nodes in .summary-stats
+    const summaryStats = page.locator('.summary-stats')
+    await expect(summaryStats).toBeVisible()
+    await expect(summaryStats).toContainText('35')
+    await expect(summaryStats).toContainText('45')
   })
 })
