@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { flip } from 'svelte/animate';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { getMasteryItems, getItemDetails, toggleWishlist, type MasteryItem, type ItemDetails } from '$lib/api';
@@ -208,12 +209,14 @@
 	</div>
 
 	<div class="items-grid">
-		{#each filteredItems as item}
-			<ItemCard
-				{item}
-				onclick={() => openItemModal(item.id)}
-				onWishlistToggle={(e) => handleWishlistToggle(e, item)}
-			/>
+		{#each filteredItems as item (item.id)}
+			<div animate:flip={{ duration: 300 }}>
+				<ItemCard
+					{item}
+					onclick={() => openItemModal(item.id)}
+					onWishlistToggle={(e) => handleWishlistToggle(e, item)}
+				/>
+			</div>
 		{/each}
 	</div>
 
