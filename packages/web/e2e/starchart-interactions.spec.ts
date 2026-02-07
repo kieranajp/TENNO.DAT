@@ -122,7 +122,8 @@ test.describe('Star Chart Page - Filter Tabs', () => {
   test('filters to completed planets', async ({ page }) => {
     await page.goto('/starchart', { waitUntil: 'networkidle' })
 
-    const completedTab = page.locator('.filter-tab', { hasText: 'COMPLETE' })
+    // Use exact text to avoid matching "INCOMPLETE"
+    const completedTab = page.locator('.filter-tab').filter({ hasText: /^COMPLETED$/ })
     await completedTab.click()
 
     await expect(completedTab).toHaveClass(/active/)

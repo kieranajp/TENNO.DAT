@@ -320,8 +320,8 @@ test.describe('Mastery Page - Item Modal', () => {
     const itemCard = page.locator('.item-card', { hasText: 'Wisp Prime' })
     await itemCard.click()
 
-    // Modal should be visible
-    const modal = page.locator('.item-modal')
+    // Modal should be visible (uses .modal-overlay wrapper)
+    const modal = page.locator('.modal-overlay')
     await expect(modal).toBeVisible()
   })
 
@@ -332,11 +332,11 @@ test.describe('Mastery Page - Item Modal', () => {
     const itemCard = page.locator('.item-card', { hasText: 'Wisp Prime' })
     await itemCard.click()
 
-    const modal = page.locator('.item-modal')
+    const modal = page.locator('.modal-overlay')
     await expect(modal).toBeVisible()
 
     // Close modal
-    const closeBtn = modal.locator('.modal-close')
+    const closeBtn = modal.locator('.close-btn')
     await closeBtn.click()
 
     await expect(modal).not.toBeVisible()
@@ -349,12 +349,11 @@ test.describe('Mastery Page - Item Modal', () => {
     const itemCard = page.locator('.item-card', { hasText: 'Wisp Prime' })
     await itemCard.click()
 
-    const modal = page.locator('.item-modal')
+    const modal = page.locator('.modal-overlay')
     await expect(modal).toBeVisible()
 
     // Click overlay (outside modal content)
-    const overlay = page.locator('.modal-overlay')
-    await overlay.click({ position: { x: 10, y: 10 } })
+    await modal.click({ position: { x: 10, y: 10 } })
 
     await expect(modal).not.toBeVisible()
   })
@@ -366,7 +365,7 @@ test.describe('Mastery Page - Item Modal', () => {
     const itemCard = page.locator('.item-card', { hasText: 'Wisp Prime' })
     await itemCard.click()
 
-    const modal = page.locator('.item-modal')
+    const modal = page.locator('.modal-overlay')
     await expect(modal).toBeVisible()
 
     // Press escape
@@ -385,7 +384,7 @@ test.describe('Mastery Page - Item Modal', () => {
     await wishlistBtn.click()
 
     // Modal should NOT be visible
-    const modal = page.locator('.item-modal')
+    const modal = page.locator('.modal-overlay')
     await expect(modal).not.toBeVisible()
   })
 })
