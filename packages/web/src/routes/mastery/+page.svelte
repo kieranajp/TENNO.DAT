@@ -17,11 +17,32 @@
 	let search = $state('');
 	let showPrime = $state(true);
 	let showWishlistedOnly = $state(false);
+	let sortBy: 'name' | 'rank' | 'type' = $state('name');
 
-	function sortByWishlist(itemList: MasteryItem[]): MasteryItem[] {
+	function sortItems(itemList: MasteryItem[]): MasteryItem[] {
 		return [...itemList].sort((a, b) => {
+			// Wishlisted items always first
 			if (a.wishlisted && !b.wishlisted) return -1;
 			if (!a.wishlisted && b.wishlisted) return 1;
+
+			if (sortBy === 'rank') {
+				// Sort by rank descending — highest progress first
+				const aRank = a.rank ?? -1;
+				const bRank = b.rank ?? -1;
+				if (aRank !== bRank) return bRank - aRank;
+				return a.name.localeCompare(b.name);
+			}
+
+			if (sortBy === 'type') {
+				const aIndex = CATEGORY_ORDER.indexOf(a.category);
+				const bIndex = CATEGORY_ORDER.indexOf(b.category);
+				const aOrder = aIndex !== -1 ? aIndex : Infinity;
+				const bOrder = bIndex !== -1 ? bIndex : Infinity;
+				if (aOrder !== bOrder) return aOrder - bOrder;
+				return a.name.localeCompare(b.name);
+			}
+
+			// Default: name
 			return a.name.localeCompare(b.name);
 		});
 	}
@@ -60,7 +81,7 @@
 	});
 
 	let filteredItems = $derived(
-		sortByWishlist(
+		sortItems(
 			items.filter((item) => {
 				if (search && !item.name.toLowerCase().includes(search.toLowerCase())) return false;
 				if (!showPrime && item.isPrime) return false;
@@ -134,6 +155,7 @@
 				class="category-select input-retro"
 				bind:value={category}
 				onchange={() => {
+					if (category && sortBy === 'type') sortBy = 'name';
 					updateUrl();
 					loadItems();
 				}}
@@ -155,6 +177,14 @@
 				<span class="checkmark checkmark-star"></span>
 				WISHLISTED
 			</label>
+
+			<select class="sort-select input-retro" bind:value={sortBy}>
+				<option value="name">SORT: NAME</option>
+				<option value="rank">SORT: RANK</option>
+				{#if !category}
+					<option value="type">SORT: TYPE</option>
+				{/if}
+			</select>
 		</div>
 
 		<div class="search-retro">
@@ -208,6 +238,10 @@
 	.category-select
 		padding: 0.25rem 0.5rem
 		min-width: 160px
+
+	.sort-select
+		padding: 0.25rem 0.5rem
+		min-width: 130px
 
 	.checkbox-retro
 		display: flex
