@@ -33,6 +33,14 @@ pnpm monorepo: **api** (Hono + hexagonal), **web** (SvelteKit 2 + Svelte 5), **s
 - Intrinsics: `.Results[0].PlayerSkills.LPS_{TACTICAL,PILOTING,etc}`
 - Missions: `.Results[0].Missions[]` → `{Tag, Completes, Tier}` (Tier=1 = Steel Path)
 
+### Prime Parts Tracking
+- Per-component ownership with tri-state toggle: `owned_count` integer cycles `0 → 1 → ... → itemCount → 0`
+- Multi-quantity components (e.g., Akarius Prime Barrel ×2) supported via `item_components.item_count`
+- Auto-completes parts on profile sync when item is mastered (`markOwned` sets `owned_count = item_count`)
+- Port: `PrimePartsRepository` — `getOwnedCounts`, `toggle`, `markOwned`, `markUnowned`
+- API: `/primes` (listing), `/primes/components/:id/toggle`, `/primes/items/:id/components`
+- Items with 0 droppable components (sentinel weapons, Excalibur Prime) filtered out server-side
+
 ### Category Seeding
 - Declarative rules: detectors, include/exclude patterns, maxRank overrides
 - `isFrameType` flag → 200 MR/rank (frames) vs 100 MR/rank (weapons)
@@ -48,13 +56,14 @@ pnpm monorepo: **api** (Hono + hexagonal), **web** (SvelteKit 2 + Svelte 5), **s
 ## Testing
 
 **Unit tests**: `pnpm test` (Vitest) - seeding rules, mastery calcs, profile parsing, weapon stats
-**Visual regression**: `cd packages/web && pnpm test:e2e` (Playwright) - catches CSS changes
+**E2E**: `cd packages/web && pnpm test:e2e` (Playwright) - visual regression + interaction tests
 **Update snapshots**: `pnpm test:e2e:update-snapshots` after intentional UI changes
 
 Key test files:
 - `packages/shared/src/seeding-rules.test.ts` - Kitguns, Zaws, Amps, modular parts
 - `packages/api/src/domain/entities/mastery.test.ts` - XP formulas, MR thresholds
 - `packages/api/src/application/http/sync.test.ts` - Profile sync, weapon stats
+- `packages/web/e2e/primes-interactions.spec.ts` - Prime page filtering, sorting, toggle, modal
 
 ## Non-Obvious Details
 

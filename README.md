@@ -22,6 +22,7 @@ A 1999-themed Warframe mastery tracker. Sync your profile from DE, track mastery
 - **Profile Sync** - Mastery XP, weapon stats, loadout, intrinsics, star chart from DE's public API
 - **MR Calculator** - Accurate calculation including equipment, intrinsics (90 levels), star chart, legendary ranks
 - **Category Tracking** - 15+ categories (frames, weapons, companions, necramechs, kitguns, zaws, amps)
+- **Prime Tracker** - Track ownership of Prime parts per component, with multi-quantity support and relic drop info
 - **Weapon Statistics** - Kills, accuracy, equip time synced from profile
 - **Wishlist** - Mark items to track, sorted to top
 - **Star Chart Progress** - Track completions including Steel Path
