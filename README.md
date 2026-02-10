@@ -2,143 +2,66 @@
 
 > KIM OS v19.99 // TENNO.DAT
 
-A 1999-themed Warframe mastery tracker. Track your mastery progress, view your loadout, and see what items you still need to master.
+A 1999-themed Warframe mastery tracker. Sync your profile from DE, track mastery progress across 15+ categories, view loadout and weapon stats, plan your grind with wishlists.
 
 ## Screenshots
 
 ![Dashboard](docs/screenshot-dashboard.png)
-*Dashboard with operator status, mastery progress by category, and current loadout*
+*Dashboard - mastery rank, intrinsics, loadout, and category progress*
 
 ![Mastery Database](docs/screenshot-mastery.png)
-*Mastery list with filtering, search, and Prime toggle*
+*Mastery list - search, filter by category/state, toggle Primes, wishlist items*
 
 ## Features
 
-- **Profile Sync** - Pulls mastery data from DE's public profile API
-- **Mastery Tracking** - See progress by category with filtering
-- **Loadout Display** - View your current equipped items and focus school
-- **Prime Filter** - Toggle Prime items visibility
-- **Item Details** - Click any item for detailed information
+- **Steam Login** - Secure authentication, no password storage
+- **Profile Sync** - Mastery XP, weapon stats, loadout, intrinsics, star chart from DE's public API
+- **MR Calculator** - Accurate calculation including equipment, intrinsics (90 levels), star chart, legendary ranks
+- **Category Tracking** - 15+ categories (frames, weapons, companions, necramechs, kitguns, zaws, amps)
+- **Weapon Statistics** - Kills, accuracy, equip time synced from profile
+- **Wishlist** - Mark items to track, sorted to top
+- **Star Chart Progress** - Track completions including Steel Path
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | SvelteKit 2 + Svelte 5 |
-| Styling | Bootstrap 5 + SASS |
-| Backend | Hono (TypeScript) |
-| Database | PostgreSQL + Drizzle ORM |
-| Data Source | [@wfcd/items](https://github.com/WFCD/warframe-items) |
+**Frontend**: SvelteKit 2, Svelte 5, Bootstrap 5
+**Backend**: Hono, hexagonal architecture
+**Database**: PostgreSQL, Drizzle ORM
+**Data**: [@wfcd/items](https://github.com/WFCD/warframe-items)
 
 ## Setup
 
 ```bash
-# Install dependencies
 pnpm install
-
-# Start PostgreSQL
-docker compose up -d
-
-# Run migrations and seed item data
-pnpm db:migrate
-pnpm db:seed
-
-# Start dev servers
-pnpm dev
+docker compose up -d          # Postgres on port 5433
+pnpm db:migrate && pnpm db:seed
+pnpm dev                      # API: 3000, Web: 5173
 ```
 
-The API runs on `http://localhost:3000` and the web UI on `http://localhost:5173`.
+### Environment Variables
 
-## Configuration
-
-1. Go to **Settings** in the app
-2. Enter your Warframe Account ID
-3. Select your platform
-4. Click **Sync Profile** on the Dashboard
-
-Your profile must be set to **PUBLIC** in Warframe for syncing to work.
-
-### Finding Your Account ID
-
-- Check your `EE.log` file (`%LOCALAPPDATA%\Warframe\EE.log` on Windows)
-- Search for "accountId" in the log
-- Or use the [Tenno Tracker](https://github.com/Jelosus2/TennoTracker) browser extension
-
-## Project Structure
-
+```env
+STEAM_API_KEY=your_key        # Optional, for Steam profile fetching
+BASE_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:5173
 ```
-packages/
-├── api/          # Hono backend (hexagonal architecture)
-│   └── src/
-│       ├── domain/           # Entities, ports (interfaces)
-│       ├── infrastructure/   # Drizzle repos, DE API adapter
-│       └── application/      # HTTP routes
-│
-├── shared/       # Shared configuration & types
-│   └── src/
-│       ├── categories.ts     # Single source of truth for all category config
-│       └── seeding-rules.ts  # Declarative item detection & filtering
-│
-└── web/          # SvelteKit frontend
-    └── src/
-        ├── routes/           # Pages (Dashboard, Mastery, Settings)
-        ├── lib/              # API client, components
-        └── styles/           # KIM OS theme (SASS)
-```
+
+### First Sync
+
+1. Login with Steam
+2. **Settings** → Enter Warframe Account ID + platform
+3. **Dashboard** → **Sync Profile**
+
+**Finding Account ID**: Check `%LOCALAPPDATA%\Warframe\EE.log` or use [Tenno Tracker](https://github.com/Jelosus2/TennoTracker) extension.
+**Profile must be PUBLIC** in Warframe settings.
 
 ## Testing
 
-### Unit Tests (Vitest)
-
-Run unit tests for the API, shared package, and web utilities:
-
 ```bash
-pnpm test              # Run all unit tests
-pnpm test:watch        # Watch mode
-pnpm test:coverage     # With coverage report
+pnpm test                     # Unit tests (Vitest)
+cd packages/web && pnpm test:e2e              # Visual regression (Playwright)
+pnpm test:e2e:update-snapshots                # Update baselines after CSS changes
 ```
-
-Tests cover:
-- **Seeding rules** - Category detection, Kitgun/Zaw/Amp filtering, PvP exclusions
-- **Mastery calculations** - XP formulas, MR thresholds, rank calculations
-- **Profile sync** - DE API parsing, loadout extraction, intrinsics
-- **Web utilities** - URL formatting, time display
-
-### Visual Regression Tests (Playwright)
-
-Catch unintended UI changes during CSS/SASS refactors:
-
-```bash
-cd packages/web
-pnpm test:e2e                    # Run visual tests
-pnpm test:e2e:update-snapshots   # Update baseline screenshots
-pnpm test:e2e:ui                 # Interactive UI mode
-```
-
-Visual tests capture screenshots of all pages at multiple viewports and compare against committed baselines.
-
-#### Workflow for SASS/CSS Refactors
-
-1. **Before changes** - Run `pnpm test:e2e` to confirm tests pass against current baselines
-2. **Make changes** - Edit your SASS/CSS files
-3. **Check for regressions** - Run `pnpm test:e2e` again
-   - Tests will fail if any visual differences are detected
-   - Check `packages/web/test-results/` for diff images showing what changed
-4. **Review changes** - If the visual changes are intentional, update baselines:
-   ```bash
-   pnpm test:e2e:update-snapshots
-   ```
-5. **Commit baselines** - Include the updated screenshots in your commit
-
-#### Troubleshooting
-
-- **Tests fail with "snapshot doesn't exist"** - Run `pnpm test:e2e:update-snapshots` to create missing baselines
-- **Flaky tests** - The config allows 2% pixel difference to handle anti-aliasing variations
-- **Debug mode** - Use `pnpm test:e2e:ui` for an interactive browser to step through tests
-
-### CI
-
-Both unit tests and visual regression tests run automatically on push to `main` and on pull requests via GitHub Actions. If E2E tests fail, the Playwright report is uploaded as an artifact for debugging.
 
 ## License
 
