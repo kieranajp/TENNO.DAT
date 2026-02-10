@@ -185,6 +185,18 @@ export const playerWishlist = pgTable('player_wishlist', {
   playerItemUnique: unique('player_wishlist_unique').on(table.playerId, table.itemId),
 }))
 
+// Player Prime part ownership tracking
+export const playerPrimeParts = pgTable('player_prime_parts', {
+  id: serial('id').primaryKey(),
+  playerId: varchar('player_id', { length: 50 }).notNull(),
+  componentId: integer('component_id').notNull().references(() => itemComponents.id, { onDelete: 'cascade' }),
+  ownedCount: integer('owned_count').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+  playerComponentIdx: index('player_prime_parts_player_component_idx').on(table.playerId, table.componentId),
+  playerComponentUnique: unique('player_prime_parts_unique').on(table.playerId, table.componentId),
+}))
+
 // Resources table (materials needed for crafting)
 export const resources = pgTable('resources', {
   id: serial('id').primaryKey(),

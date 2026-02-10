@@ -27,10 +27,10 @@
 			if (!a.wishlisted && b.wishlisted) return 1;
 
 			if (sortBy === 'rank') {
-				// Sort by rank descending — highest progress first
+				// Sort by rank ascending
 				const aRank = a.rank ?? -1;
 				const bRank = b.rank ?? -1;
-				if (aRank !== bRank) return bRank - aRank;
+				if (aRank !== bRank) return aRank - bRank;
 				return a.name.localeCompare(b.name);
 			}
 

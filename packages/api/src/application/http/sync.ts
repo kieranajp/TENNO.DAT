@@ -148,6 +148,23 @@ export function syncRoutes(container: Container) {
 
       await container.nodeRepo.upsertCompletions(settings.playerId!, nodeCompletions)
 
+      // Auto-mark Prime parts as owned for mastered Primes
+      const masteredPrimeIds = masteryRecords
+        .filter(r => {
+          const item = [...itemsMap.values()].find(i => i.id === r.itemId)
+          return item?.isPrime && r.rank >= 30
+        })
+        .map(r => r.itemId)
+
+      if (masteredPrimeIds.length > 0) {
+        const componentIds = await container.itemRepo.getComponentIdsForItems(masteredPrimeIds)
+        await container.primePartsRepo.markOwned(settings.playerId!, componentIds)
+        log.info('Auto-marked Prime parts as owned', {
+          masteredPrimeCount: masteredPrimeIds.length,
+          componentCount: componentIds.length,
+        })
+      }
+
       const masteredCount = masteryRecords.filter(r => r.rank >= 30).length
       log.info('Sync complete', {
         userId: auth.userId,

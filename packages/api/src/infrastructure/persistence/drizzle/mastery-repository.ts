@@ -124,6 +124,17 @@ export class DrizzleMasteryRepository implements MasteryRepository {
     }))
   }
 
+  async getMasteredItemIds(playerId: string): Promise<number[]> {
+    const rows = await this.db
+      .select({ itemId: playerMastery.itemId })
+      .from(playerMastery)
+      .where(and(
+        eq(playerMastery.playerId, playerId),
+        gte(playerMastery.rank, 30)
+      ))
+    return rows.map(r => r.itemId)
+  }
+
   async getEquipmentMasteryXP(playerId: string): Promise<number> {
     const records = await this.db
       .select({

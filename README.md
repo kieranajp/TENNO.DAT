@@ -12,6 +12,10 @@ A 1999-themed Warframe mastery tracker. Sync your profile from DE, track mastery
 ![Mastery Database](docs/screenshot-mastery.png)
 *Mastery list - search, filter by category/state, toggle Primes, wishlist items*
 
+![Prime Tracker](docs/screenshot-primes.png)
+*Prime parts list - track ownership of Prime parts and plan your farm*
+
+
 ## Features
 
 - **Steam Login** - Secure authentication, no password storage
