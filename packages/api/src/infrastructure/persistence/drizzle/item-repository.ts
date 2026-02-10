@@ -123,6 +123,7 @@ export class DrizzleItemRepository implements ItemRepository {
         rarity: d.rarity ?? 'Common',
       })),
       components: components.map(c => ({
+        id: c.id,
         name: c.name,
         itemCount: c.itemCount,
         ducats: c.ducats ?? undefined,
@@ -170,6 +171,98 @@ export class DrizzleItemRepository implements ItemRepository {
       .from(items)
       .groupBy(items.category)
       .orderBy(items.category)
+  }
+
+  async findPrimesWithComponents(category?: string): Promise<Array<Item & {
+    components: Array<{
+      id: number
+      name: string
+      ducats: number | null
+      drops: Array<{ location: string; chance: number; rarity: string | null }>
+    }>
+  }>> {
+    const conditions = [eq(items.isPrime, true)]
+    if (category) conditions.push(eq(items.category, category))
+
+    const primeItems = await this.db
+      .select()
+      .from(items)
+      .where(and(...conditions))
+      .orderBy(items.name)
+
+    if (primeItems.length === 0) return []
+
+    const primeIds = primeItems.map(p => p.id)
+
+    // Get tradeable components (ducats IS NOT NULL = Prime parts)
+    const comps = await this.db
+      .select()
+      .from(itemComponents)
+      .where(inArray(itemComponents.itemId, primeIds))
+
+    const compIds = comps.map(c => c.id)
+    const drops = compIds.length > 0
+      ? await this.db
+          .select()
+          .from(componentDrops)
+          .where(inArray(componentDrops.componentId, compIds))
+      : []
+
+    const dropsMap = new Map<number, typeof drops>()
+    for (const d of drops) {
+      const arr = dropsMap.get(d.componentId) ?? []
+      arr.push(d)
+      dropsMap.set(d.componentId, arr)
+    }
+
+    const compsMap = new Map<number, typeof comps>()
+    for (const c of comps) {
+      const arr = compsMap.get(c.itemId) ?? []
+      arr.push(c)
+      compsMap.set(c.itemId, arr)
+    }
+
+    return primeItems.map(item => ({
+      ...item,
+      acquisitionData: item.acquisitionData as ItemAcquisitionData | null,
+      components: (compsMap.get(item.id) ?? []).map(c => ({
+        id: c.id,
+        name: c.name,
+        itemCount: c.itemCount,
+        ducats: c.ducats,
+        drops: (dropsMap.get(c.id) ?? []).map(d => ({
+          location: d.location,
+          chance: Number(d.chance),
+          rarity: d.rarity,
+        })),
+      })),
+    }))
+  }
+
+  async getComponentCountsByItem(itemIds: number[]): Promise<Map<number, { total: number; componentIds: number[] }>> {
+    if (itemIds.length === 0) return new Map()
+    const rows = await this.db
+      .select({ id: itemComponents.id, itemId: itemComponents.itemId })
+      .from(itemComponents)
+      .where(inArray(itemComponents.itemId, itemIds))
+
+    const result = new Map<number, { total: number; componentIds: number[] }>()
+    for (const row of rows) {
+      const entry = result.get(row.itemId) ?? { total: 0, componentIds: [] }
+      entry.total++
+      entry.componentIds.push(row.id)
+      result.set(row.itemId, entry)
+    }
+    return result
+  }
+
+  async getComponentIdsForItems(itemIds: number[]): Promise<number[]> {
+    if (itemIds.length === 0) return []
+    const rows = await this.db
+      .select({ id: itemComponents.id })
+      .from(itemComponents)
+      .where(inArray(itemComponents.itemId, itemIds))
+    return rows.map(r => r.id)
   }
 
   async upsertMany(itemsToInsert: Omit<Item, 'id'>[]): Promise<void> {

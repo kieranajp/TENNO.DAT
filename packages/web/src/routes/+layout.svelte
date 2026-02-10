@@ -134,6 +134,7 @@
 	const navItems = [
 		{ href: '/', label: 'Dashboard' },
 		{ href: '/mastery', label: 'Mastery' },
+		{ href: '/primes', label: 'Primes' },
 		{ href: '/starchart', label: 'Star Chart' }
 	];
 
@@ -221,15 +222,17 @@
 					<div class="title-icon"></div>
 					<span class="title-text">
 						{#if $page.url.pathname === '/'}
-							MASTERY DASHBOARD.EXE
+							MASTERY_DASHBOARD.EXE
 						{:else if $page.url.pathname === '/starchart'}
-							STAR CHART.EXE
+							STAR_CHART.EXE
 						{:else if $page.url.pathname === '/mastery'}
-							MASTERY DATABASE.EXE
+							MASTERY_DATABASE.EXE
+						{:else if $page.url.pathname === '/primes'}
+							PRIME_TRACKER.EXE
 						{:else if $page.url.pathname === '/settings'}
-							SYSTEM CONFIG.EXE
+							SYSTEM_CONFIG.EXE
 						{:else}
-							WARFRAME TRACKER
+							TENNO.DAT
 						{/if}
 					</span>
 				</div>
@@ -297,7 +300,7 @@
 		letter-spacing: $letter-spacing-wide
 
 		.material-icons
-			font-size: 1.5rem
+			font-size: 1.3rem
 
 		.spinning
 			animation: spin 1s linear infinite

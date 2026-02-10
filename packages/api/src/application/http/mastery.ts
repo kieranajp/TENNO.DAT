@@ -73,30 +73,52 @@ export function masteryRoutes(container: Container) {
     }
 
     try {
-      const [items, wishlistedIds] = await Promise.all([
+      const [items, wishlistedIds, ownedComponentCounts] = await Promise.all([
         container.masteryRepo.getItemsWithMastery(settings.playerId, {
           category: c.req.query('category') || undefined,
           masteredOnly: c.req.query('mastered') === 'true',
           unmasteredOnly: c.req.query('unmastered') === 'true',
         }),
         container.wishlistRepo.getWishlistedItemIds(settings.playerId),
+        container.primePartsRepo.getOwnedCounts(settings.playerId),
       ])
 
       const wishlistedSet = new Set(wishlistedIds)
 
-      // Add wishlisted flag and sort: wishlisted first, then by name
-      const itemsWithWishlist = items
-        .map(item => ({
-          ...item,
-          wishlisted: wishlistedSet.has(item.id),
-        }))
+      // Get component counts for Prime items
+      const primeItemIds = items.filter(i => i.isPrime).map(i => i.id)
+      const componentCounts = await container.itemRepo.getComponentCountsByItem(primeItemIds)
+      const masteredItemIds = new Set(
+        await container.masteryRepo.getMasteredItemIds(settings.playerId)
+      )
+
+      // Add wishlisted flag + prime progress, sort: wishlisted first, then by name
+      const itemsWithExtras = items
+        .map(item => {
+          let primeProgress: { owned: number; total: number } | null = null
+          if (item.isPrime) {
+            const compData = componentCounts.get(item.id)
+            if (compData && compData.total > 0) {
+              const isMastered = masteredItemIds.has(item.id)
+              primeProgress = {
+                owned: isMastered ? compData.total : compData.componentIds.reduce((sum, id) => sum + (ownedComponentCounts.get(id) ?? 0), 0),
+                total: compData.total,
+              }
+            }
+          }
+          return {
+            ...item,
+            wishlisted: wishlistedSet.has(item.id),
+            primeProgress,
+          }
+        })
         .sort((a, b) => {
           if (a.wishlisted && !b.wishlisted) return -1
           if (!a.wishlisted && b.wishlisted) return 1
           return a.name.localeCompare(b.name)
         })
 
-      return c.json(itemsWithWishlist)
+      return c.json(itemsWithExtras)
     } catch (error) {
       return handleRouteError(c, log, error, 'Failed to fetch mastery items')
     }

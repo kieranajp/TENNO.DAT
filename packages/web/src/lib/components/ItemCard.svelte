@@ -44,6 +44,11 @@
 			{#if item.isPrime}
 				<span class="item-prime">PRIME</span>
 			{/if}
+			{#if item.primeProgress && item.primeProgress.total > 0}
+				<span class="prime-progress" class:complete={item.primeProgress.owned === item.primeProgress.total}>
+					{item.primeProgress.owned}/{item.primeProgress.total}
+				</span>
+			{/if}
 		</div>
 	</div>
 	<div class="item-rank-display">
@@ -174,6 +179,19 @@
 		color: $warning-text
 		padding: 0 0.25rem
 		border: 1px solid $warning
+
+	.prime-progress
+		font-size: 0.65rem
+		font-family: $font-family-monospace
+		color: $gray-500
+		padding: 0 0.25rem
+		border: 1px solid $gray-300
+		background: $gray-100
+
+		&.complete
+			color: $success
+			border-color: $success
+			background: rgba($success, 0.1)
 
 	.item-rank-display
 		display: flex

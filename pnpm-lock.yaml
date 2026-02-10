@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.3.15
+        version: 0.3.15
       '@types/node':
         specifier: ^25.0.10
         version: 25.0.10
@@ -34,7 +37,7 @@ importers:
         version: 17.2.3
       drizzle-orm:
         specifier: ^0.30.0
-        version: 0.30.10(postgres@3.4.8)
+        version: 0.30.10(@electric-sql/pglite@0.3.15)(postgres@3.4.8)
       hono:
         specifier: ^4.0.0
         version: 4.11.5
@@ -124,6 +127,9 @@ packages:
   '@bcoe/v8-coverage@1.0.2':
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
+
+  '@electric-sql/pglite@0.3.15':
+    resolution: {integrity: sha512-Cj++n1Mekf9ETfdc16TlDi+cDDQF0W7EcbyRHYOAeZdsAe8M/FJg18itDTSwyHfar2WIezawM9o0EKaRGVKygQ==}
 
   '@esbuild-kit/core-utils@3.3.2':
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
@@ -2065,6 +2071,8 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
+  '@electric-sql/pglite@0.3.15': {}
+
   '@esbuild-kit/core-utils@3.3.2':
     dependencies:
       esbuild: 0.18.20
@@ -2872,8 +2880,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.30.10(postgres@3.4.8):
+  drizzle-orm@0.30.10(@electric-sql/pglite@0.3.15)(postgres@3.4.8):
     optionalDependencies:
+      '@electric-sql/pglite': 0.3.15
       postgres: 3.4.8
 
   dunder-proto@1.0.1:

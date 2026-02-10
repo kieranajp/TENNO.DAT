@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getImageUrl, formatBuildTime, toggleWishlist, isItemWishlisted, type ItemDetails } from '$lib/api';
+	import { getImageUrl, formatBuildTime, toggleWishlist, isItemWishlisted, getOwnedComponentCounts, toggleComponentOwned, type ItemDetails } from '$lib/api';
 
 	let {
 		item,
@@ -13,6 +13,8 @@
 
 	let wishlisted = $state(false);
 	let togglingWishlist = $state(false);
+	let ownedCounts = $state<Map<number, number>>(new Map());
+	let togglingComponent = $state<number | null>(null);
 
 	// Load wishlist state when item changes
 	$effect(() => {
@@ -20,6 +22,17 @@
 			isItemWishlisted(item.id).then((state) => {
 				wishlisted = state;
 			});
+		}
+	});
+
+	// Load owned components for Prime items
+	$effect(() => {
+		if (item?.isPrime) {
+			getOwnedComponentCounts(item.id).then((counts) => {
+				ownedCounts = new Map(Object.entries(counts).map(([k, v]) => [Number(k), v]));
+			});
+		} else {
+			ownedCounts = new Map();
 		}
 	});
 
@@ -32,6 +45,22 @@
 			onWishlistToggle?.(item.id, newState);
 		} finally {
 			togglingWishlist = false;
+		}
+	}
+
+	async function handleComponentToggle(componentId: number) {
+		if (togglingComponent) return;
+		togglingComponent = componentId;
+		try {
+			const newCount = await toggleComponentOwned(componentId);
+			ownedCounts = new Map(ownedCounts);
+			if (newCount > 0) {
+				ownedCounts.set(componentId, newCount);
+			} else {
+				ownedCounts.delete(componentId);
+			}
+		} finally {
+			togglingComponent = null;
 		}
 	}
 
@@ -205,17 +234,52 @@
 					</div>
 				{/if}
 
-				<!-- Component Drops -->
+				<!-- Component Drops / Prime Parts -->
 				{#if item.acquisitionData?.components && item.acquisitionData.components.length > 0}
 					<div class="acquisition-section">
 						<h4>
-							<span class="material-icons">layers</span>
-							COMPONENT DROPS
+							<span class="material-icons">{item.isPrime ? 'checklist' : 'layers'}</span>
+							{item.isPrime ? 'PRIME PARTS' : 'COMPONENT DROPS'}
+							{#if item.isPrime}
+								{@const ownedTotal = item.acquisitionData.components.reduce((sum, c) => sum + (ownedCounts.get(c.id) ?? 0), 0)}
+								{@const totalParts = item.acquisitionData.components.reduce((sum, c) => sum + c.itemCount, 0)}
+								<span class="parts-progress">
+									{ownedTotal}/{totalParts}
+								</span>
+							{/if}
 						</h4>
 						{#each item.acquisitionData.components as comp}
-							{#if comp.drops && comp.drops.length > 0}
-								<div class="component-group">
-									<div class="component-name">{comp.name}{#if comp.itemCount > 1} x{comp.itemCount}{/if}</div>
+							{@const compOwned = ownedCounts.get(comp.id) ?? 0}
+							{@const compComplete = compOwned >= comp.itemCount}
+							<div class="component-group" class:owned={compComplete}>
+								<div class="component-header">
+									{#if item.isPrime}
+										<button
+											class="component-checkbox"
+											class:checked={compComplete}
+											class:partial={compOwned > 0 && !compComplete}
+											disabled={togglingComponent === comp.id}
+											onclick={() => handleComponentToggle(comp.id)}
+										>
+											<span class="material-icons">
+												{#if compComplete}
+													check_box
+												{:else if compOwned > 0}
+													indeterminate_check_box
+												{:else}
+													check_box_outline_blank
+												{/if}
+											</span>
+										</button>
+									{/if}
+									<div class="component-name">
+										{comp.name}{#if comp.itemCount > 1} <span class="item-count">{compOwned}/{comp.itemCount}</span>{/if}
+										{#if comp.ducats}
+											<span class="ducats">{comp.ducats}d</span>
+										{/if}
+									</div>
+								</div>
+								{#if comp.drops && comp.drops.length > 0 && !compComplete}
 									<div class="drop-list">
 										{#each comp.drops.slice(0, 3) as drop}
 											<div class="drop-item">
@@ -224,8 +288,8 @@
 											</div>
 										{/each}
 									</div>
-								</div>
-							{/if}
+								{/if}
+							</div>
 						{/each}
 					</div>
 				{/if}
@@ -451,11 +515,47 @@
 		&.platinum
 			color: $info
 
+	.component-header
+		display: flex
+		align-items: center
+		gap: 0.5rem
+
+	.component-checkbox
+		background: transparent
+		border: none
+		cursor: pointer
+		padding: 0
+		color: $gray-400
+		transition: color $transition-base
+		flex-shrink: 0
+
+		&:hover
+			color: $kim-accent
+
+		&.partial
+			color: $warning
+
+		&.checked
+			color: $success
+
+		&:disabled
+			opacity: 0.5
+			cursor: not-allowed
+
+		.material-icons
+			font-size: 1.25rem
+
 	.component-group
 		margin-bottom: 0.75rem
 
 		&:last-child
 			margin-bottom: 0
+
+		&.owned
+			opacity: 0.5
+
+			.component-name
+				text-decoration: line-through
 
 	.component-name
 		font-family: $font-family-monospace
@@ -463,6 +563,19 @@
 		color: $kim-border
 		margin-bottom: 0.25rem
 		text-transform: uppercase
+
+	.item-count
+		color: $kim-accent
+
+	.parts-progress
+		margin-left: auto
+		font-size: $font-size-xxs
+		color: $gray-500
+
+	.ducats
+		font-size: $font-size-xxs
+		color: $warning
+		margin-left: 0.5rem
 
 	.drop-list
 		display: flex

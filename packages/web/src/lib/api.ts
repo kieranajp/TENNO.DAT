@@ -113,6 +113,7 @@ export interface MasteryItem {
 	rank: number | null;
 	masteryState: MasteryState;
 	wishlisted: boolean;
+	primeProgress: { owned: number; total: number } | null;
 }
 
 // ItemAcquisitionData is now imported from @warframe-tracker/shared
@@ -313,4 +314,57 @@ export async function isItemWishlisted(itemId: number): Promise<boolean> {
 	});
 	const data = await handleResponse<{ wishlisted: boolean }>(response);
 	return data.wishlisted;
+}
+
+// Prime parts API functions
+export async function getOwnedComponentCounts(itemId: number): Promise<Record<string, number>> {
+	const response = await fetch(`${API_BASE}/primes/items/${itemId}/components`, {
+		credentials: 'include'
+	});
+	const data = await handleResponse<{ ownedCounts: Record<string, number> }>(response);
+	return data.ownedCounts;
+}
+
+export async function toggleComponentOwned(componentId: number): Promise<number> {
+	const response = await fetch(`${API_BASE}/primes/components/${componentId}/toggle`, {
+		method: 'POST',
+		credentials: 'include'
+	});
+	const data = await handleResponse<{ ownedCount: number }>(response);
+	return data.ownedCount;
+}
+
+export interface PrimeItem {
+	id: number;
+	name: string;
+	category: string;
+	imageName: string | null;
+	vaulted: boolean | null;
+	mastered: boolean;
+	components: Array<{
+		id: number;
+		name: string;
+		itemCount: number;
+		ducats: number | null;
+		ownedCount: number;
+		drops: Array<{ location: string; chance: number; rarity: string | null }>;
+	}>;
+	ownedCount: number;
+	totalCount: number;
+	complete: boolean;
+}
+
+export async function getPrimes(params?: {
+	category?: string;
+	vaulted?: boolean;
+	complete?: boolean;
+}): Promise<PrimeItem[]> {
+	const searchParams = new URLSearchParams();
+	if (params?.category) searchParams.set('category', params.category);
+	if (params?.vaulted === false) searchParams.set('vaulted', 'false');
+	if (params?.complete === false) searchParams.set('complete', 'false');
+	const res = await fetch(`${API_BASE}/primes?${searchParams}`, {
+		credentials: 'include'
+	});
+	return handleResponse(res);
 }

@@ -1,4 +1,4 @@
-import openid from 'openid'
+import openid, { type OpenIdError } from 'openid'
 
 const { RelyingParty } = openid
 import { createLogger } from '../logger'
@@ -14,7 +14,7 @@ export interface SteamProfile {
 }
 
 export class SteamOpenIDService {
-  private relyingParty: RelyingParty
+  private relyingParty: InstanceType<typeof RelyingParty>
 
   constructor(baseUrl: string) {
     const returnUrl = `${baseUrl}/auth/steam/callback`
@@ -25,7 +25,7 @@ export class SteamOpenIDService {
 
   async getAuthUrl(state?: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.relyingParty.authenticate(STEAM_OPENID_URL, false, (err, authUrl) => {
+      this.relyingParty.authenticate(STEAM_OPENID_URL, false, (err: OpenIdError | null, authUrl: string | null) => {
         if (err || !authUrl) {
           log.error('Failed to generate auth URL', new Error(err?.message))
           reject(err ?? new Error('No auth URL returned'))
@@ -45,7 +45,7 @@ export class SteamOpenIDService {
 
   async verifyAssertion(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.relyingParty.verifyAssertion(url, (err, result) => {
+      this.relyingParty.verifyAssertion(url, (err: OpenIdError | null, result?: { authenticated: boolean; claimedIdentifier?: string }) => {
         if (err || !result?.authenticated) {
           log.error('Failed to verify assertion', new Error(err?.message))
           reject(err ?? new Error('Authentication failed'))

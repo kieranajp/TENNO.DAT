@@ -110,12 +110,12 @@ Run `pnpm drizzle-kit generate` to create the migration SQL.
 ### Success Criteria
 
 #### Automated Verification:
-- [ ] `pnpm drizzle-kit generate` creates migration file without errors
-- [ ] `pnpm db:migrate` applies migration successfully
-- [ ] TypeScript compiles: `pnpm -F api typecheck`
+- [x] `pnpm drizzle-kit generate` creates migration file without errors
+- [x] `pnpm db:migrate` applies migration successfully
+- [x] TypeScript compiles: `pnpm -F api typecheck`
 
 #### Manual Verification:
-- [ ] Verify table exists with correct columns and constraints
+- [x] Verify table exists with correct columns and constraints
 
 ---
 
@@ -258,10 +258,10 @@ primePartsRepo: new DrizzlePrimePartsRepository(db),
 ### Success Criteria
 
 #### Automated Verification:
-- [ ] TypeScript compiles: `pnpm -F api typecheck`
+- [x] TypeScript compiles: `pnpm -F api typecheck`
 
 #### Manual Verification:
-- [ ] N/A - tested via API routes in next phase
+- [x] N/A - tested via API routes in next phase
 
 ---
 
@@ -443,12 +443,12 @@ Implement these in the corresponding Drizzle repositories. `findPrimesWithCompon
 ### Success Criteria
 
 #### Automated Verification:
-- [ ] TypeScript compiles: `pnpm -F api typecheck`
+- [x] TypeScript compiles: `pnpm -F api typecheck`
 
 #### Manual Verification:
-- [ ] `curl` test: POST `/primes/components/123/toggle` returns `{ "owned": true }`
-- [ ] `curl` test: GET `/primes/items/456/components` returns `{ "ownedComponentIds": [...] }`
-- [ ] `curl` test: GET `/primes/incomplete` returns list of incomplete Primes with components
+- [x] `curl` test: POST `/primes/components/123/toggle` returns `{ "owned": true }`
+- [x] `curl` test: GET `/primes/items/456/components` returns `{ "ownedComponentIds": [...] }`
+- [x] `curl` test: GET `/primes/incomplete` returns list of incomplete Primes with components
 
 ---
 
@@ -501,11 +501,11 @@ Implementation: query `item_components WHERE item_id IN (itemIds) AND ducats IS 
 ### Success Criteria
 
 #### Automated Verification:
-- [ ] TypeScript compiles: `pnpm -F api typecheck`
-- [ ] Unit test: sync with mastered Prime → components auto-marked
+- [x] TypeScript compiles: `pnpm -F api typecheck`
+- [x] Unit test: sync with mastered Prime → components auto-marked
 
 #### Manual Verification:
-- [ ] Sync profile → check database: mastered Prime components have entries in `player_prime_parts`
+- [x] Sync profile → check database: mastered Prime components have entries in `player_prime_parts`
 
 ---
 
@@ -724,15 +724,15 @@ Key UX decisions:
 ### Success Criteria
 
 #### Automated Verification:
-- [ ] TypeScript compiles: `pnpm -F web typecheck`
-- [ ] Build succeeds: `pnpm -F web build`
+- [x] TypeScript compiles: `pnpm -F web typecheck`
+- [x] Build succeeds: `pnpm -F web build`
 
 #### Manual Verification:
-- [ ] Open a Prime item modal → checkboxes visible next to components
-- [ ] Toggle a component → state persists on modal reopen
-- [ ] Owned components hide their drop locations
-- [ ] Progress counter updates correctly
-- [ ] Non-Prime items still show normal "COMPONENT DROPS" without checkboxes
+- [x] Open a Prime item modal → checkboxes visible next to components
+- [x] Toggle a component → state persists on modal reopen
+- [x] Owned components hide their drop locations
+- [x] Progress counter updates correctly
+- [x] Non-Prime items still show normal "COMPONENT DROPS" without checkboxes
 
 ---
 
@@ -813,12 +813,12 @@ Add progress indicator to Prime item cards:
 ### Success Criteria
 
 #### Automated Verification:
-- [ ] TypeScript compiles: `pnpm -F web typecheck`
+- [x] TypeScript compiles: `pnpm -F web typecheck`
 
 #### Manual Verification:
-- [ ] Prime item cards show "2/4" progress badge
-- [ ] Non-Prime items don't show progress
-- [ ] Mastered Primes show full progress (4/4)
+- [x] Prime item cards show "2/4" progress badge
+- [x] Non-Prime items don't show progress
+- [x] Mastered Primes show full progress (4/4)
 
 ---
 
@@ -886,19 +886,19 @@ Add link between mastery and starchart:
 ### Success Criteria
 
 #### Automated Verification:
-- [ ] TypeScript compiles: `pnpm -F web typecheck`
-- [ ] Build succeeds: `pnpm -F web build`
+- [x] TypeScript compiles: `pnpm -F web typecheck`
+- [x] Build succeeds: `pnpm -F web build`
 
 #### Manual Verification:
-- [ ] `/primes` page loads with incomplete Primes listed
-- [ ] Available and vaulted sections separated
-- [ ] Component checkboxes toggle correctly
-- [ ] Relic info shows for unowned parts only
-- [ ] Category filter works
-- [ ] "Hide vaulted" toggle works
-- [ ] Progress sorted: most complete first
-- [ ] Clicking item opens modal
-- [ ] Navigation link visible in sidebar
+- [x] `/primes` page loads with incomplete Primes listed
+- [x] Available and vaulted sections separated
+- [x] Component checkboxes toggle correctly
+- [x] Relic info shows for unowned parts only
+- [x] Category filter works
+- [x] "Hide vaulted" toggle works
+- [x] Progress sorted: most complete first
+- [x] Clicking item opens modal
+- [x] Navigation link visible in sidebar
 
 ---
 

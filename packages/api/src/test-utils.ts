@@ -23,6 +23,7 @@ export function createMockContainer(): Container {
       getItemsWithMastery: vi.fn(),
       upsertMany: vi.fn(),
       getEquipmentMasteryXP: vi.fn(),
+      getMasteredItemIds: vi.fn().mockResolvedValue([]),
     },
     loadoutRepo: {
       upsert: vi.fn(),
@@ -41,6 +42,9 @@ export function createMockContainer(): Container {
       findAllAsMap: vi.fn(),
       getCategories: vi.fn(),
       upsertMany: vi.fn(),
+      findPrimesWithComponents: vi.fn().mockResolvedValue([]),
+      getComponentCountsByItem: vi.fn().mockResolvedValue(new Map()),
+      getComponentIdsForItems: vi.fn().mockResolvedValue([]),
     },
     userRepo: {
       findById: vi.fn(),
@@ -64,6 +68,13 @@ export function createMockContainer(): Container {
       add: vi.fn(),
       remove: vi.fn(),
       toggle: vi.fn(),
+    },
+    primePartsRepo: {
+      getOwnedCounts: vi.fn().mockResolvedValue(new Map()),
+      getOwnedCountsForItem: vi.fn().mockResolvedValue(new Map()),
+      toggle: vi.fn(),
+      markOwned: vi.fn(),
+      markUnowned: vi.fn(),
     },
     profileApi: {
       fetch: vi.fn(),

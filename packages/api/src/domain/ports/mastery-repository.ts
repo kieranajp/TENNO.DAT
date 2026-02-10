@@ -30,4 +30,5 @@ export interface MasteryRepository {
     unmasteredOnly?: boolean
   }): Promise<MasteryWithItem[]>
   getEquipmentMasteryXP(playerId: string): Promise<number>
+  getMasteredItemIds(playerId: string): Promise<number[]>
 }

@@ -23,6 +23,7 @@ export interface ItemAcquisitionData {
     rarity: string
   }>
   components: Array<{
+    id: number
     name: string
     itemCount: number
     ducats?: number

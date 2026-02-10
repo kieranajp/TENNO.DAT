@@ -157,7 +157,8 @@ describe('Mastery Routes', () => {
       expect(body).toEqual(mockItems.map(item => ({
         ...item,
         masteryState: item.masteryState.id,
-        wishlisted: false
+        wishlisted: false,
+        primeProgress: null
       })))
     })
 
