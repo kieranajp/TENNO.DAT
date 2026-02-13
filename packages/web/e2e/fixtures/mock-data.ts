@@ -9,6 +9,7 @@ import type {
   PlayerSettings,
   StarChartProgress,
   AuthUser,
+  PrimeItem,
 } from '../../src/lib/api'
 import { MasteryState } from '@warframe-tracker/shared'
 
@@ -224,6 +225,91 @@ export const mockSettings: PlayerSettings = {
   railjackIntrinsics: 50,
   drifterIntrinsics: 30,
 }
+
+export const mockPrimes: PrimeItem[] = [
+  {
+    id: 1,
+    name: 'Wisp Prime',
+    category: 'Warframes',
+    imageName: 'wisp-prime.png',
+    vaulted: false,
+    mastered: true,
+    components: [
+      { id: 101, name: 'Blueprint', itemCount: 1, ducats: 25, ownedCount: 1, drops: [{ location: 'Lith W1 Relic', chance: 0.25, rarity: 'Common' }] },
+      { id: 102, name: 'Chassis', itemCount: 1, ducats: 15, ownedCount: 1, drops: [{ location: 'Meso W2 Relic', chance: 0.11, rarity: 'Uncommon' }] },
+      { id: 103, name: 'Neuroptics', itemCount: 1, ducats: 45, ownedCount: 1, drops: [{ location: 'Neo W3 Relic', chance: 0.02, rarity: 'Rare' }] },
+      { id: 104, name: 'Systems', itemCount: 1, ducats: 15, ownedCount: 1, drops: [{ location: 'Axi W1 Relic', chance: 0.11, rarity: 'Uncommon' }] },
+    ],
+    ownedCount: 4,
+    totalCount: 4,
+    complete: true,
+  },
+  {
+    id: 4,
+    name: 'Volt Prime',
+    category: 'Warframes',
+    imageName: 'volt-prime.png',
+    vaulted: true,
+    mastered: false,
+    components: [
+      { id: 201, name: 'Blueprint', itemCount: 1, ducats: 25, ownedCount: 0, drops: [{ location: 'Lith V1 Relic (Vaulted)', chance: 0.25, rarity: 'Common' }] },
+      { id: 202, name: 'Chassis', itemCount: 1, ducats: 15, ownedCount: 1, drops: [{ location: 'Meso V2 Relic (Vaulted)', chance: 0.11, rarity: 'Uncommon' }] },
+      { id: 203, name: 'Neuroptics', itemCount: 1, ducats: 45, ownedCount: 0, drops: [{ location: 'Neo V3 Relic (Vaulted)', chance: 0.02, rarity: 'Rare' }] },
+      { id: 204, name: 'Systems', itemCount: 1, ducats: 15, ownedCount: 0, drops: [{ location: 'Axi V1 Relic (Vaulted)', chance: 0.11, rarity: 'Uncommon' }] },
+    ],
+    ownedCount: 1,
+    totalCount: 4,
+    complete: false,
+  },
+  {
+    id: 5,
+    name: 'Fulmin Prime',
+    category: 'Primary',
+    imageName: 'fulmin-prime.png',
+    vaulted: false,
+    mastered: false,
+    components: [
+      { id: 301, name: 'Blueprint', itemCount: 1, ducats: 25, ownedCount: 1, drops: [{ location: 'Lith F1 Relic', chance: 0.25, rarity: 'Common' }] },
+      { id: 302, name: 'Barrel', itemCount: 1, ducats: 45, ownedCount: 0, drops: [{ location: 'Axi F1 Relic', chance: 0.02, rarity: 'Rare' }] },
+      { id: 303, name: 'Receiver', itemCount: 1, ducats: 15, ownedCount: 1, drops: [{ location: 'Neo F2 Relic', chance: 0.11, rarity: 'Uncommon' }] },
+      { id: 304, name: 'Stock', itemCount: 1, ducats: 15, ownedCount: 0, drops: [{ location: 'Meso F1 Relic', chance: 0.11, rarity: 'Uncommon' }] },
+    ],
+    ownedCount: 2,
+    totalCount: 4,
+    complete: false,
+  },
+  {
+    id: 10,
+    name: 'Akarius Prime',
+    category: 'Secondary',
+    imageName: 'akarius-prime.png',
+    vaulted: false,
+    mastered: false,
+    components: [
+      { id: 401, name: 'Blueprint', itemCount: 1, ducats: 25, ownedCount: 0, drops: [{ location: 'Lith A1 Relic', chance: 0.25, rarity: 'Common' }] },
+      { id: 402, name: 'Barrel', itemCount: 2, ducats: 15, ownedCount: 1, drops: [{ location: 'Meso A1 Relic', chance: 0.11, rarity: 'Uncommon' }] },
+      { id: 403, name: 'Receiver', itemCount: 1, ducats: 45, ownedCount: 0, drops: [{ location: 'Neo A1 Relic', chance: 0.02, rarity: 'Rare' }] },
+    ],
+    ownedCount: 1,
+    totalCount: 4,
+    complete: false,
+  },
+  {
+    id: 8,
+    name: 'Skana Prime',
+    category: 'Melee',
+    imageName: 'skana-prime.png',
+    vaulted: true,
+    mastered: false,
+    components: [
+      { id: 501, name: 'Blueprint', itemCount: 1, ducats: 25, ownedCount: 0, drops: [{ location: 'Lith S1 Relic (Vaulted)', chance: 0.25, rarity: 'Common' }] },
+      { id: 502, name: 'Blade', itemCount: 1, ducats: 45, ownedCount: 0, drops: [{ location: 'Neo S1 Relic (Vaulted)', chance: 0.02, rarity: 'Rare' }] },
+    ],
+    ownedCount: 0,
+    totalCount: 2,
+    complete: false,
+  },
+]
 
 export const mockStarChartProgress: StarChartProgress = {
   planets: [

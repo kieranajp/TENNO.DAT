@@ -97,6 +97,7 @@ describe('GLOBAL_MAX_RANK_OVERRIDES', () => {
   it.each([
     ['Kuva', 'Kuva Braton'],
     ['Tenet', 'Tenet Envoy'],
+    ['Coda', 'Coda Strun'],
   ])('has %s weapon override', (_, testName) => {
     const hasOverride = GLOBAL_MAX_RANK_OVERRIDES.some(override =>
       override.matcher instanceof RegExp && override.matcher.test(testName) && override.maxRank === 40
