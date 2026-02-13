@@ -1,8 +1,8 @@
 import type { Context, Next } from 'hono'
 import { getCookie, deleteCookie } from 'hono/cookie'
 import type { Container } from '../../../infrastructure/bootstrap/container'
-
-const SESSION_COOKIE = 'tenno_session'
+import type { PlayerSettings } from '../../../domain/entities/player'
+import { SESSION_COOKIE } from '../constants'
 
 export interface AuthContext {
   userId: number
@@ -12,6 +12,7 @@ export interface AuthContext {
 declare module 'hono' {
   interface ContextVariableMap {
     auth: AuthContext
+    playerSettings: PlayerSettings
   }
 }
 
@@ -60,6 +61,7 @@ export function createOnboardingMiddleware(container: Container) {
       return c.json({ error: 'Onboarding required', code: 'ONBOARDING_REQUIRED' }, 403)
     }
 
+    c.set('playerSettings', settings)
     await next()
   }
 }

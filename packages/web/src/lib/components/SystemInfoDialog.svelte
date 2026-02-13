@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getSettings, type PlayerSettings } from '$lib/api';
+	import { getSettings, sanitiseDisplayName, type PlayerSettings } from '$lib/api';
 	import { auth } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
 
@@ -86,7 +86,7 @@
 					{#if settings?.displayName}
 						<div class="info-row">
 							<span class="info-label">WARFRAME NAME</span>
-							<span class="info-value">{settings.displayName.replace(/[^\x20-\x7E]/g, '').trim()}</span>
+							<span class="info-value">{sanitiseDisplayName(settings.displayName)}</span>
 						</div>
 					{/if}
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { masteryRoutes } from './mastery'
-import { createMockContainer, createMockAuthMiddleware, mockAuth } from '../../test-utils'
+import { createMockContainer, createMockOnboardedMiddleware, mockAuth, mockSettings } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import { MasteryState } from '@warframe-tracker/shared'
 
@@ -12,33 +12,23 @@ describe('Mastery Routes', () => {
   beforeEach(() => {
     container = createMockContainer()
     app = new Hono()
-    // Add mock auth middleware before routes
-    app.use('*', createMockAuthMiddleware(mockAuth))
+    app.use('*', createMockOnboardedMiddleware(mockAuth, mockSettings))
     app.route('/mastery', masteryRoutes(container))
   })
 
   describe('GET /mastery/summary', () => {
-    it('returns 400 when no player settings configured', async () => {
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(null)
-
-      const res = await app.request('/mastery/summary')
-
-      expect(res.status).toBe(400)
-      const body = await res.json()
-      expect(body.error).toBe('No player configured')
-    })
-
     it('returns mastery summary with categories and totals', async () => {
-      const mockSettings = {
-        id: 1,
-        userId: 1,
-        playerId: 'test-player',
-        platform: 'pc',
+      // Rebuild app with custom settings that have intrinsics
+      const customSettings = {
+        ...mockSettings,
         displayName: 'TestUser',
         lastSyncAt: new Date('2024-01-15'),
         railjackIntrinsics: 50,
         drifterIntrinsics: 30,
       }
+      app = new Hono()
+      app.use('*', createMockOnboardedMiddleware(mockAuth, customSettings))
+      app.route('/mastery', masteryRoutes(container))
 
       const mockCategories = [
         { category: 'Warframes', total: 50, mastered: 45 },
@@ -53,7 +43,6 @@ describe('Mastery Routes', () => {
         focusSchool: 'Zenurik',
       }
 
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.masteryRepo.getSummary).mockResolvedValue(mockCategories)
       vi.mocked(container.loadoutRepo.getWithItems).mockResolvedValue(mockLoadout)
       vi.mocked(container.masteryRepo.getEquipmentMasteryXP).mockResolvedValue(500000)
@@ -79,18 +68,6 @@ describe('Mastery Routes', () => {
     })
 
     it('calculates correct mastery rank from total XP', async () => {
-      const mockSettings = {
-        id: 1,
-        userId: 1,
-        playerId: 'test-player',
-        platform: 'pc',
-        displayName: null,
-        lastSyncAt: null,
-        railjackIntrinsics: 0,
-        drifterIntrinsics: 0,
-      }
-
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.masteryRepo.getSummary).mockResolvedValue([])
       vi.mocked(container.loadoutRepo.getWithItems).mockResolvedValue(null)
       vi.mocked(container.masteryRepo.getEquipmentMasteryXP).mockResolvedValue(225000) // MR ~9
@@ -106,28 +83,7 @@ describe('Mastery Routes', () => {
   })
 
   describe('GET /mastery/items', () => {
-    it('returns 400 when no player settings configured', async () => {
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(null)
-
-      const res = await app.request('/mastery/items')
-
-      expect(res.status).toBe(400)
-      const body = await res.json()
-      expect(body.error).toBe('No player configured')
-    })
-
     it('returns items with mastery status', async () => {
-      const mockSettings = {
-        id: 1,
-        userId: 1,
-        playerId: 'test-player',
-        platform: 'pc',
-        displayName: null,
-        lastSyncAt: null,
-        railjackIntrinsics: 0,
-        drifterIntrinsics: 0,
-      }
-
       const mockItems = [
         {
           id: 1,
@@ -145,7 +101,6 @@ describe('Mastery Routes', () => {
         },
       ]
 
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.masteryRepo.getItemsWithMastery).mockResolvedValue(mockItems)
 
       const res = await app.request('/mastery/items')
@@ -163,18 +118,6 @@ describe('Mastery Routes', () => {
     })
 
     it('passes category filter to repository', async () => {
-      const mockSettings = {
-        id: 1,
-        userId: 1,
-        playerId: 'test-player',
-        platform: 'pc',
-        displayName: null,
-        lastSyncAt: null,
-        railjackIntrinsics: 0,
-        drifterIntrinsics: 0,
-      }
-
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.masteryRepo.getItemsWithMastery).mockResolvedValue([])
 
       await app.request('/mastery/items?category=Warframes')
@@ -186,18 +129,6 @@ describe('Mastery Routes', () => {
     })
 
     it('passes mastered filter to repository', async () => {
-      const mockSettings = {
-        id: 1,
-        userId: 1,
-        playerId: 'test-player',
-        platform: 'pc',
-        displayName: null,
-        lastSyncAt: null,
-        railjackIntrinsics: 0,
-        drifterIntrinsics: 0,
-      }
-
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.masteryRepo.getItemsWithMastery).mockResolvedValue([])
 
       await app.request('/mastery/items?mastered=true')
@@ -209,18 +140,6 @@ describe('Mastery Routes', () => {
     })
 
     it('passes unmastered filter to repository', async () => {
-      const mockSettings = {
-        id: 1,
-        userId: 1,
-        playerId: 'test-player',
-        platform: 'pc',
-        displayName: null,
-        lastSyncAt: null,
-        railjackIntrinsics: 0,
-        drifterIntrinsics: 0,
-      }
-
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.masteryRepo.getItemsWithMastery).mockResolvedValue([])
 
       await app.request('/mastery/items?unmastered=true')

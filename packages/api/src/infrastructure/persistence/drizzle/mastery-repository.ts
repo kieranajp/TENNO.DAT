@@ -1,4 +1,4 @@
-import { eq, sql, and, gte, lt } from 'drizzle-orm'
+import { eq, sql, and, gte } from 'drizzle-orm'
 import type { DrizzleDb } from './connection'
 import { playerMastery, items } from './schema'
 import { getMasteryStateFromRank, getMasteryContribution, type MasteryRecord } from '../../../domain/entities/mastery'
@@ -72,14 +72,6 @@ export class DrizzleMasteryRepository implements MasteryRepository {
         vaulted: items.vaulted,
         xp: playerMastery.xp,
         rank: playerMastery.rank,
-        masteryState: sql<'unmastered' | 'mastered_30' | 'mastered_40'>`
-          case
-            when ${playerMastery.rank} IS NULL then 'unmastered'
-            when ${items.maxRank} > 30 and ${playerMastery.rank} >= 40 then 'mastered_40'
-            when ${playerMastery.rank} >= 30 then 'mastered_30'
-            else 'unmastered'
-          end
-        `,
       })
       .from(items)
       .leftJoin(

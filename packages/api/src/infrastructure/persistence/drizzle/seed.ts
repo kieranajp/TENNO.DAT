@@ -1,5 +1,5 @@
 import Items from '@wfcd/items'
-import { sql, eq } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import { db, schema } from './connection'
 import { WFCD_CATEGORIES, SeedingRules } from '@warframe-tracker/shared'
 import { createLogger } from '../../logger'

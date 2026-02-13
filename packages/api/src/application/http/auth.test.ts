@@ -22,6 +22,11 @@ describe('Auth Routes', () => {
   let app: Hono
 
   beforeEach(() => {
+    // Clear env vars so authRoutes picks up defaults (localhost)
+    delete process.env.STEAM_API_KEY
+    delete process.env.FRONTEND_URL
+    delete process.env.BASE_URL
+
     container = createMockContainer()
     app = new Hono()
     app.route('/auth', authRoutes(container))

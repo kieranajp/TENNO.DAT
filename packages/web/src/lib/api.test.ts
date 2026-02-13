@@ -3,8 +3,8 @@ import {
   formatBuildTime,
   getImageUrl,
   getMasteryRankIconUrl,
-  FocusSchool,
 } from './api'
+import { FocusSchool } from '@warframe-tracker/shared'
 
 describe('formatBuildTime', () => {
   it('returns null for null input', () => {

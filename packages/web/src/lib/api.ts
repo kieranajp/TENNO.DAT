@@ -1,6 +1,6 @@
-import { FocusSchool, MasteryState, type ItemAcquisitionData } from '@warframe-tracker/shared';
+import { MasteryState, type ItemAcquisitionData } from '@warframe-tracker/shared';
 
-export { FocusSchool, MasteryState, type ItemAcquisitionData };
+export { MasteryState, type ItemAcquisitionData };
 
 export const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
@@ -215,6 +215,11 @@ export async function syncProfile(): Promise<SyncResult> {
 		return handleResponse(res);
 	}
 	return res.json();
+}
+
+export function sanitiseDisplayName(name: string | null): string | null {
+	if (!name) return null;
+	return name.replace(/[^\x20-\x7E]/g, '').trim() || null;
 }
 
 export function getImageUrl(imageName: string | null): string | null {

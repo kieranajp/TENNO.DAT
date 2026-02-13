@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import { calculateMR, intrinsicsToXP } from '../../domain/entities/mastery'
 import { createLogger } from '../../infrastructure/logger'
-import { handleRouteError, noPlayerConfigured } from './errors'
+import { handleRouteError } from './errors'
 
 const log = createLogger('Mastery')
 
@@ -11,19 +11,14 @@ export function masteryRoutes(container: Container) {
 
   // Get mastery progress summary
   router.get('/summary', async (c) => {
-    const auth = c.get('auth')
-    const settings = await container.playerRepo.getSettings(auth.userId)
-
-    if (!settings?.playerId) {
-      return noPlayerConfigured(c, log)
-    }
+    const settings = c.get('playerSettings')
 
     try {
       const [categories, loadout, equipmentXP, starChartXP] = await Promise.all([
-        container.masteryRepo.getSummary(settings.playerId),
-        container.loadoutRepo.getWithItems(settings.playerId),
-        container.masteryRepo.getEquipmentMasteryXP(settings.playerId),
-        container.nodeRepo.getStarChartMasteryXP(settings.playerId),
+        container.masteryRepo.getSummary(settings.playerId!),
+        container.loadoutRepo.getWithItems(settings.playerId!),
+        container.masteryRepo.getEquipmentMasteryXP(settings.playerId!),
+        container.nodeRepo.getStarChartMasteryXP(settings.playerId!),
       ])
 
       const totals = categories.reduce(
@@ -65,22 +60,17 @@ export function masteryRoutes(container: Container) {
 
   // Get items with mastery status
   router.get('/items', async (c) => {
-    const auth = c.get('auth')
-    const settings = await container.playerRepo.getSettings(auth.userId)
-
-    if (!settings?.playerId) {
-      return noPlayerConfigured(c, log)
-    }
+    const settings = c.get('playerSettings')
 
     try {
       const [items, wishlistedIds, ownedComponentCounts] = await Promise.all([
-        container.masteryRepo.getItemsWithMastery(settings.playerId, {
+        container.masteryRepo.getItemsWithMastery(settings.playerId!, {
           category: c.req.query('category') || undefined,
           masteredOnly: c.req.query('mastered') === 'true',
           unmasteredOnly: c.req.query('unmastered') === 'true',
         }),
-        container.wishlistRepo.getWishlistedItemIds(settings.playerId),
-        container.primePartsRepo.getOwnedCounts(settings.playerId),
+        container.wishlistRepo.getWishlistedItemIds(settings.playerId!),
+        container.primePartsRepo.getOwnedCounts(settings.playerId!),
       ])
 
       const wishlistedSet = new Set(wishlistedIds)
@@ -89,7 +79,7 @@ export function masteryRoutes(container: Container) {
       const primeItemIds = items.filter(i => i.isPrime).map(i => i.id)
       const componentCounts = await container.itemRepo.getComponentCountsByItem(primeItemIds)
       const masteredItemIds = new Set(
-        await container.masteryRepo.getMasteredItemIds(settings.playerId)
+        await container.masteryRepo.getMasteredItemIds(settings.playerId!)
       )
 
       // Add wishlisted flag + prime progress, sort: wishlisted first, then by name

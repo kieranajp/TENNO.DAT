@@ -9,6 +9,7 @@ import {
   GLOBAL_EXCLUSIONS,
   GLOBAL_MAX_RANK_OVERRIDES,
   PRIME_OVERRIDES,
+  RANK_THRESHOLDS,
 } from './categories'
 
 /**
@@ -149,8 +150,8 @@ export class SeedingRules {
       return item.maxLevelCap
     }
 
-    // Default to 30
-    return 30
+    // Default to standard max rank
+    return RANK_THRESHOLDS.standard
   }
 
   /**

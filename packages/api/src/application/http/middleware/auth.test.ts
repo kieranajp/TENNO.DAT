@@ -224,7 +224,7 @@ describe('Auth Middleware', () => {
       expect(body.code).toBe('ONBOARDING_REQUIRED')
     })
 
-    it('allows request when player is fully configured', async () => {
+    it('allows request and sets playerSettings when player is fully configured', async () => {
       vi.mocked(container.playerRepo.getSettings).mockResolvedValue({
         id: 1,
         userId: 1,
@@ -242,13 +242,17 @@ describe('Auth Middleware', () => {
         await next()
       })
       app.use('*', createOnboardingMiddleware(container))
-      app.get('/protected', (c) => c.json({ ok: true }))
+      app.get('/protected', (c) => {
+        const settings = c.get('playerSettings')
+        return c.json({ ok: true, playerId: settings.playerId })
+      })
 
       const res = await app.request('/protected')
 
       expect(res.status).toBe(200)
       const body = await res.json()
       expect(body.ok).toBe(true)
+      expect(body.playerId).toBe('configured-player')
     })
 
     it('queries player settings with correct userId', async () => {
