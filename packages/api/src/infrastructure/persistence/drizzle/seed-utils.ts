@@ -203,6 +203,13 @@ export const ZERO_MASTERY_PLANETS = new Set([
   'Dark Refractory',
 ])
 
+// Individual nodes that give 0 mastery XP despite being on mastery-granting planets
+export const ZERO_MASTERY_NODES = new Set([
+  'SolNode94',  // Apollodorus (Mercury)
+  'SolNode28',  // Terminus (Mercury)
+  'SolNode451', // Saya's Vigil (Earth)
+])
+
 // Junctions data (not in any API, must be hardcoded)
 export const JUNCTIONS: Array<{ key: string; name: string; planet: string }> = [
   { key: 'EarthToVenusJunction', name: 'Venus Junction', planet: 'Earth' },

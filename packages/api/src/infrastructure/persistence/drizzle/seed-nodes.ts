@@ -7,6 +7,7 @@ import {
   RAILJACK_NODE_XP,
   JUNCTIONS,
   ZERO_MASTERY_PLANETS,
+  ZERO_MASTERY_NODES,
 } from './seed-utils'
 
 const log = createLogger('SeedNodes')
@@ -57,7 +58,7 @@ async function seedNodes() {
       const wsNode = warframestatData[nodeKey]
       const missionType = wsNode?.type || null
 
-      const masteryXp = ZERO_MASTERY_PLANETS.has(planet) ? 0 : (node.xp ?? DEFAULT_NODE_XP)
+      const masteryXp = ZERO_MASTERY_PLANETS.has(planet) || ZERO_MASTERY_NODES.has(nodeKey) ? 0 : (node.xp ?? DEFAULT_NODE_XP)
 
       missionNodes.push({
         nodeKey,
