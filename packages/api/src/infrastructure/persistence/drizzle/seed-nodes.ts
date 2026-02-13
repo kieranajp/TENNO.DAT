@@ -50,8 +50,8 @@ async function seedNodes() {
 
   for (const [planet, nodes] of Object.entries(frameHubData)) {
     for (const [nodeKey, node] of Object.entries(nodes)) {
-      // Only include SolNodes (skip ClanNodes which are Dark Sector)
-      if (!nodeKey.startsWith('SolNode')) continue
+      // Include SolNodes and SettlementNodes (Phobos), skip ClanNodes (Dark Sector)
+      if (!nodeKey.startsWith('SolNode') && !nodeKey.startsWith('SettlementNode')) continue
 
       // Get mission type from warframestat if available
       const wsNode = warframestatData[nodeKey]
