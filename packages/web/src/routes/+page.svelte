@@ -8,6 +8,7 @@
 	let summary: MasterySummary | null = $state(null);
 	let sortedCategories = $derived(summary ? sortByCategory(summary.categories) : []);
 	let syncing = $state(false);
+	let syncCooldown = $state(false);
 	let error: string | null = $state(null);
 	let selectedItem: ItemDetails | null = $state(null);
 	let loadingItem = $state(false);
@@ -29,6 +30,7 @@
 	});
 
 	async function handleSync() {
+		if (syncCooldown) return;
 		syncing = true;
 		error = null;
 		try {
@@ -42,6 +44,8 @@
 			error = 'Sync failed. Check your Account ID.';
 		} finally {
 			syncing = false;
+			syncCooldown = true;
+			setTimeout(() => syncCooldown = false, 30_000);
 		}
 	}
 
@@ -133,7 +137,7 @@
 						</div>
 					</div>
 
-					<button class="btn-retro sync-btn" onclick={handleSync} disabled={syncing}>
+					<button class="btn-retro sync-btn" onclick={handleSync} disabled={syncing || syncCooldown}>
 						{#if syncing}
 							<span class="spinner"></span>
 						{:else}
