@@ -342,6 +342,8 @@
 		padding: 0 0.5rem
 		gap: 0.25rem
 		padding-top: 0.25rem
+		overflow-x: auto
+		-webkit-overflow-scrolling: touch
 
 	.nav-tab
 		padding: 0.25rem 1rem
@@ -355,6 +357,8 @@
 		text-transform: uppercase
 		margin-bottom: -$border-width
 		transition: all $transition-fast
+		white-space: nowrap
+		flex-shrink: 0
 
 		&:hover
 			background: $gray-100
@@ -368,11 +372,14 @@
 
 	.main-content
 		flex: 1
-		padding: 1.5rem
+		padding: 0.75rem
 		overflow-y: auto
 		overflow-x: hidden
 		background: $kim-terminal-light
 		min-width: 0
+
+		@media (min-width: 768px)
+			padding: 1.5rem
 
 	// Easter egg: Minimize to title bar
 	.main-window.minimized
