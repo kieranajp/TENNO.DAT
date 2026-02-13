@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { syncRoutes } from './sync'
-import { createMockContainer, createMockAuthMiddleware, mockAuth } from '../../test-utils'
+import { createMockContainer, createMockOnboardedMiddleware, mockAuth, mockSettings } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import type { ProfileData } from '../../domain/ports/profile-api'
 
@@ -12,13 +12,13 @@ describe('Sync Routes', () => {
   beforeEach(() => {
     container = createMockContainer()
     app = new Hono()
-    app.use('*', createMockAuthMiddleware(mockAuth))
+    app.use('*', createMockOnboardedMiddleware(mockAuth, mockSettings))
     app.route('/sync', syncRoutes(container))
   })
 
   describe('GET /sync/settings', () => {
     it('returns player settings', async () => {
-      const mockSettings = {
+      const settings = {
         id: 1,
         userId: 1,
         playerId: 'test-player-id',
@@ -29,7 +29,7 @@ describe('Sync Routes', () => {
         drifterIntrinsics: 30,
       }
 
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
+      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(settings)
 
       const res = await app.request('/sync/settings')
 
@@ -97,17 +97,6 @@ describe('Sync Routes', () => {
   })
 
   describe('POST /sync/profile', () => {
-    const mockSettings = {
-      id: 1,
-      userId: 1,
-      playerId: 'test-player',
-      platform: 'pc',
-      displayName: null,
-      lastSyncAt: null,
-      railjackIntrinsics: 0,
-      drifterIntrinsics: 0,
-    }
-
     const createMockProfile = (overrides: Partial<ProfileData> = {}): ProfileData => ({
       displayName: 'TestPlayer',
       playerLevel: 30,
@@ -129,30 +118,8 @@ describe('Sync Routes', () => {
     })
 
     beforeEach(() => {
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.itemRepo.findAllAsMap).mockResolvedValue(new Map())
       vi.mocked(container.nodeRepo.findAllAsMap).mockResolvedValue(new Map())
-    })
-
-    it('returns 400 when no player configured', async () => {
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(null)
-
-      const res = await app.request('/sync/profile', { method: 'POST' })
-
-      expect(res.status).toBe(400)
-      const body = await res.json()
-      expect(body.error).toBe('No player configured')
-    })
-
-    it('returns 400 when playerId is missing', async () => {
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue({
-        ...mockSettings,
-        playerId: null,
-      })
-
-      const res = await app.request('/sync/profile', { method: 'POST' })
-
-      expect(res.status).toBe(400)
     })
 
     it('fetches profile from DE API with correct platform', async () => {

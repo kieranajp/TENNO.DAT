@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { starchartRoutes } from './starchart'
-import { createMockContainer, createMockAuthMiddleware, mockAuth } from '../../test-utils'
+import { createMockContainer, createMockOnboardedMiddleware, mockAuth, mockSettings } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
 
 describe('Starchart Routes', () => {
@@ -11,34 +11,12 @@ describe('Starchart Routes', () => {
   beforeEach(() => {
     container = createMockContainer()
     app = new Hono()
-    // Add mock auth middleware before routes
-    app.use('*', createMockAuthMiddleware(mockAuth))
+    app.use('*', createMockOnboardedMiddleware(mockAuth, mockSettings))
     app.route('/starchart', starchartRoutes(container))
   })
 
   describe('GET /starchart/nodes', () => {
-    it('returns 400 when no player settings configured', async () => {
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(null)
-
-      const res = await app.request('/starchart/nodes')
-
-      expect(res.status).toBe(400)
-      const body = await res.json()
-      expect(body.error).toBe('No player configured')
-    })
-
     it('returns star chart progress for normal mode by default', async () => {
-      const mockSettings = {
-        id: 1,
-        userId: 1,
-        playerId: 'test-player',
-        platform: 'pc',
-        displayName: null,
-        lastSyncAt: null,
-        railjackIntrinsics: 0,
-        drifterIntrinsics: 0,
-      }
-
       const mockProgress = {
         planets: [
           {
@@ -61,7 +39,6 @@ describe('Starchart Routes', () => {
         },
       }
 
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.nodeRepo.getNodesWithCompletion).mockResolvedValue(mockProgress)
 
       const res = await app.request('/starchart/nodes')
@@ -73,17 +50,6 @@ describe('Starchart Routes', () => {
     })
 
     it('returns steel path progress when steelPath=true', async () => {
-      const mockSettings = {
-        id: 1,
-        userId: 1,
-        playerId: 'test-player',
-        platform: 'pc',
-        displayName: null,
-        lastSyncAt: null,
-        railjackIntrinsics: 0,
-        drifterIntrinsics: 0,
-      }
-
       const mockProgress = {
         planets: [],
         summary: {
@@ -94,7 +60,6 @@ describe('Starchart Routes', () => {
         },
       }
 
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.nodeRepo.getNodesWithCompletion).mockResolvedValue(mockProgress)
 
       const res = await app.request('/starchart/nodes?steelPath=true')
@@ -104,18 +69,6 @@ describe('Starchart Routes', () => {
     })
 
     it('treats steelPath=false explicitly as normal mode', async () => {
-      const mockSettings = {
-        id: 1,
-        userId: 1,
-        playerId: 'test-player',
-        platform: 'pc',
-        displayName: null,
-        lastSyncAt: null,
-        railjackIntrinsics: 0,
-        drifterIntrinsics: 0,
-      }
-
-      vi.mocked(container.playerRepo.getSettings).mockResolvedValue(mockSettings)
       vi.mocked(container.nodeRepo.getNodesWithCompletion).mockResolvedValue({
         planets: [],
         summary: { completedNodes: 0, totalNodes: 0, completedXP: 0, totalXP: 0 },

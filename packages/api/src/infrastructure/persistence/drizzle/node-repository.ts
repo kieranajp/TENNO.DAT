@@ -5,6 +5,20 @@ import { nodes, playerNodes } from './schema'
 import type { Node, NodeCompletion } from '../../../domain/entities/node'
 import type { NodeRepository, StarChartProgress, PlanetProgress, NodeWithCompletion } from '../../../domain/ports/node-repository'
 
+function calculatePlanetProgress(planetName: string, nodesList: NodeWithCompletion[]): PlanetProgress {
+  const completed = nodesList.filter(n => n.completed).length
+  const xpEarned = nodesList.filter(n => n.completed).reduce((sum, n) => sum + n.masteryXp, 0)
+  const xpTotal = nodesList.reduce((sum, n) => sum + n.masteryXp, 0)
+  return {
+    name: planetName,
+    completed,
+    total: nodesList.length,
+    xpEarned,
+    xpTotal,
+    nodes: nodesList,
+  }
+}
+
 export class DrizzleNodeRepository implements NodeRepository {
   constructor(private db: DrizzleDb) {}
 
@@ -128,52 +142,25 @@ export class DrizzleNodeRepository implements NodeRepository {
     let totalCompletedXP = 0
     let totalXP = 0
 
+    const addPlanet = (planetName: string, nodesList: NodeWithCompletion[]) => {
+      const progress = calculatePlanetProgress(planetName, nodesList)
+      planets.push(progress)
+      totalCompletedNodes += progress.completed
+      totalNodes += progress.total
+      totalCompletedXP += progress.xpEarned
+      totalXP += progress.xpTotal
+    }
+
     for (const planetName of PLANET_ORDER) {
       const nodesList = planetMap.get(planetName)
       if (!nodesList || nodesList.length === 0) continue
-
-      const completed = nodesList.filter(n => n.completed).length
-      const total = nodesList.length
-      const xpEarned = nodesList.filter(n => n.completed).reduce((sum, n) => sum + n.masteryXp, 0)
-      const xpTotal = nodesList.reduce((sum, n) => sum + n.masteryXp, 0)
-
-      planets.push({
-        name: planetName,
-        completed,
-        total,
-        xpEarned,
-        xpTotal,
-        nodes: nodesList,
-      })
-
-      totalCompletedNodes += completed
-      totalNodes += total
-      totalCompletedXP += xpEarned
-      totalXP += xpTotal
+      addPlanet(planetName, nodesList)
     }
 
     // Add any remaining planets not in the order list
     for (const [planetName, nodesList] of Array.from(planetMap.entries())) {
       if ((PLANET_ORDER as readonly string[]).includes(planetName)) continue
-
-      const completed = nodesList.filter(n => n.completed).length
-      const total = nodesList.length
-      const xpEarned = nodesList.filter(n => n.completed).reduce((sum, n) => sum + n.masteryXp, 0)
-      const xpTotal = nodesList.reduce((sum, n) => sum + n.masteryXp, 0)
-
-      planets.push({
-        name: planetName,
-        completed,
-        total,
-        xpEarned,
-        xpTotal,
-        nodes: nodesList,
-      })
-
-      totalCompletedNodes += completed
-      totalNodes += total
-      totalCompletedXP += xpEarned
-      totalXP += xpTotal
+      addPlanet(planetName, nodesList)
     }
 
     return {

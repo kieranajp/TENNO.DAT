@@ -5,6 +5,17 @@ import type { Item } from '../../../domain/entities/item'
 import type { ItemRepository, PersonalStats } from '../../../domain/ports/item-repository'
 import type { ItemAcquisitionData } from '@warframe-tracker/shared'
 
+function groupBy<T, K>(items: T[], keyFn: (item: T) => K): Map<K, T[]> {
+  const map = new Map<K, T[]>()
+  for (const item of items) {
+    const key = keyFn(item)
+    const arr = map.get(key) ?? []
+    arr.push(item)
+    map.set(key, arr)
+  }
+  return map
+}
+
 export class DrizzleItemRepository implements ItemRepository {
   constructor(private db: DrizzleDb) {}
 
@@ -95,12 +106,7 @@ export class DrizzleItemRepository implements ItemRepository {
       : []
 
     // Group component drops by component ID
-    const componentDropsMap = new Map<number, typeof allComponentDrops>()
-    for (const drop of allComponentDrops) {
-      const existing = componentDropsMap.get(drop.componentId) ?? []
-      existing.push(drop)
-      componentDropsMap.set(drop.componentId, existing)
-    }
+    const componentDropsMap = groupBy(allComponentDrops, d => d.componentId)
 
     // Get required resources with quantities
     const resourceRequirements = await this.db
@@ -177,6 +183,7 @@ export class DrizzleItemRepository implements ItemRepository {
     components: Array<{
       id: number
       name: string
+      itemCount: number
       ducats: number | null
       drops: Array<{ location: string; chance: number; rarity: string | null }>
     }>
@@ -208,19 +215,8 @@ export class DrizzleItemRepository implements ItemRepository {
           .where(inArray(componentDrops.componentId, compIds))
       : []
 
-    const dropsMap = new Map<number, typeof drops>()
-    for (const d of drops) {
-      const arr = dropsMap.get(d.componentId) ?? []
-      arr.push(d)
-      dropsMap.set(d.componentId, arr)
-    }
-
-    const compsMap = new Map<number, typeof comps>()
-    for (const c of comps) {
-      const arr = compsMap.get(c.itemId) ?? []
-      arr.push(c)
-      compsMap.set(c.itemId, arr)
-    }
+    const dropsMap = groupBy(drops, d => d.componentId)
+    const compsMap = groupBy(comps, c => c.itemId)
 
     return primeItems.map(item => ({
       ...item,

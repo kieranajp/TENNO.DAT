@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, getItemDetails, type MasterySummary, type ItemDetails } from '$lib/api';
+	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, getItemDetails, sanitiseDisplayName, type MasterySummary, type ItemDetails } from '$lib/api';
 	import { sortByCategory } from '$lib/categories';
 	import { CATEGORIES } from '@warframe-tracker/shared';
 	import ItemModal from '$lib/components/ItemModal.svelte';
@@ -101,7 +101,7 @@
 						<div class="mastery-rank">
 							MR {summary.masteryRank?.rank ?? '??'}
 							{#if summary.displayName}
-								<span class="rank-title">{summary.displayName.replace(/[^\x20-\x7E]/g, '').trim()}</span>
+								<span class="rank-title">{sanitiseDisplayName(summary.displayName)}</span>
 							{/if}
 						</div>
 					</div>

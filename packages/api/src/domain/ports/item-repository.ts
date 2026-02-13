@@ -24,6 +24,7 @@ export interface ItemRepository {
     components: Array<{
       id: number
       name: string
+      itemCount: number
       ducats: number | null
       drops: Array<{ location: string; chance: number; rarity: string | null }>
     }>

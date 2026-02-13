@@ -4,9 +4,7 @@ import type { DrizzleDb } from './connection'
 import { sessions } from './schema'
 import type { Session } from '../../../domain/entities/user'
 import type { SessionRepository } from '../../../domain/ports/session-repository'
-
-const SHORT_SESSION_HOURS = 24
-const LONG_SESSION_DAYS = 30
+import { SESSION_TTL_SHORT, SESSION_TTL_LONG } from '../../../application/http/constants'
 
 export class DrizzleSessionRepository implements SessionRepository {
   constructor(private db: DrizzleDb) {}
@@ -25,8 +23,8 @@ export class DrizzleSessionRepository implements SessionRepository {
   async create(userId: number, rememberMe: boolean): Promise<Session> {
     const id = randomBytes(32).toString('hex')
     const expiresAt = rememberMe
-      ? new Date(Date.now() + LONG_SESSION_DAYS * 24 * 60 * 60 * 1000)
-      : new Date(Date.now() + SHORT_SESSION_HOURS * 60 * 60 * 1000)
+      ? new Date(Date.now() + SESSION_TTL_LONG * 1000)
+      : new Date(Date.now() + SESSION_TTL_SHORT * 1000)
 
     const result = await this.db
       .insert(sessions)
@@ -40,8 +38,8 @@ export class DrizzleSessionRepository implements SessionRepository {
   }
 
   async deleteExpired(): Promise<number> {
-    const result = await this.db.delete(sessions).where(lt(sessions.expiresAt, new Date()))
-    return result.rowCount ?? 0
+    const deleted = await this.db.delete(sessions).where(lt(sessions.expiresAt, new Date())).returning({ id: sessions.id })
+    return deleted.length
   }
 
   async deleteAllForUser(userId: number): Promise<void> {

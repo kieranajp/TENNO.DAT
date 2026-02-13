@@ -2,6 +2,7 @@ import { vi } from 'vitest'
 import type { MiddlewareHandler } from 'hono'
 import type { Container } from './infrastructure/bootstrap/container'
 import type { AuthContext } from './application/http/middleware/auth'
+import type { PlayerSettings } from './domain/entities/player'
 
 /**
  * Creates a mock container with all repository methods stubbed.
@@ -99,4 +100,33 @@ export function createMockAuthMiddleware(auth: AuthContext): MiddlewareHandler {
 export const mockAuth: AuthContext = {
   userId: 1,
   steamId: '76561198012345678',
+}
+
+/**
+ * Default mock player settings for tests.
+ */
+export const mockSettings: PlayerSettings = {
+  id: 1,
+  userId: 1,
+  playerId: 'test-player',
+  platform: 'pc',
+  displayName: null,
+  lastSyncAt: null,
+  railjackIntrinsics: 0,
+  drifterIntrinsics: 0,
+}
+
+/**
+ * Creates a middleware that injects both mock auth and player settings contexts.
+ * Use this to test routes behind the onboarding middleware.
+ */
+export function createMockOnboardedMiddleware(
+  auth: AuthContext,
+  settings: PlayerSettings
+): MiddlewareHandler {
+  return async (c, next) => {
+    c.set('auth', auth)
+    c.set('playerSettings', settings)
+    await next()
+  }
 }

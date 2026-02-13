@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-
-	const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+	import { API_BASE } from '$lib/api';
 
 	let rememberMe = $state(true);
 	let error = $state<string | null>(null);

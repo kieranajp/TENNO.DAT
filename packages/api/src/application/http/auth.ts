@@ -4,23 +4,20 @@ import type { Container } from '../../infrastructure/bootstrap/container'
 import { SteamOpenIDService } from '../../infrastructure/external/steam-openid'
 import { createLogger } from '../../infrastructure/logger'
 import { handleRouteError } from './errors'
+import { SESSION_COOKIE, SESSION_TTL_SHORT, SESSION_TTL_LONG } from './constants'
 
 const log = createLogger('Auth')
 
-const SESSION_COOKIE = 'tenno_session'
 const REMEMBER_COOKIE = 'tenno_remember'
-const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'
-const STEAM_API_KEY = process.env.STEAM_API_KEY ?? ''
-const FRONTEND_URL = process.env.FRONTEND_URL ?? 'http://localhost:5173'
-
-// Session durations
 const AUTH_FLOW_TTL = 300 // 5 minutes for auth flow cookies
-const SESSION_TTL_SHORT = 24 * 60 * 60 // 24 hours
-const SESSION_TTL_LONG = 30 * 24 * 60 * 60 // 30 days with remember me
 
 export function authRoutes(container: Container) {
+  const baseUrl = process.env.BASE_URL ?? 'http://localhost:3000'
+  const steamApiKey = process.env.STEAM_API_KEY ?? ''
+  const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173'
+
   const router = new Hono()
-  const steam = new SteamOpenIDService(BASE_URL)
+  const steam = new SteamOpenIDService(baseUrl)
 
   // GET /auth/steam - Redirect to Steam login
   router.get('/steam', async (c) => {
@@ -48,12 +45,12 @@ export function authRoutes(container: Container) {
     try {
       // Reconstruct full URL for OpenID verification
       const requestUrl = new URL(c.req.url)
-      const fullUrl = `${BASE_URL}${requestUrl.pathname}${requestUrl.search}`
+      const fullUrl = `${baseUrl}${requestUrl.pathname}${requestUrl.search}`
       const steamId = await steam.verifyAssertion(fullUrl)
 
       // Fetch Steam profile
-      const profile = STEAM_API_KEY
-        ? await steam.fetchProfile(steamId, STEAM_API_KEY)
+      const profile = steamApiKey
+        ? await steam.fetchProfile(steamId, steamApiKey)
         : { steamId, displayName: null, avatarUrl: null }
 
       // Find or create user
@@ -91,10 +88,10 @@ export function authRoutes(container: Container) {
       log.info('User logged in', { userId: user.id, steamId, rememberMe })
 
       // Redirect to frontend
-      return c.redirect(FRONTEND_URL)
+      return c.redirect(frontendUrl)
     } catch (error) {
       log.error('Steam callback failed', error instanceof Error ? error : undefined)
-      return c.redirect(`${FRONTEND_URL}/login?error=auth_failed`)
+      return c.redirect(`${frontendUrl}/login?error=auth_failed`)
     }
   })
 

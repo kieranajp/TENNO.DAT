@@ -37,6 +37,7 @@ app.route('/auth', authRoutes(container))
 // Note: Must use both exact path and wildcard since /path/* doesn't match /path
 app.use('/sync', authMiddleware)
 app.use('/sync/*', authMiddleware)
+app.use('/sync/profile', onboardingMiddleware)
 app.use('/mastery', authMiddleware, onboardingMiddleware)
 app.use('/mastery/*', authMiddleware, onboardingMiddleware)
 // /items and /items/categories are public (static catalog)

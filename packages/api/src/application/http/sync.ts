@@ -3,7 +3,7 @@ import { Platform } from '@warframe-tracker/shared'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import { getRankFromXp } from '../../domain/entities/mastery'
 import { createLogger } from '../../infrastructure/logger'
-import { handleRouteError, noPlayerConfigured } from './errors'
+import { handleRouteError } from './errors'
 
 const log = createLogger('Sync')
 
@@ -48,11 +48,7 @@ export function syncRoutes(container: Container) {
 
   router.post('/profile', async (c) => {
     const auth = c.get('auth')
-    const settings = await container.playerRepo.getSettings(auth.userId)
-
-    if (!settings?.playerId) {
-      return noPlayerConfigured(c, log)
-    }
+    const settings = c.get('playerSettings')
 
     try {
       const platform = Platform.fromId(settings.platform ?? 'pc')
@@ -62,7 +58,7 @@ export function syncRoutes(container: Container) {
 
       log.info('Starting sync', { userId: auth.userId, playerId: settings.playerId, platform: platform.id })
 
-      const profile = await container.profileApi.fetch(settings.playerId, platform)
+      const profile = await container.profileApi.fetch(settings.playerId!, platform)
 
       if (profile.displayName) {
         await container.playerRepo.updateDisplayName(auth.userId, profile.displayName)
