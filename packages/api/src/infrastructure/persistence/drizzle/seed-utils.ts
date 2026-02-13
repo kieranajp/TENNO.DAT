@@ -189,7 +189,19 @@ export function extractDrops(item: { drops?: RawDrop[] }) {
 // Constants for star chart node XP values
 export const JUNCTION_XP = 1000
 export const DEFAULT_NODE_XP = 24
-export const RAILJACK_NODE_XP = 69
+export const RAILJACK_NODE_XP = 0
+
+// Planets/regions whose nodes give 0 mastery XP
+export const ZERO_MASTERY_PLANETS = new Set([
+  'Deimos',
+  'Zariman',
+  'Duviri',
+  'Void',
+  'Lua',
+  'Kuva Fortress',
+  'Höllvania',
+  'Dark Refractory',
+])
 
 // Junctions data (not in any API, must be hardcoded)
 export const JUNCTIONS: Array<{ key: string; name: string; planet: string }> = [

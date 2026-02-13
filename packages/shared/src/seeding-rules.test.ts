@@ -82,6 +82,7 @@ describe('SeedingRules', () => {
     it.each([
       ['40 for Kuva weapons', { uniqueName: '/Lotus/Weapons/Grineer/KuvaBraton', name: 'Kuva Braton' }, 'Primary', 40],
       ['40 for Tenet weapons', { uniqueName: '/Lotus/Weapons/Corpus/TenetEnvoy', name: 'Tenet Envoy' }, 'Secondary', 40],
+      ['40 for Coda weapons', { uniqueName: '/Lotus/Weapons/Tenno/1999/CodaStrun', name: 'Coda Strun' }, 'Primary', 40],
       ['40 for Paracesis', { uniqueName: '/Lotus/Weapons/Tenno/Melee/Paracesis', name: 'Paracesis' }, 'Melee', 40],
       ['40 for Necramechs', { uniqueName: '/Lotus/Powersuits/EntratiMech/Voidrig', name: 'Voidrig' }, 'Necramechs', 40],
       ['maxLevelCap from item data', { uniqueName: '/Lotus/Weapons/Tenno/Rifle/Braton', name: 'Braton', maxLevelCap: 35 }, 'Primary', 35],

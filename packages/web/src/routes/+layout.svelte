@@ -14,7 +14,7 @@
 	let currentTime = $state('');
 	let username = $state('TENNO');
 	let isMinimized = $state(false);
-	let showTechrot = $state(false);
+	let showEntrati = $state(false);
 	let isGlitching = $state(false);
 	let showSettingsDialog = $state(false);
 	let showSystemInfoDialog = $state(false);
@@ -39,9 +39,9 @@
 	}
 
 	function handleClose() {
-		showTechrot = true;
+		showEntrati = true;
 		setTimeout(() => {
-			showTechrot = false;
+			showEntrati = false;
 		}, 1500);
 	}
 
@@ -161,11 +161,11 @@
 <div class="crt-overlay"></div>
 <div class="noise-overlay"></div>
 
-<!-- Techrot Virus Easter Egg -->
-{#if showTechrot}
-	<div class="techrot-overlay">
-		<img src="/techrot.webp" alt="Techrot icon" />
-		<div class="techrot-text">TECHROT DETECTED</div>
+<!-- Entrati Virus Easter Egg -->
+{#if showEntrati}
+	<div class="entrati-overlay">
+		<img src="/entrati.png" alt="Entrati Eye" />
+		<div class="entrati-text">WE END AS WE BEGAN</div>
 	</div>
 {/if}
 
@@ -420,8 +420,8 @@
 			transform: translate(0)
 			clip-path: none
 
-	// Easter egg: Techrot virus overlay (CRT green aesthetic)
-	:global(.techrot-overlay)
+	// Easter egg: Entrati virus overlay (CRT green aesthetic)
+	:global(.entrati-overlay)
 		position: fixed
 		inset: 0
 		background: rgba(0, 20, 0, 0.95)
@@ -430,35 +430,35 @@
 		flex-direction: column
 		align-items: center
 		justify-content: center
-		animation: techrot-flash 0.15s steps(2) infinite
+		animation: entrati-flash 0.15s steps(2) infinite
 
 		img
 			width: 200px
 			height: 200px
 			filter: drop-shadow(0 0 20px #00ff00) drop-shadow(0 0 40px #00ff00) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(3)
-			animation: techrot-pulse 0.3s ease-in-out infinite alternate
+			animation: entrati-pulse 0.3s ease-in-out infinite alternate
 
-		.techrot-text
+		.entrati-text
 			margin-top: 2rem
 			font-family: monospace
 			font-size: 2rem
 			color: #00ff00
 			text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00
-			animation: techrot-text-flicker 0.1s steps(2) infinite
+			animation: entrati-text-flicker 0.1s steps(2) infinite
 
-	@keyframes techrot-flash
+	@keyframes entrati-flash
 		0%
 			background: rgba(0, 20, 0, 0.95)
 		50%
 			background: rgba(0, 40, 0, 0.9)
 
-	@keyframes techrot-pulse
+	@keyframes entrati-pulse
 		from
 			transform: scale(1)
 		to
 			transform: scale(1.1)
 
-	@keyframes techrot-text-flicker
+	@keyframes entrati-text-flicker
 		0%
 			opacity: 1
 		50%
