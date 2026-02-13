@@ -19,6 +19,33 @@
 	let showSettingsDialog = $state(false);
 	let showSystemInfoDialog = $state(false);
 
+	// Tab scroll arrows
+	let tabsBar: HTMLElement | undefined = $state();
+	let canScrollLeft = $state(false);
+	let canScrollRight = $state(false);
+
+	function updateScrollButtons() {
+		if (!tabsBar) return;
+		canScrollLeft = tabsBar.scrollLeft > 0;
+		canScrollRight = tabsBar.scrollLeft + tabsBar.clientWidth < tabsBar.scrollWidth - 1;
+	}
+
+	function scrollTabs(direction: number) {
+		tabsBar?.scrollBy({ left: direction * 80, behavior: 'smooth' });
+	}
+
+	$effect(() => {
+		if (!tabsBar) return;
+		updateScrollButtons();
+		tabsBar.addEventListener('scroll', updateScrollButtons);
+		const ro = new ResizeObserver(updateScrollButtons);
+		ro.observe(tabsBar);
+		return () => {
+			tabsBar!.removeEventListener('scroll', updateScrollButtons);
+			ro.disconnect();
+		};
+	});
+
 	// Auth state from store subscription
 	let authUser = $state<AuthUser | null>(null);
 	let authChecked = $state(false);
@@ -244,17 +271,29 @@
 			</div>
 
 			<!-- Navigation Tabs -->
-			<nav class="nav-tabs-bar">
-				{#each navItems as item}
-					<a
-						href={item.href}
-						class="nav-tab"
-						class:active={$page.url.pathname === item.href}
-					>
-						{item.label}
-					</a>
-				{/each}
-			</nav>
+			<div class="nav-tabs-wrapper">
+				{#if canScrollLeft}
+					<button class="nav-scroll-btn" onclick={() => scrollTabs(-1)} aria-label="Scroll tabs left">
+						<span class="material-icons">chevron_left</span>
+					</button>
+				{/if}
+				<nav class="nav-tabs-bar" bind:this={tabsBar}>
+					{#each navItems as item}
+						<a
+							href={item.href}
+							class="nav-tab"
+							class:active={$page.url.pathname === item.href}
+						>
+							{item.label}
+						</a>
+					{/each}
+				</nav>
+				{#if canScrollRight}
+					<button class="nav-scroll-btn" onclick={() => scrollTabs(1)} aria-label="Scroll tabs right">
+						<span class="material-icons">chevron_right</span>
+					</button>
+				{/if}
+			</div>
 
 			<div class="main-content">
 				{@render children()}
@@ -335,15 +374,44 @@
 		background: $kim-accent
 		border: 1px solid black
 
-	.nav-tabs-bar
+	.nav-tabs-wrapper
 		display: flex
 		background: $gray-300
 		border-bottom: $border-width solid $kim-border-dark
+
+	.nav-scroll-btn
+		display: flex
+		align-items: center
+		justify-content: center
+		background: $gray-200
+		border: none
+		border-bottom: $border-width solid $kim-border-dark
+		margin-bottom: -$border-width
+		color: $gray-700
+		cursor: pointer
+		padding: 0 0.125rem
+		flex-shrink: 0
+		transition: background $transition-fast
+
+		.material-icons
+			font-size: $font-size-base
+
+		&:hover
+			background: $gray-100
+			color: $kim-accent
+
+	.nav-tabs-bar
+		display: flex
 		padding: 0 0.5rem
 		gap: 0.25rem
 		padding-top: 0.25rem
-		overflow-x: auto
-		-webkit-overflow-scrolling: touch
+		overflow-x: scroll
+		scrollbar-width: none
+		flex: 1
+		min-width: 0
+
+		&::-webkit-scrollbar
+			display: none
 
 	.nav-tab
 		padding: 0.25rem 1rem
