@@ -351,9 +351,9 @@ export const GLOBAL_EXCLUSIONS: SeedingRule[] = [
  */
 export const GLOBAL_MAX_RANK_OVERRIDES: MaxRankOverride[] = [
   {
-    matcher: /^(Kuva |Tenet )/,
+    matcher: /^(Kuva |Tenet |Coda )/,
     maxRank: 40,
-    reason: 'Kuva and Tenet weapons cap at rank 40',
+    reason: 'Kuva, Tenet, and Coda weapons cap at rank 40',
   },
   {
     matcher: 'Paracesis',

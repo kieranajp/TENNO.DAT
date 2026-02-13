@@ -342,8 +342,8 @@ describe('seed-utils', () => {
       expect(DEFAULT_NODE_XP).toBe(24)
     })
 
-    it('RAILJACK_NODE_XP is 69', () => {
-      expect(RAILJACK_NODE_XP).toBe(69)
+    it('RAILJACK_NODE_XP is 0 (railjack nodes do not grant mastery)', () => {
+      expect(RAILJACK_NODE_XP).toBe(0)
     })
   })
 
