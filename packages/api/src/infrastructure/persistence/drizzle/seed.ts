@@ -194,10 +194,11 @@ async function seed() {
   const itemIdMap = new Map(allDbItems.map(item => [item.uniqueName, item.id]))
 
   // Clear existing relational data (for re-seeding)
+  // itemComponents is upserted (not deleted) to preserve player_prime_parts
+  // which cascade-deletes from itemComponents
   log.info('Clearing existing relational data...')
   await db.delete(schema.componentDrops)
   await db.delete(schema.itemDrops)
-  await db.delete(schema.itemComponents)
   await db.delete(schema.itemResources)
 
   // Get resource maps for linking components to resources
@@ -242,7 +243,7 @@ async function seed() {
       const craftedParts = uniqueComponents.filter(comp => isCraftedPart(comp))
       const resourceComponents = uniqueComponents.filter(comp => !isCraftedPart(comp))
 
-      // Insert crafted parts into item_components
+      // Upsert crafted parts into item_components (preserves IDs for player_prime_parts)
       for (const comp of craftedParts) {
         const [insertedComponent] = await db.insert(schema.itemComponents).values({
           itemId,
@@ -250,6 +251,13 @@ async function seed() {
           itemCount: comp.itemCount,
           ducats: comp.ducats ?? null,
           tradable: comp.tradable ?? false,
+        }).onConflictDoUpdate({
+          target: [schema.itemComponents.itemId, schema.itemComponents.name],
+          set: {
+            itemCount: sql`excluded.item_count`,
+            ducats: sql`excluded.ducats`,
+            tradable: sql`excluded.tradable`,
+          },
         }).returning({ id: schema.itemComponents.id })
 
         // Insert component drops
