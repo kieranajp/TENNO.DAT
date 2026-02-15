@@ -238,14 +238,14 @@ export class DrizzleItemRepository implements ItemRepository {
   async getComponentCountsByItem(itemIds: number[]): Promise<Map<number, { total: number; componentIds: number[] }>> {
     if (itemIds.length === 0) return new Map()
     const rows = await this.db
-      .select({ id: itemComponents.id, itemId: itemComponents.itemId })
+      .select({ id: itemComponents.id, itemId: itemComponents.itemId, itemCount: itemComponents.itemCount })
       .from(itemComponents)
       .where(inArray(itemComponents.itemId, itemIds))
 
     const result = new Map<number, { total: number; componentIds: number[] }>()
     for (const row of rows) {
       const entry = result.get(row.itemId) ?? { total: 0, componentIds: [] }
-      entry.total++
+      entry.total += row.itemCount
       entry.componentIds.push(row.id)
       result.set(row.itemId, entry)
     }
