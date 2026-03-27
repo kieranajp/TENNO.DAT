@@ -31,7 +31,7 @@ importers:
         version: link:../shared
       '@wfcd/items':
         specifier: latest
-        version: 1.1272.109(warframe-worldstate-data@3.1.19)
+        version: 1.1272.166(warframe-worldstate-data@3.1.19)
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -1112,8 +1112,8 @@ packages:
   '@vitest/utils@3.2.4':
     resolution: {integrity: sha512-fB2V0JFrQSMsCo9HiSq3Ezpdv4iYaXRG1Sx8edX3MwxfyNn83mKiGzOcH+Fkxt4MHxr3y42fQi1oeAInqgX2QA==}
 
-  '@wfcd/items@1.1272.109':
-    resolution: {integrity: sha512-OB9Xm2l/ED6RjSKC4Z5rNC+eaQjAt2qvJ9wk3SEm1eXi6kYfhbHMuE4m2Otab9xAHjfmsYitSchsO34D0qzrdg==}
+  '@wfcd/items@1.1272.166':
+    resolution: {integrity: sha512-U38DeoN4wJASAM8oiMfV2tVfDzUqWmJBJxuIlseF1vkt99TpqArd4AgYzT7Ub4KjYdv7l0d1I7TmEYmXvs8Wmw==}
     peerDependencies:
       warframe-worldstate-data: ^3.0.0
 
@@ -1514,12 +1514,13 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
     engines: {node: '>=12'}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
@@ -2728,7 +2729,7 @@ snapshots:
       loupe: 3.2.1
       tinyrainbow: 2.0.0
 
-  '@wfcd/items@1.1272.109(warframe-worldstate-data@3.1.19)':
+  '@wfcd/items@1.1272.166(warframe-worldstate-data@3.1.19)':
     dependencies:
       warframe-worldstate-data: 3.1.19
 
