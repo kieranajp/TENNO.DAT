@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+      time: "03:00"
+      timezone: Atlantic/Canary
+    groups:
+      warframe-items:
+        patterns:
+          - "warframe-items"
+          - "@wfcd/*"
+    open-pull-requests-limit: 5

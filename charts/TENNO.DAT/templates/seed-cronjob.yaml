@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-seed-items
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-seed
+    app.kubernetes.io/name: {{ .Chart.Name }}-seed
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  schedule: "0 4 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: {{ .Release.Name }}-seed
+        spec:
+          {{- if .Values.api.imagePullSecrets }}
+          imagePullSecrets:
+          {{- range .Values.api.imagePullSecrets }}
+          - name: {{ . }}
+          {{- end }}
+          {{- end }}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            fsGroup: 1001
+            seccompProfile:
+              type: RuntimeDefault
+          restartPolicy: OnFailure
+          containers:
+          - name: seed-items
+            image: {{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}
+            command: ["pnpm", "--filter", "api", "db:seed-items"]
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsNonRoot: true
+              runAsUser: 1001
+              capabilities:
+                drop:
+                - ALL
+              seccompProfile:
+                type: RuntimeDefault
+            env:
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+            envFrom:
+            - secretRef:
+                name: {{ .Values.secretName }}
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
