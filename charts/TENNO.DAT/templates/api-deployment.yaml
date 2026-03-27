@@ -53,6 +53,24 @@ spec:
         envFrom:
         - secretRef:
             name: {{ .Values.secretName }}
+      - name: db-seed-items
+        image: {{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}
+        command: ["pnpm", "--filter", "api", "db:seed-items"]
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+        envFrom:
+        - secretRef:
+            name: {{ .Values.secretName }}
       containers:
       - name: api
         image: {{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}
