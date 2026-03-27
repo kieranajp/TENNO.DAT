@@ -5,6 +5,8 @@ set -euo pipefail
 TAG="${1:-$(git rev-parse --short HEAD)}"
 NAMESPACE="${NAMESPACE:-apps}"
 
+ktx seldon
+
 echo "Deploying tenno with tag: sha-$TAG to namespace: $NAMESPACE"
 
 # Deploy with Helm
