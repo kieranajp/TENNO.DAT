@@ -18,45 +18,86 @@
 	<div class="homepage-backdrop"></div>
 
 	<div class="homepage-content">
-		<!-- Hero -->
-		<header class="hero">
-			<div class="hero-icon">
-				<span class="material-icons">computer</span>
+		<!-- Hero: Win95 Setup Wizard -->
+		<div class="wizard window-frame">
+			<div class="title-bar">
+				<div class="d-flex align-items-center gap-2">
+					<span class="material-icons title-bar-icon">computer</span>
+					<span class="title-text">TENNO.DAT Setup</span>
+				</div>
+				<div class="window-controls">
+					<button type="button" disabled>_</button>
+					<button type="button" disabled>□</button>
+					<button type="button" class="close-btn" disabled>X</button>
+				</div>
 			</div>
-			<h1 class="hero-title">TENNO.DAT</h1>
-			<p class="hero-tagline">MASTERY TRACKING SYSTEM ONLYNE.</p>
-			<p class="hero-description">
-				Track your mastery rank progress, prime parts, and star chart completion across every item in Warframe.
-			</p>
-			<div class="hero-cta">
-				{#if authChecked && authUser}
-					<a href="/dashboard" class="btn-retro cta-btn">
-						<span class="material-icons">arrow_forward</span>
-						Go to Dashboard
-					</a>
-				{:else}
-					<a href="/login" class="btn-retro cta-btn">
-						<svg class="steam-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 259" fill="currentColor">
-							<path d="M127.78 0C60.95 0 5.48 52.02 0 117.5l68.69 28.4c5.84-4 12.87-6.35 20.47-6.35.68 0 1.35.02 2.02.06l30.63-44.4v-.62c0-27.52 22.39-49.93 49.91-49.93 27.53 0 49.93 22.4 49.93 49.93 0 27.53-22.4 49.93-49.93 49.93h-1.16l-43.7 31.21c0 .52.03 1.04.03 1.56 0 20.67-16.8 37.48-37.47 37.48-18.27 0-33.56-13.12-36.87-30.45L3.25 161.9C21.35 215.85 71.65 254.8 131.47 254.8c72.7 0 131.67-58.96 131.67-131.67C263.15 50.83 200.48 0 127.78 0z"/>
-							<path d="M80.75 196.78l-15.58-6.45c2.77 5.76 7.35 10.65 13.51 13.54 13.38 6.28 29.32.55 35.6-12.82 3.05-6.5 3.1-13.7.14-20.24-2.96-6.54-8.31-11.34-15.06-13.52-.67-.22-1.34-.4-2.02-.56l16.1 6.67c9.87 4.1 14.55 15.39 10.44 25.25-4.1 9.87-15.38 14.55-25.25 10.44-6.58-2.73-11.27-8.09-13.51-14.31h-.37zM221.6 94.6c0-18.37-14.94-33.3-33.32-33.3-18.38 0-33.31 14.93-33.31 33.3 0 18.38 14.93 33.32 33.31 33.32 18.38 0 33.32-14.94 33.32-33.32zm-58.14-.01c0-13.72 11.14-24.86 24.85-24.86 13.72 0 24.86 11.14 24.86 24.86 0 13.72-11.14 24.86-24.86 24.86-13.71 0-24.85-11.14-24.85-24.86z"/>
-						</svg>
-						Log in with Steam
-					</a>
-				{/if}
+			<div class="wizard-body">
+				<div class="wizard-sidebar">
+					<div class="sidebar-text">
+						<span>T</span><span>E</span><span>N</span><span>N</span><span>O</span><span>.</span><span>D</span><span>A</span><span>T</span>
+					</div>
+				</div>
+				<div class="wizard-main">
+					<h1 class="wizard-title">Welcome to TENNO.DAT</h1>
+					<p class="wizard-tagline">MASTERY TRACKING SYSTEM ONLYNE.</p>
+
+					<p class="wizard-description">
+						This program will help you track your Warframe mastery rank progress, prime parts collection, and star chart completion.
+					</p>
+
+					<div class="wizard-checklist">
+						<div class="checklist-item">
+							<span class="material-icons check">check_box</span>
+							<span>Mastery progress across every item</span>
+						</div>
+						<div class="checklist-item">
+							<span class="material-icons check">check_box</span>
+							<span>Prime part ownership tracking</span>
+						</div>
+						<div class="checklist-item">
+							<span class="material-icons check">check_box</span>
+							<span>Star chart completion (Normal + Steel Path)</span>
+						</div>
+					</div>
+
+					<p class="wizard-continue">
+						Click the button below to continue.
+					</p>
+				</div>
 			</div>
-		</header>
+			<div class="wizard-footer">
+				<div class="wizard-footer-left">
+					<span class="material-icons">help_outline</span>
+				</div>
+				<div class="wizard-footer-buttons">
+					{#if authChecked && authUser}
+						<a href="/dashboard" class="btn-retro wizard-btn wizard-btn-primary">
+							Go to Dashboard
+							<span class="material-icons">arrow_forward</span>
+						</a>
+					{:else}
+						<a href="/login" class="btn-retro wizard-btn wizard-btn-primary">
+							Log in with Steam
+							<span class="material-icons">arrow_forward</span>
+						</a>
+					{/if}
+				</div>
+			</div>
+		</div>
 
 		<!-- Feature Panels -->
 		<section class="features">
 			<div class="feature-card window-frame">
 				<div class="title-bar">
 					<div class="d-flex align-items-center gap-2">
-						<div class="title-icon"></div>
+						<span class="material-icons title-bar-icon">military_tech</span>
 						<span class="title-text">MASTERY_DATABASE.EXE</span>
 					</div>
 				</div>
 				<div class="feature-body">
-					<span class="material-icons feature-icon">military_tech</span>
+					<div class="feature-screenshot">
+						<img src="/screenshots/mastery.png" alt="Mastery database showing ranked items" />
+					</div>
 					<p>Every weapon, frame, and companion. See what you've ranked and what's left.</p>
 				</div>
 			</div>
@@ -64,12 +105,14 @@
 			<div class="feature-card window-frame">
 				<div class="title-bar">
 					<div class="d-flex align-items-center gap-2">
-						<div class="title-icon"></div>
+						<span class="material-icons title-bar-icon">diamond</span>
 						<span class="title-text">PRIME_TRACKER.EXE</span>
 					</div>
 				</div>
 				<div class="feature-body">
-					<span class="material-icons feature-icon">diamond</span>
+					<div class="feature-screenshot">
+						<img src="/screenshots/primes.png" alt="Prime parts tracker with component checklist" />
+					</div>
 					<p>Track which prime parts you own and which you still need to farm.</p>
 				</div>
 			</div>
@@ -77,12 +120,14 @@
 			<div class="feature-card window-frame">
 				<div class="title-bar">
 					<div class="d-flex align-items-center gap-2">
-						<div class="title-icon"></div>
+						<span class="material-icons title-bar-icon">public</span>
 						<span class="title-text">STAR_CHART.EXE</span>
 					</div>
 				</div>
 				<div class="feature-body">
-					<span class="material-icons feature-icon">public</span>
+					<div class="feature-screenshot">
+						<img src="/screenshots/starchart.png" alt="Star chart node completion view" />
+					</div>
 					<p>Normal and Steel Path completion, node by node.</p>
 				</div>
 			</div>
@@ -92,7 +137,7 @@
 		<section class="how-it-works window-frame">
 			<div class="title-bar">
 				<div class="d-flex align-items-center gap-2">
-					<div class="title-icon"></div>
+					<span class="material-icons title-bar-icon">description</span>
 					<span class="title-text">SETUP.TXT</span>
 				</div>
 			</div>
@@ -145,7 +190,7 @@
 
 	.homepage-content
 		width: 100%
-		max-width: 720px
+		max-width: 780px
 		display: flex
 		flex-direction: column
 		gap: 1.5rem
@@ -159,36 +204,64 @@
 			opacity: 1
 			transform: translateY(0)
 
-	// Hero
-	.hero
-		text-align: center
-		background: $kim-terminal-light
-		border: $border-width solid $kim-border-dark
-		padding: 2rem 1.5rem
-		box-shadow: $shadow-sm
+	// Title bar icon (replaces red squares)
+	.title-bar-icon
+		font-size: 14px
+		color: black
 
-	.hero-icon
-		width: 64px
-		height: 64px
-		background: $kim-bg-dark
-		border: $border-width solid $kim-border
+	// ========================
+	// Setup Wizard Hero
+	// ========================
+	.wizard-body
 		display: flex
-		align-items: center
-		justify-content: center
-		margin: 0 auto 1rem
+		min-height: 280px
 
-		.material-icons
-			font-size: 32px
-			color: $kim-title
+	.wizard-sidebar
+		width: 160px
+		flex-shrink: 0
+		background: linear-gradient(180deg, $kim-bg-dark 0%, darken($kim-title, 15%) 40%, $kim-title 100%)
+		display: flex
+		align-items: flex-end
+		padding: 1.5rem 0.75rem
+		position: relative
+		overflow: hidden
 
-	.hero-title
+		// Subtle pixel grid overlay
+		&::before
+			content: ''
+			position: absolute
+			inset: 0
+			background-image: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px), repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px)
+			pointer-events: none
+
+	.sidebar-text
+		display: flex
+		flex-direction: column
 		font-family: $font-family-monospace
-		font-size: 2rem
-		letter-spacing: $letter-spacing-wider
+		font-size: 1.75rem
+		font-weight: bold
+		letter-spacing: 0.15em
+		line-height: 1.1
+
+		span
+			color: rgba(255, 255, 255, 0.85)
+			text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3)
+
+	.wizard-main
+		flex: 1
+		padding: 1.5rem
+		background: $kim-terminal-light
+		display: flex
+		flex-direction: column
+
+	.wizard-title
+		font-family: $font-family-monospace
+		font-size: 1.4rem
+		letter-spacing: $letter-spacing-wide
 		color: $kim-border-dark
 		margin: 0 0 0.25rem
 
-	.hero-tagline
+	.wizard-tagline
 		font-family: $font-family-monospace
 		font-size: $font-size-sm
 		color: $kim-accent
@@ -196,31 +269,80 @@
 		letter-spacing: $letter-spacing-wide
 		margin: 0 0 1rem
 
-	.hero-description
+	.wizard-description
 		font-family: $font-family-monospace
 		font-size: $font-size-sm
 		color: $gray-700
-		margin: 0 0 1.5rem
+		margin: 0 0 1rem
 		line-height: 1.6
 
-	.hero-cta
+	.wizard-checklist
 		display: flex
-		justify-content: center
+		flex-direction: column
+		gap: 0.4rem
+		margin-bottom: 1rem
 
-	.cta-btn
-		display: inline-flex
+	.checklist-item
+		display: flex
 		align-items: center
 		gap: 0.5rem
-		padding: 0.75rem 1.5rem
-		font-size: 1rem
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
+		color: $gray-700
+
+		.check
+			font-size: 1.1rem
+			color: $kim-border
+
+	.wizard-continue
+		font-family: $font-family-monospace
+		font-size: $font-size-xs
+		color: $gray-500
+		margin: auto 0 0
+
+	.wizard-footer
+		display: flex
+		align-items: center
+		justify-content: space-between
+		padding: 0.5rem 0.75rem
+		border-top: $border-width solid $kim-border-dark
+		background: $gray-200
+
+	.wizard-footer-left
+		.material-icons
+			font-size: 1.1rem
+			color: $gray-500
+
+	.wizard-footer-buttons
+		display: flex
+		gap: 0.5rem
+
+	.wizard-btn
+		display: inline-flex
+		align-items: center
+		gap: 0.4rem
+		padding: 0.4rem 1rem
+		font-size: $font-size-sm
 		text-decoration: none
 		color: white
 
-		.steam-icon
-			width: 20px
-			height: 20px
+		.material-icons
+			font-size: 0.9rem
 
-	// Features
+	.wizard-btn-primary
+		background: $kim-border-dark
+
+		&:hover
+			background: $kim-accent
+
+	// Mobile: hide sidebar
+	@media (max-width: 639px)
+		.wizard-sidebar
+			display: none
+
+	// ========================
+	// Feature Cards
+	// ========================
 	.features
 		display: grid
 		grid-template-columns: 1fr
@@ -233,30 +355,38 @@
 		display: flex
 		flex-direction: column
 
-	.title-icon
-		width: $icon-size-sm
-		height: $icon-size-sm
-		background: $kim-accent
-		border: 1px solid black
-
 	.feature-body
 		background: $kim-terminal-light
-		padding: 1rem
+		padding: 0.75rem
 		flex: 1
-		text-align: center
+		display: flex
+		flex-direction: column
 
 		p
 			font-family: $font-family-monospace
 			font-size: $font-size-sm
 			color: $gray-700
-			margin: 0.75rem 0 0
+			margin: 0.5rem 0 0
 			line-height: 1.5
 
-	.feature-icon
-		font-size: 1.5rem
-		color: $kim-border
+	.feature-screenshot
+		background: $gray-200
+		border: 1px solid $gray-300
+		aspect-ratio: 4 / 3
+		overflow: hidden
+		display: flex
+		align-items: center
+		justify-content: center
 
+		img
+			width: 100%
+			height: 100%
+			object-fit: cover
+			image-rendering: auto
+
+	// ========================
 	// How it Works
+	// ========================
 	.steps-body
 		background: $kim-terminal-light
 		padding: 1.25rem
@@ -294,7 +424,9 @@
 		.material-icons
 			font-size: 1rem
 
+	// ========================
 	// Privacy
+	// ========================
 	.privacy-note
 		display: flex
 		align-items: flex-start
