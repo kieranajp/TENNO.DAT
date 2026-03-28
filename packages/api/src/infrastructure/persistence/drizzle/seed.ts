@@ -204,6 +204,9 @@ async function seed() {
   // Get resource maps for linking components to resources
   const { resourceIdByName } = await getResourceMaps()
 
+  // Build a set of item names (lowercased) to detect weapons-as-ingredients
+  const itemNameSet = new Set(itemsToInsert.map(item => item.name.toLowerCase()))
+
   // Second pass: Insert components and drops
   log.info('Inserting components and drops...')
 
@@ -275,7 +278,12 @@ async function seed() {
 
       // Insert resource requirements into item_resources
       for (const comp of resourceComponents) {
-        const resourceId = resourceIdByName.get(comp.name.toLowerCase())
+        const compNameLower = comp.name.toLowerCase()
+
+        // Skip items used as crafting ingredients (e.g., Grakata for Twin Grakatas)
+        if (itemNameSet.has(compNameLower)) continue
+
+        const resourceId = resourceIdByName.get(compNameLower)
         if (resourceId) {
           await db.insert(schema.itemResources).values({
             itemId,
@@ -283,8 +291,6 @@ async function seed() {
             quantity: comp.itemCount,
           }).onConflictDoNothing()
         } else {
-          // Resource not found in resources table - log and skip
-          // This might be a crafted part we didn't recognize
           log.debug(`Unknown resource "${comp.name}" for item "${item.name}" - skipping`)
         }
       }

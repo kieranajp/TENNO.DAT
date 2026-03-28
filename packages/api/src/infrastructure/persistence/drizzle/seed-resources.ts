@@ -45,6 +45,24 @@ export async function seedResources() {
   await db.delete(schema.itemResources)
   await db.delete(schema.resources)
 
+  // Manually add resources that @wfcd/items doesn't classify as resources
+  const manualResources = [
+    {
+      uniqueName: '/Lotus/Types/Items/MiscItems/Forma',
+      name: 'Forma',
+      type: 'Resource',
+      imageName: 'forma-778e068bc2.png',
+      description: 'A resource used to add or change Polarities on equipment.',
+      tradable: false,
+    },
+  ]
+
+  for (const manual of manualResources) {
+    if (!resources.some((r: any) => r.uniqueName === manual.uniqueName)) {
+      resources.push(manual as any)
+    }
+  }
+
   // Insert resources
   log.info('Inserting resources...')
   const BATCH_SIZE = 100

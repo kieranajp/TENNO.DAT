@@ -83,6 +83,11 @@ export const CRAFTED_PART_NAMES = new Set([
   'prime carapace',
   'prime cerebrum',
   'set',
+  // Plural forms (e.g., Twin Vipers Wraith components)
+  'barrels',
+  'receivers',
+  'blades',
+  'stocks',
 ])
 
 // Suffixes that indicate a crafted part
