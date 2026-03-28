@@ -25,7 +25,7 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.8.0
-        version: 1.19.9(hono@4.11.5)
+        version: 1.19.9(hono@4.12.9)
       '@warframe-tracker/shared':
         specifier: workspace:*
         version: link:../shared
@@ -39,8 +39,8 @@ importers:
         specifier: ^0.30.0
         version: 0.30.10(@electric-sql/pglite@0.3.15)(postgres@3.4.8)
       hono:
-        specifier: ^4.0.0
-        version: 4.11.5
+        specifier: ^4.12.9
+        version: 4.12.9
       openid:
         specifier: ^2.0.14
         version: 2.0.14
@@ -1548,8 +1548,8 @@ packages:
   heap@0.2.7:
     resolution: {integrity: sha512-2bsegYkkHO+h/9MGbn6KWcE45cHZgPANo5LXF7EvWdT0yT2EguSVO1nDgU5c8+ZOPwp2vMNa7YFsJhVcDR9Sdg==}
 
-  hono@4.11.5:
-    resolution: {integrity: sha512-WemPi9/WfyMwZs+ZUXdiwcCh9Y+m7L+8vki9MzDw3jJ+W9Lc+12HGsd368Qc1vZi1xwW8BWMMsnK5efYKPdt4g==}
+  hono@4.12.9:
+    resolution: {integrity: sha512-wy3T8Zm2bsEvxKZM5w21VdHDDcwVS1yUFFY6i8UobSsKfFceT7TOwhbhfKsDyx7tYQlmRM5FLpIuYvNFyjctiA==}
     engines: {node: '>=16.9.0'}
 
   html-escaper@2.0.2:
@@ -2375,9 +2375,9 @@ snapshots:
   '@esbuild/win32-x64@0.27.2':
     optional: true
 
-  '@hono/node-server@1.19.9(hono@4.11.5)':
+  '@hono/node-server@1.19.9(hono@4.12.9)':
     dependencies:
-      hono: 4.11.5
+      hono: 4.12.9
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -3177,7 +3177,7 @@ snapshots:
 
   heap@0.2.7: {}
 
-  hono@4.11.5: {}
+  hono@4.12.9: {}
 
   html-escaper@2.0.2: {}
 
