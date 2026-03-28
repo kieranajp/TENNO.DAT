@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { auth } from '$lib/stores/auth';
 	import type { AuthUser } from '$lib/api';
+	import SupportFooter from '$lib/components/SupportFooter.svelte';
 
 	let authUser = $state<AuthUser | null>(null);
 	let authChecked = $state(false);
@@ -39,7 +40,7 @@
 				</div>
 				<div class="wizard-main">
 					<h1 class="wizard-title">Welcome to TENNO.DAT</h1>
-					<p class="wizard-tagline">MASTERY TRACKING SYSTEM ONLYNE.</p>
+					<p class="wizard-tagline">MASTERY TRACKING SYSTEM. ON-LYNE.</p>
 
 					<p class="wizard-description">
 						This program will help you track your Warframe mastery rank progress, prime parts collection, and star chart completion.
@@ -67,7 +68,6 @@
 			</div>
 			<div class="wizard-footer">
 				<div class="wizard-footer-left">
-					<span class="material-icons">help_outline</span>
 				</div>
 				<div class="wizard-footer-buttons">
 					{#if authChecked && authUser}
@@ -96,7 +96,7 @@
 				</div>
 				<div class="feature-body">
 					<div class="feature-screenshot">
-						<img src="/screenshots/mastery.png" alt="Mastery database showing ranked items" />
+						<img src="/screenshots/mastery.webp" alt="Mastery database showing ranked items" />
 					</div>
 					<p>Every weapon, frame, and companion. See what you've ranked and what's left.</p>
 				</div>
@@ -111,7 +111,7 @@
 				</div>
 				<div class="feature-body">
 					<div class="feature-screenshot">
-						<img src="/screenshots/primes.png" alt="Prime parts tracker with component checklist" />
+						<img src="/screenshots/primes.webp" alt="Prime parts tracker with component checklist" />
 					</div>
 					<p>Track which prime parts you own and which you still need to farm.</p>
 				</div>
@@ -126,7 +126,7 @@
 				</div>
 				<div class="feature-body">
 					<div class="feature-screenshot">
-						<img src="/screenshots/starchart.png" alt="Star chart node completion view" />
+						<img src="/screenshots/starchart.webp" alt="Star chart node completion view" />
 					</div>
 					<p>Normal and Steel Path completion, node by node.</p>
 				</div>
@@ -169,13 +169,7 @@
 			<p>No Warframe credentials required. We read your public profile via the DE API. Nothing is stored beyond what you see here.</p>
 		</footer>
 
-		<!-- Support -->
-		<div class="support-link">
-			<a href="https://ko-fi.com/kieranajp" target="_blank" rel="noopener noreferrer">
-				<span class="material-icons">local_cafe</span>
-				<span>Buy me a forma</span>
-			</a>
-		</div>
+		<SupportFooter />
 	</div>
 </div>
 
@@ -234,12 +228,21 @@
 		position: relative
 		overflow: hidden
 
-		// Subtle pixel grid overlay
+		// Follie background art
 		&::before
 			content: ''
 			position: absolute
 			inset: 0
-			background-image: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px), repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px)
+			background: url('/follie.webp') center center / cover no-repeat
+			opacity: 0.3
+			pointer-events: none
+
+		// Darken bottom for text legibility
+		&::after
+			content: ''
+			position: absolute
+			inset: 0
+			background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, transparent 60%)
 			pointer-events: none
 
 	.sidebar-text
@@ -250,6 +253,8 @@
 		font-weight: bold
 		letter-spacing: 0.15em
 		line-height: 1.1
+		position: relative
+		z-index: 1
 
 		span
 			color: rgba(255, 255, 255, 0.85)
@@ -316,11 +321,6 @@
 		border-top: $border-width solid $kim-border-dark
 		background: $gray-200
 
-	.wizard-footer-left
-		.material-icons
-			font-size: 1.1rem
-			color: $gray-500
-
 	.wizard-footer-buttons
 		display: flex
 		gap: 0.5rem
@@ -385,12 +385,31 @@
 		display: flex
 		align-items: center
 		justify-content: center
+		position: relative
 
 		img
 			width: 100%
 			height: 100%
 			object-fit: cover
 			image-rendering: auto
+
+		// CRT scanlines
+		&::before
+			content: ''
+			position: absolute
+			inset: 0
+			background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 0, 0, 0.08) 2px, rgba(0, 0, 0, 0.08) 3px)
+			pointer-events: none
+			z-index: 1
+
+		// Vignette
+		&::after
+			content: ''
+			position: absolute
+			inset: 0
+			background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.25) 100%)
+			pointer-events: none
+			z-index: 2
 
 	// ========================
 	// How it Works
@@ -456,25 +475,4 @@
 			margin: 0
 			line-height: 1.5
 
-	// ========================
-	// Support
-	// ========================
-	.support-link
-		text-align: center
-
-		a
-			display: inline-flex
-			align-items: center
-			gap: 0.4rem
-			font-family: $font-family-monospace
-			font-size: $font-size-xs
-			color: $gray-500
-			text-decoration: none
-			transition: color $transition-fast
-
-			.material-icons
-				font-size: 0.9rem
-
-			&:hover
-				color: $kim-accent
 </style>
