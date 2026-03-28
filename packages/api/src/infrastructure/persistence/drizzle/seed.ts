@@ -303,7 +303,7 @@ async function seed() {
   process.exit(0)
 }
 
-seed().catch((err) => {
-  log.error('Seed failed', err)
+seed().catch((error) => {
+  log.error('Seed failed', error instanceof Error ? error : undefined)
   process.exit(1)
 })

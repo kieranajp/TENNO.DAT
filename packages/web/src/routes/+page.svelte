@@ -2,6 +2,9 @@
 	import { auth } from '$lib/stores/auth';
 	import type { AuthUser } from '$lib/api';
 	import SupportFooter from '$lib/components/SupportFooter.svelte';
+	import { getWindowControls } from '$lib/stores/window-controls';
+
+	const windowControls = getWindowControls();
 
 	let authUser = $state<AuthUser | null>(null);
 	let authChecked = $state(false);
@@ -27,9 +30,9 @@
 					<span class="title-text">TENNO.DAT Setup</span>
 				</div>
 				<div class="window-controls">
-					<button type="button" disabled>_</button>
-					<button type="button" disabled>□</button>
-					<button type="button" class="close-btn" disabled>X</button>
+					<button type="button" onclick={windowControls.minimize} title="Minimize">_</button>
+					<button type="button" onclick={windowControls.maximize} title="Maximize">□</button>
+					<button type="button" class="close-btn" onclick={windowControls.close} title="Close">X</button>
 				</div>
 			</div>
 			<div class="wizard-body">

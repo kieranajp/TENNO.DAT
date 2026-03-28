@@ -10,6 +10,7 @@
 	import SystemInfoDialog from '$lib/components/SystemInfoDialog.svelte';
 	import SupportFooter from '$lib/components/SupportFooter.svelte';
 	import GitHubIcon from '$lib/components/icons/GitHubIcon.svelte';
+	import { setWindowControls } from '$lib/stores/window-controls';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -80,6 +81,12 @@
 			isGlitching = false;
 		}, 500);
 	}
+
+	setWindowControls({
+		minimize: handleMinimize,
+		maximize: handleMaximize,
+		close: handleClose,
+	});
 
 	async function handleLogout() {
 		try {
