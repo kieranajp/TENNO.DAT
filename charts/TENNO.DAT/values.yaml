@@ -60,11 +60,14 @@ ingress:
     certResolver: letsencrypt
   routes:
     web:
-      host: "tenno.kieranajp.uk"
+      host: "tenno.club"
       port: 3000
     api:
-      host: "ordis.kieranajp.uk"
+      host: "api.tenno.club"
       port: 3000
+  redirects:
+    - from: "tenno.kieranajp.uk"
+      to: "https://tenno.club"
 
 secretName: warframe-secrets
 secrets:
@@ -76,10 +79,10 @@ secrets:
   DB_PORT: ""
 
   # API configuration
-  BASE_URL: ""           # Where API is publicly accessible (e.g., https://ordis.kieranajp.uk)
-  FRONTEND_URL: ""       # Where to redirect after auth (e.g., https://tenno.kieranajp.uk)
-  CORS_ORIGIN: ""        # Allowed CORS origin (e.g., https://tenno.kieranajp.uk)
+  BASE_URL: ""           # Where API is publicly accessible (e.g., https://api.tenno.club)
+  FRONTEND_URL: ""       # Where to redirect after auth (e.g., https://tenno.club)
+  CORS_ORIGIN: ""        # Allowed CORS origin (e.g., https://tenno.club)
   STEAM_API_KEY: ""      # Optional Steam API key
 
   # Web frontend configuration
-  VITE_API_URL: ""       # API URL for web frontend (e.g., https://ordis.kieranajp.uk)
+  VITE_API_URL: ""       # API URL for web frontend (e.g., https://api.tenno.club)

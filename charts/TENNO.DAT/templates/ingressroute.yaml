@@ -34,4 +34,38 @@ spec:
     - name: {{ $.Release.Name }}-{{ $name }}
       port: {{ $route.port }}
 {{- end }}
+{{- range $redirect := .Values.ingress.redirects }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $.Release.Name }}-redirect-{{ $redirect.from | replace "." "-" }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  redirectRegex:
+    regex: "^https?://{{ $redirect.from }}/(.*)"
+    replacement: "{{ $redirect.to }}/${1}"
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $.Release.Name }}-redirect-{{ $redirect.from | replace "." "-" }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  entryPoints:
+    - websecure
+  {{- if $.Values.ingress.tls.enabled }}
+  tls:
+    certResolver: {{ $.Values.ingress.tls.certResolver }}
+  {{- end }}
+  routes:
+  - match: Host(`{{ $redirect.from }}`)
+    kind: Rule
+    middlewares:
+    - name: {{ $.Release.Name }}-redirect-{{ $redirect.from | replace "." "-" }}
+    services:
+    - name: noop@internal
+      kind: TraefikService
+{{- end }}
 {{- end }}
