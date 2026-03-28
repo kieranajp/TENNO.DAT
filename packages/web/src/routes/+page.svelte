@@ -161,6 +161,9 @@
 					<span>Your profile syncs automatically</span>
 				</div>
 			</div>
+			<div class="steps-note">
+				<span>You don't need to play Warframe through Steam — any Steam account works for login. Your Warframe account ID is separate.</span>
+			</div>
 		</section>
 
 		<!-- Privacy -->
@@ -450,6 +453,22 @@
 
 		.material-icons
 			font-size: 1rem
+
+	.steps-note
+		display: flex
+		align-items: center
+		justify-content: center
+		gap: 0.5rem
+		padding: 0.5rem 1.25rem 0.75rem
+		background: $kim-terminal-light
+		font-family: $font-family-monospace
+		font-size: $font-size-xs
+		color: $gray-500
+		line-height: 1.5
+		text-align: center
+
+		.material-icons
+			font-size: 0.9rem
 
 	// ========================
 	// Privacy
