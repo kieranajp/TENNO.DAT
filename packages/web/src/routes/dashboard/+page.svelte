@@ -190,7 +190,7 @@
 									{#if slot.item}
 										<div class="loadout-status" class:mastered={slot.item.masteryState !== 'unmastered'} class:mastered-full={slot.item.masteryState === 'mastered_40'}>
 											{#if slot.item.masteryState === 'mastered_40'}
-												<span class="status-dot status-gold"></span>
+												<span class="material-icons status-star">star</span>
 												<span class="rank-display">{slot.item.rank}/{slot.item.maxRank}</span>
 											{:else if slot.item.masteryState === 'mastered_30'}
 												<span class="status-dot"></span>

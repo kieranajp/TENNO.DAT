@@ -54,7 +54,7 @@
 	<div class="item-rank-display">
 		{#if item.masteryState === 'mastered_40'}
 			<div class="item-mastered item-mastered-full">
-				<span class="material-icons">check_circle</span>
+				<span class="material-icons">star</span>
 			</div>
 		{:else if item.masteryState === 'mastered_30'}
 			{#if item.maxRank > 30}
