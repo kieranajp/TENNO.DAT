@@ -18,10 +18,10 @@ export const sessions = pgTable('sessions', {
   rememberMe: boolean('remember_me').default(false).notNull(),
   expiresAt: timestamp('expires_at').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-}, (table) => ({
-  userIdIdx: index('sessions_user_id_idx').on(table.userId),
-  expiresAtIdx: index('sessions_expires_at_idx').on(table.expiresAt),
-}))
+}, (table) => [
+  index('sessions_user_id_idx').on(table.userId),
+  index('sessions_expires_at_idx').on(table.expiresAt),
+])
 
 export const items = pgTable('items', {
   id: serial('id').primaryKey(),
@@ -42,10 +42,10 @@ export const items = pgTable('items', {
   // Introduced info (normalized from acquisitionData)
   introducedName: varchar('introduced_name', { length: 255 }),
   introducedDate: date('introduced_date'),
-}, (table) => ({
-  categoryIdx: index('category_idx').on(table.category),
-  isPrimeIdx: index('is_prime_idx').on(table.isPrime),
-}))
+}, (table) => [
+  index('category_idx').on(table.category),
+  index('is_prime_idx').on(table.isPrime),
+])
 
 export const itemsRelations = relations(items, ({ many }) => ({
   components: many(itemComponents),
@@ -61,10 +61,10 @@ export const itemComponents = pgTable('item_components', {
   itemCount: integer('item_count').notNull().default(1),
   ducats: integer('ducats'),
   tradable: boolean('tradable').default(false),
-}, (table) => ({
-  itemIdIdx: index('item_components_item_id_idx').on(table.itemId),
-  itemNameUnique: unique('item_components_item_name_unique').on(table.itemId, table.name),
-}))
+}, (table) => [
+  index('item_components_item_id_idx').on(table.itemId),
+  unique('item_components_item_name_unique').on(table.itemId, table.name),
+])
 
 export const itemComponentsRelations = relations(itemComponents, ({ one, many }) => ({
   item: one(items, {
@@ -81,9 +81,9 @@ export const itemDrops = pgTable('item_drops', {
   location: varchar('location', { length: 255 }).notNull(),
   chance: decimal('chance', { precision: 10, scale: 8 }).notNull(),
   rarity: varchar('rarity', { length: 20 }),
-}, (table) => ({
-  itemIdIdx: index('item_drops_item_id_idx').on(table.itemId),
-}))
+}, (table) => [
+  index('item_drops_item_id_idx').on(table.itemId),
+])
 
 export const itemDropsRelations = relations(itemDrops, ({ one }) => ({
   item: one(items, {
@@ -99,9 +99,9 @@ export const componentDrops = pgTable('component_drops', {
   location: varchar('location', { length: 255 }).notNull(),
   chance: decimal('chance', { precision: 10, scale: 8 }).notNull(),
   rarity: varchar('rarity', { length: 20 }),
-}, (table) => ({
-  componentIdIdx: index('component_drops_component_id_idx').on(table.componentId),
-}))
+}, (table) => [
+  index('component_drops_component_id_idx').on(table.componentId),
+])
 
 export const componentDropsRelations = relations(componentDrops, ({ one }) => ({
   component: one(itemComponents, {
@@ -137,10 +137,10 @@ export const playerMastery = pgTable('player_mastery', {
   headshots: integer('headshots'),
   equipTime: integer('equip_time'),
   assists: integer('assists'),
-}, (table) => ({
-  playerItemIdx: index('player_item_idx').on(table.playerId, table.itemId),
-  playerItemUnique: unique('player_item_unique').on(table.playerId, table.itemId),
-}))
+}, (table) => [
+  index('player_item_idx').on(table.playerId, table.itemId),
+  unique('player_item_unique').on(table.playerId, table.itemId),
+])
 
 export const playerLoadout = pgTable('player_loadout', {
   id: serial('id').primaryKey(),
@@ -170,9 +170,9 @@ export const playerNodes = pgTable('player_nodes', {
   completes: integer('completes').notNull().default(0),
   isSteelPath: boolean('is_steel_path').notNull().default(false),
   syncedAt: timestamp('synced_at').defaultNow().notNull(),
-}, (table) => ({
-  playerNodeUnique: unique().on(table.playerId, table.nodeId, table.isSteelPath),
-}))
+}, (table) => [
+  unique().on(table.playerId, table.nodeId, table.isSteelPath),
+])
 
 // Player wishlist - items they want to farm/build
 export const playerWishlist = pgTable('player_wishlist', {
@@ -180,10 +180,10 @@ export const playerWishlist = pgTable('player_wishlist', {
   playerId: varchar('player_id', { length: 50 }).notNull(),
   itemId: integer('item_id').notNull().references(() => items.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-}, (table) => ({
-  playerItemIdx: index('player_wishlist_player_item_idx').on(table.playerId, table.itemId),
-  playerItemUnique: unique('player_wishlist_unique').on(table.playerId, table.itemId),
-}))
+}, (table) => [
+  index('player_wishlist_player_item_idx').on(table.playerId, table.itemId),
+  unique('player_wishlist_unique').on(table.playerId, table.itemId),
+])
 
 // Player Prime part ownership tracking
 export const playerPrimeParts = pgTable('player_prime_parts', {
@@ -192,10 +192,10 @@ export const playerPrimeParts = pgTable('player_prime_parts', {
   componentId: integer('component_id').notNull().references(() => itemComponents.id, { onDelete: 'cascade' }),
   ownedCount: integer('owned_count').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-}, (table) => ({
-  playerComponentIdx: index('player_prime_parts_player_component_idx').on(table.playerId, table.componentId),
-  playerComponentUnique: unique('player_prime_parts_unique').on(table.playerId, table.componentId),
-}))
+}, (table) => [
+  index('player_prime_parts_player_component_idx').on(table.playerId, table.componentId),
+  unique('player_prime_parts_unique').on(table.playerId, table.componentId),
+])
 
 // Resources table (materials needed for crafting)
 export const resources = pgTable('resources', {
@@ -206,9 +206,9 @@ export const resources = pgTable('resources', {
   imageName: varchar('image_name', { length: 255 }),
   description: text('description'),
   tradable: boolean('tradable').default(false),
-}, (table) => ({
-  nameIdx: index('resources_name_idx').on(table.name),
-}))
+}, (table) => [
+  index('resources_name_idx').on(table.name),
+])
 
 export const resourcesRelations = relations(resources, ({ many }) => ({
   itemResources: many(itemResources),
@@ -221,11 +221,11 @@ export const itemResources = pgTable('item_resources', {
   itemId: integer('item_id').notNull().references(() => items.id, { onDelete: 'cascade' }),
   resourceId: integer('resource_id').notNull().references(() => resources.id, { onDelete: 'cascade' }),
   quantity: integer('quantity').notNull().default(1),
-}, (table) => ({
-  itemIdIdx: index('item_resources_item_id_idx').on(table.itemId),
-  resourceIdIdx: index('item_resources_resource_id_idx').on(table.resourceId),
-  itemResourceUnique: unique('item_resources_unique').on(table.itemId, table.resourceId),
-}))
+}, (table) => [
+  index('item_resources_item_id_idx').on(table.itemId),
+  index('item_resources_resource_id_idx').on(table.resourceId),
+  unique('item_resources_unique').on(table.itemId, table.resourceId),
+])
 
 export const itemResourcesRelations = relations(itemResources, ({ one }) => ({
   item: one(items, {
@@ -246,9 +246,9 @@ export const resourceDrops = pgTable('resource_drops', {
   chance: decimal('chance', { precision: 10, scale: 8 }).notNull(),
   rarity: varchar('rarity', { length: 20 }),
   dropQuantity: varchar('drop_quantity', { length: 50 }), // e.g., "10X Plastids"
-}, (table) => ({
-  resourceIdIdx: index('resource_drops_resource_id_idx').on(table.resourceId),
-}))
+}, (table) => [
+  index('resource_drops_resource_id_idx').on(table.resourceId),
+])
 
 export const resourceDropsRelations = relations(resourceDrops, ({ one }) => ({
   resource: one(resources, {
