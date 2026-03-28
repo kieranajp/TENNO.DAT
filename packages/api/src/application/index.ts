@@ -3,8 +3,10 @@ import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger as honoLogger } from 'hono/logger'
+import { prometheus } from '@hono/prometheus'
 import { createContainer } from '../infrastructure/bootstrap/container'
 import { createLogger } from '../infrastructure/logger'
+import { SyncProbe, AuthProbe, PrimePartsProbe, DbProbe, registry } from '../infrastructure/observability'
 import { authRoutes } from './http/auth'
 import { itemsRoutes } from './http/items'
 import { masteryRoutes } from './http/mastery'
@@ -15,7 +17,13 @@ import { primePartsRoutes } from './http/prime-parts'
 import { createAuthMiddleware, createOnboardingMiddleware } from './http/middleware/auth'
 
 const log = createLogger('Server')
-const container = createContainer()
+
+const syncProbe = new SyncProbe()
+const authProbe = new AuthProbe()
+const primePartsProbe = new PrimePartsProbe()
+const dbProbe = new DbProbe()
+
+const container = createContainer(syncProbe)
 const app = new Hono()
 
 const CORS_ORIGIN = process.env.CORS_ORIGIN ?? 'http://localhost:5173'
@@ -26,12 +34,16 @@ app.use('*', cors({
   credentials: true,
 }))
 
+const { printMetrics, registerMetrics } = prometheus({ registry, collectDefaultMetrics: false })
+app.use('*', registerMetrics)
+app.get('/metrics', printMetrics)
+
 const authMiddleware = createAuthMiddleware(container)
 const onboardingMiddleware = createOnboardingMiddleware(container)
 
 // Public routes
 app.get('/health', (c) => c.json({ status: 'ok' }))
-app.route('/auth', authRoutes(container))
+app.route('/auth', authRoutes(container, authProbe))
 
 // Protected routes (require auth)
 // Note: Must use both exact path and wildcard since /path/* doesn't match /path
@@ -51,12 +63,12 @@ app.use('/primes', authMiddleware, onboardingMiddleware)
 app.use('/primes/*', authMiddleware, onboardingMiddleware)
 
 // Route definitions
-app.route('/items', itemsRoutes(container))
-app.route('/mastery', masteryRoutes(container))
-app.route('/sync', syncRoutes(container))
-app.route('/starchart', starchartRoutes(container))
-app.route('/wishlist', wishlistRoutes(container))
-app.route('/primes', primePartsRoutes(container))
+app.route('/items', itemsRoutes(container, dbProbe))
+app.route('/mastery', masteryRoutes(container, dbProbe))
+app.route('/sync', syncRoutes(container, syncProbe, dbProbe))
+app.route('/starchart', starchartRoutes(container, dbProbe))
+app.route('/wishlist', wishlistRoutes(container, dbProbe))
+app.route('/primes', primePartsRoutes(container, primePartsProbe, dbProbe))
 
 const port = Number(process.env.PORT) || 3000
 

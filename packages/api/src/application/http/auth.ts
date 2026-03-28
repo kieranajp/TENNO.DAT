@@ -3,6 +3,7 @@ import { getCookie, setCookie, deleteCookie } from 'hono/cookie'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import { SteamOpenIDService } from '../../infrastructure/external/steam-openid'
 import { createLogger } from '../../infrastructure/logger'
+import type { AuthProbe } from '../../infrastructure/observability/auth-probe'
 import { handleRouteError } from './errors'
 import { SESSION_COOKIE, SESSION_TTL_SHORT, SESSION_TTL_LONG } from './constants'
 
@@ -11,7 +12,7 @@ const log = createLogger('Auth')
 const REMEMBER_COOKIE = 'tenno_remember'
 const AUTH_FLOW_TTL = 300 // 5 minutes for auth flow cookies
 
-export function authRoutes(container: Container) {
+export function authRoutes(container: Container, probe: AuthProbe) {
   const baseUrl = process.env.BASE_URL ?? 'http://localhost:3000'
   const steamApiKey = process.env.STEAM_API_KEY ?? ''
   const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173'
@@ -22,6 +23,7 @@ export function authRoutes(container: Container) {
   // GET /auth/steam - Redirect to Steam login
   router.get('/steam', async (c) => {
     try {
+      probe.steamAuthStarted()
       const rememberMe = c.req.query('remember') === 'true'
 
       // Store remember preference in a temporary cookie
@@ -55,6 +57,7 @@ export function authRoutes(container: Container) {
 
       // Find or create user
       let user = await container.userRepo.findBySteamId(steamId)
+      const isNewUser = !user
 
       if (user) {
         // Update profile and last login
@@ -85,11 +88,13 @@ export function authRoutes(container: Container) {
         path: '/',
       })
 
+      probe.steamAuthSucceeded(isNewUser)
       log.info('User logged in', { userId: user.id, steamId, rememberMe })
 
       // Redirect to frontend dashboard
       return c.redirect(`${frontendUrl}/dashboard`)
     } catch (error) {
+      probe.steamAuthFailed()
       log.error('Steam callback failed', error instanceof Error ? error : undefined)
       return c.redirect(`${frontendUrl}/login?error=auth_failed`)
     }
@@ -111,6 +116,7 @@ export function authRoutes(container: Container) {
       }
 
       await container.userRepo.delete(sessionData.userId)
+      probe.accountDeleted()
 
       deleteCookie(c, SESSION_COOKIE, { path: '/' })
       log.info('Account deleted', { userId: sessionData.userId })

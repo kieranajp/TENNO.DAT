@@ -1,19 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { masteryRoutes } from './mastery'
-import { createMockContainer, createMockOnboardedMiddleware, mockAuth, mockSettings } from '../../test-utils'
+import { createMockContainer, createMockOnboardedMiddleware, createMockDbProbe, mockAuth, mockSettings } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import type { DbProbe } from '../../infrastructure/observability/db-probe'
 import { MasteryState } from '@warframe-tracker/shared'
 
 describe('Mastery Routes', () => {
   let container: Container
+  let dbProbe: DbProbe
   let app: Hono
 
   beforeEach(() => {
     container = createMockContainer()
+    dbProbe = createMockDbProbe()
     app = new Hono()
     app.use('*', createMockOnboardedMiddleware(mockAuth, mockSettings))
-    app.route('/mastery', masteryRoutes(container))
+    app.route('/mastery', masteryRoutes(container, dbProbe))
   })
 
   describe('GET /mastery/summary', () => {
@@ -28,7 +31,7 @@ describe('Mastery Routes', () => {
       }
       app = new Hono()
       app.use('*', createMockOnboardedMiddleware(mockAuth, customSettings))
-      app.route('/mastery', masteryRoutes(container))
+      app.route('/mastery', masteryRoutes(container, dbProbe))
 
       const mockCategories = [
         { category: 'Warframes', total: 50, mastered: 45 },

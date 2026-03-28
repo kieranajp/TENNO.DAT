@@ -1,11 +1,13 @@
 import { Hono } from 'hono'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import type { PrimePartsProbe } from '../../infrastructure/observability/prime-parts-probe'
+import type { DbProbe } from '../../infrastructure/observability/db-probe'
 import { handleRouteError } from './errors'
 import { createLogger } from '../../infrastructure/logger'
 
 const log = createLogger('PrimeParts')
 
-export function primePartsRoutes(container: Container) {
+export function primePartsRoutes(container: Container, probe: PrimePartsProbe, db: DbProbe) {
   const router = new Hono()
 
   // Toggle component ownership (cycles 0 → 1 → ... → itemCount → 0)
@@ -17,6 +19,7 @@ export function primePartsRoutes(container: Container) {
       if (isNaN(componentId)) return c.json({ error: 'Invalid component ID' }, 400)
 
       const ownedCount = await container.primePartsRepo.toggle(settings.playerId!, componentId)
+      probe.partToggled()
       return c.json({ ownedCount })
     } catch (error) {
       return handleRouteError(c, log, error, 'Failed to toggle component ownership')

@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { Platform } from '@warframe-tracker/shared'
 import { DeProfileApi } from './de-profile-api'
+import { createMockSyncProbe } from '../../test-utils'
+import type { SyncProbe } from '../observability/sync-probe'
 
 /**
  * Tests for the DE Profile API extraction logic.
@@ -8,10 +10,12 @@ import { DeProfileApi } from './de-profile-api'
  */
 describe('DeProfileApi', () => {
   let api: DeProfileApi
+  let syncProbe: SyncProbe
   let mockFetch: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    api = new DeProfileApi()
+    syncProbe = createMockSyncProbe()
+    api = new DeProfileApi(syncProbe)
     mockFetch = vi.fn()
     global.fetch = mockFetch
   })
@@ -24,7 +28,7 @@ describe('DeProfileApi', () => {
     it('uses correct URL for PC platform', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ Results: [{ LoadOutInventory: { XPInfo: [] } }] }),
+        text: () => Promise.resolve(JSON.stringify({ Results: [{ LoadOutInventory: { XPInfo: [] } }] })),
       })
 
       await api.fetch('TestPlayer', Platform.PC)
@@ -37,7 +41,7 @@ describe('DeProfileApi', () => {
     it('uses correct URL for PS platform', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ Results: [{ LoadOutInventory: { XPInfo: [] } }] }),
+        text: () => Promise.resolve(JSON.stringify({ Results: [{ LoadOutInventory: { XPInfo: [] } }] })),
       })
 
       await api.fetch('TestPlayer', Platform.PlayStation)
@@ -50,7 +54,7 @@ describe('DeProfileApi', () => {
     it('uses correct URL for Xbox platform', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ Results: [{ LoadOutInventory: { XPInfo: [] } }] }),
+        text: () => Promise.resolve(JSON.stringify({ Results: [{ LoadOutInventory: { XPInfo: [] } }] })),
       })
 
       await api.fetch('TestPlayer', Platform.Xbox)
@@ -63,7 +67,7 @@ describe('DeProfileApi', () => {
     it('uses correct URL for Switch platform', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ Results: [{ LoadOutInventory: { XPInfo: [] } }] }),
+        text: () => Promise.resolve(JSON.stringify({ Results: [{ LoadOutInventory: { XPInfo: [] } }] })),
       })
 
       await api.fetch('TestPlayer', Platform.Switch)
@@ -109,7 +113,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -134,7 +138,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -150,7 +154,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -177,7 +181,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -202,7 +206,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -234,7 +238,7 @@ describe('DeProfileApi', () => {
 
         mockFetch.mockResolvedValueOnce({
           ok: true,
-          json: () => Promise.resolve(mockResponse),
+          text: () => Promise.resolve(JSON.stringify(mockResponse)),
         })
 
         const result = await api.fetch('TestPlayer', Platform.PC)
@@ -252,7 +256,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -269,7 +273,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -294,7 +298,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -324,7 +328,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -347,7 +351,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -370,7 +374,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -401,7 +405,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -424,7 +428,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -442,7 +446,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -461,7 +465,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -481,7 +485,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -500,7 +504,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)
@@ -517,7 +521,7 @@ describe('DeProfileApi', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockResponse),
+        text: () => Promise.resolve(JSON.stringify(mockResponse)),
       })
 
       const result = await api.fetch('TestPlayer', Platform.PC)

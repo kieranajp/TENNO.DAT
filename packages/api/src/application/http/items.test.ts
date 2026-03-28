@@ -1,19 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { itemsRoutes } from './items'
-import { createMockContainer, createMockAuthMiddleware, mockAuth } from '../../test-utils'
+import { createMockContainer, createMockAuthMiddleware, createMockDbProbe, mockAuth } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import type { DbProbe } from '../../infrastructure/observability/db-probe'
 
 describe('Items Routes', () => {
   let container: Container
+  let dbProbe: DbProbe
   let app: Hono
 
   beforeEach(() => {
     container = createMockContainer()
+    dbProbe = createMockDbProbe()
     app = new Hono()
     // Add mock auth middleware before routes
     app.use('*', createMockAuthMiddleware(mockAuth))
-    app.route('/items', itemsRoutes(container))
+    app.route('/items', itemsRoutes(container, dbProbe))
   })
 
   describe('GET /items', () => {
