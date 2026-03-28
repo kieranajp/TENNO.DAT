@@ -146,8 +146,8 @@ export async function getResourceMaps() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   seedResources()
     .then(() => process.exit(0))
-    .catch((err) => {
-      log.error('Resource seeding failed', err)
+    .catch((error) => {
+      log.error('Resource seeding failed', error instanceof Error ? error : undefined)
       process.exit(1)
     })
 }

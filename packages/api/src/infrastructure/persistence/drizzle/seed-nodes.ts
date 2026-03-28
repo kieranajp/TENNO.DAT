@@ -124,7 +124,7 @@ async function seedNodes() {
   process.exit(0)
 }
 
-seedNodes().catch((err) => {
-  log.error('Node seed failed', err)
+seedNodes().catch((error) => {
+  log.error('Node seed failed', error instanceof Error ? error : undefined)
   process.exit(1)
 })
