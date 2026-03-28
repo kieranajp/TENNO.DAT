@@ -2,18 +2,19 @@
 
 > KIM OS v19.99 // TENNO.DAT
 
+[![codecov](https://codecov.io/gh/kieranajp/TENNO.DAT/graph/badge.svg?token=X4BM660M1G)](https://codecov.io/gh/kieranajp/TENNO.DAT)
+
 A 1999-themed Warframe mastery tracker. Sync your profile from DE, track mastery progress across 15+ categories, view loadout and weapon stats, plan your grind with wishlists.
 
 ## Screenshots
 
-![Dashboard](packages/web/static/screenshots/dashboard.webp)
-*Dashboard - mastery rank, intrinsics, loadout, and category progress*
-
-![Mastery Database](packages/web/static/screenshots/mastery.webp)
-*Mastery list - search, filter by category/state, toggle Primes, wishlist items*
-
-![Prime Tracker](packages/web/static/screenshots/primes.webp)
-*Prime parts list - track ownership of Prime parts and plan your farm*
+<table>
+<tr>
+<td align="center"><img src="packages/web/static/screenshots/dashboard.webp" alt="Dashboard" width="300"><br><em>Dashboard</em></td>
+<td align="center"><img src="packages/web/static/screenshots/mastery.webp" alt="Mastery Database" width="300"><br><em>Mastery list</em></td>
+<td align="center"><img src="packages/web/static/screenshots/primes.webp" alt="Prime Tracker" width="300"><br><em>Prime tracker</em></td>
+</tr>
+</table>
 
 
 ## Features
