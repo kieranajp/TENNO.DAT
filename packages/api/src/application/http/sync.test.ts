@@ -1,19 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { syncRoutes } from './sync'
-import { createMockContainer, createMockOnboardedMiddleware, mockAuth, mockSettings } from '../../test-utils'
+import { createMockContainer, createMockOnboardedMiddleware, createMockSyncProbe, createMockDbProbe, mockAuth, mockSettings } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import type { SyncProbe } from '../../infrastructure/observability/sync-probe'
+import type { DbProbe } from '../../infrastructure/observability/db-probe'
 import type { ProfileData } from '../../domain/ports/profile-api'
 
 describe('Sync Routes', () => {
   let container: Container
+  let syncProbe: SyncProbe
+  let dbProbe: DbProbe
   let app: Hono
 
   beforeEach(() => {
     container = createMockContainer()
+    syncProbe = createMockSyncProbe()
+    dbProbe = createMockDbProbe()
     app = new Hono()
     app.use('*', createMockOnboardedMiddleware(mockAuth, mockSettings))
-    app.route('/sync', syncRoutes(container))
+    app.route('/sync', syncRoutes(container, syncProbe, dbProbe))
   })
 
   describe('GET /sync/settings', () => {

@@ -1,31 +1,53 @@
 import { FocusSchool, Platform } from '@warframe-tracker/shared'
 import type { ProfileApi, ProfileData, Loadout, Intrinsics, MissionCompletion, WeaponStats } from '../../domain/ports/profile-api'
+import type { SyncProbe } from '../observability/sync-probe'
 import { createLogger } from '../logger'
 
 const log = createLogger('DeProfileApi')
 
 export class DeProfileApi implements ProfileApi {
+  constructor(private readonly probe: SyncProbe) {}
+
   async fetch(playerId: string, platform: Platform): Promise<ProfileData> {
     const url = platform.profileUrl(playerId)
 
     log.info('Fetching profile', { playerId, platform: platform.id, url })
 
-    const response = await fetch(url)
+    const endTimer = this.probe.startingProfileFetch(platform.id)
+
+    let response: Response
+    try {
+      response = await fetch(url)
+    } catch (error) {
+      this.probe.profileFetchFailed('network_error')
+      endTimer()
+      throw error
+    }
 
     if (!response.ok) {
       const body = await response.text()
       log.error('Profile fetch failed', { status: response.status, body })
 
       if (response.status === 403) {
+        this.probe.profileFetchFailed('rate_limited')
+        endTimer()
         throw new Error('Access denied - you may be rate limited. Try again in a few minutes.')
       }
       if (response.status === 409) {
+        this.probe.profileFetchFailed('private_profile')
+        endTimer()
         throw new Error('Profile is private. Enable public profile in Warframe settings.')
       }
+      this.probe.profileFetchFailed('http_error')
+      endTimer()
       throw new Error(`Profile API error: ${response.status}${body ? ` - ${body}` : ''}`)
     }
 
-    const data = await response.json()
+    const text = await response.text()
+    this.probe.profileFetchSucceeded(text.length)
+    endTimer()
+
+    const data = JSON.parse(text)
 
     // XP data is in Results[0].LoadOutInventory.XPInfo, NOT top-level XpComponents
     const xpInfo = data.Results?.[0]?.LoadOutInventory?.XPInfo ?? []

@@ -3,6 +3,10 @@ import type { MiddlewareHandler } from 'hono'
 import type { Container } from './infrastructure/bootstrap/container'
 import type { AuthContext } from './application/http/middleware/auth'
 import type { PlayerSettings } from './domain/entities/player'
+import type { SyncProbe } from './infrastructure/observability/sync-probe'
+import type { AuthProbe } from './infrastructure/observability/auth-probe'
+import type { PrimePartsProbe } from './infrastructure/observability/prime-parts-probe'
+import type { DbProbe } from './infrastructure/observability/db-probe'
 
 /**
  * Creates a mock container with all repository methods stubbed.
@@ -74,6 +78,37 @@ export function createMockContainer(): Container {
       fetch: vi.fn(),
     },
   }
+}
+
+export function createMockSyncProbe(): SyncProbe {
+  return {
+    startingProfileFetch: vi.fn().mockReturnValue(vi.fn()),
+    profileFetchSucceeded: vi.fn(),
+    profileFetchFailed: vi.fn(),
+    itemsMatched: vi.fn(),
+    profileSyncCompleted: vi.fn(),
+  } as unknown as SyncProbe
+}
+
+export function createMockAuthProbe(): AuthProbe {
+  return {
+    steamAuthStarted: vi.fn(),
+    steamAuthSucceeded: vi.fn(),
+    steamAuthFailed: vi.fn(),
+    accountDeleted: vi.fn(),
+  } as unknown as AuthProbe
+}
+
+export function createMockPrimePartsProbe(): PrimePartsProbe {
+  return {
+    partToggled: vi.fn(),
+  } as unknown as PrimePartsProbe
+}
+
+export function createMockDbProbe(): DbProbe {
+  return {
+    startQuery: vi.fn().mockReturnValue(vi.fn()),
+  } as unknown as DbProbe
 }
 
 /**

@@ -3,11 +3,13 @@ import { Platform } from '@warframe-tracker/shared'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import { getRankFromXp } from '../../domain/entities/mastery'
 import { createLogger } from '../../infrastructure/logger'
+import type { SyncProbe } from '../../infrastructure/observability/sync-probe'
+import type { DbProbe } from '../../infrastructure/observability/db-probe'
 import { handleRouteError } from './errors'
 
 const log = createLogger('Sync')
 
-export function syncRoutes(container: Container) {
+export function syncRoutes(container: Container, probe: SyncProbe, db: DbProbe) {
   const router = new Hono()
 
   // Get settings for authenticated user
@@ -72,6 +74,7 @@ export function syncRoutes(container: Container) {
       )
 
       const matchedCount = profile.xpComponents.filter(xp => itemsMap.has(xp.itemType)).length
+      probe.itemsMatched(matchedCount, profile.xpComponents.length - matchedCount)
       const unmatchedSample = profile.xpComponents
         .filter(xp => !itemsMap.has(xp.itemType))
         .slice(0, 5)
@@ -104,7 +107,9 @@ export function syncRoutes(container: Container) {
           }
         })
 
+      const endUpsertMastery = db.startQuery('masteryRepo.upsertMany')
       await container.masteryRepo.upsertMany(masteryRecords)
+      endUpsertMastery()
       await container.playerRepo.updateLastSync(auth.userId)
 
       // Resolve loadout uniqueNames to item IDs and persist
@@ -142,7 +147,9 @@ export function syncRoutes(container: Container) {
           return completions
         })
 
+      const endUpsertNodes = db.startQuery('nodeRepo.upsertCompletions')
       await container.nodeRepo.upsertCompletions(settings.playerId!, nodeCompletions)
+      endUpsertNodes()
 
       // Auto-mark Prime parts as owned for mastered Primes
       const masteredPrimeIds = masteryRecords
@@ -154,7 +161,9 @@ export function syncRoutes(container: Container) {
 
       if (masteredPrimeIds.length > 0) {
         const componentIds = await container.itemRepo.getComponentIdsForItems(masteredPrimeIds)
+        const endMarkOwned = db.startQuery('primePartsRepo.markOwned')
         await container.primePartsRepo.markOwned(settings.playerId!, componentIds)
+        endMarkOwned()
         log.info('Auto-marked Prime parts as owned', {
           masteredPrimeCount: masteredPrimeIds.length,
           componentCount: componentIds.length,
@@ -173,6 +182,8 @@ export function syncRoutes(container: Container) {
           drifter: intrinsics.drifter.total,
         },
       })
+
+      probe.profileSyncCompleted(profile.playerLevel)
 
       return c.json({
         success: true,

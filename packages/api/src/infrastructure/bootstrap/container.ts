@@ -9,6 +9,7 @@ import { DrizzleSessionRepository } from '../persistence/drizzle/session-reposit
 import { DrizzleWishlistRepository } from '../persistence/drizzle/wishlist-repository'
 import { DrizzlePrimePartsRepository } from '../persistence/drizzle/prime-parts-repository'
 import { DeProfileApi } from '../external/de-profile-api'
+import type { SyncProbe } from '../observability/sync-probe'
 import type { ItemRepository } from '../../domain/ports/item-repository'
 import type { PlayerRepository } from '../../domain/ports/player-repository'
 import type { MasteryRepository } from '../../domain/ports/mastery-repository'
@@ -33,7 +34,7 @@ export interface Container {
   profileApi: ProfileApi
 }
 
-export function createContainer(): Container {
+export function createContainer(syncProbe: SyncProbe): Container {
   return {
     itemRepo: new DrizzleItemRepository(db),
     playerRepo: new DrizzlePlayerRepository(db),
@@ -44,6 +45,6 @@ export function createContainer(): Container {
     sessionRepo: new DrizzleSessionRepository(db),
     wishlistRepo: new DrizzleWishlistRepository(db),
     primePartsRepo: new DrizzlePrimePartsRepository(db),
-    profileApi: new DeProfileApi(),
+    profileApi: new DeProfileApi(syncProbe),
   }
 }

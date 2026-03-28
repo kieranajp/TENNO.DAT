@@ -1,11 +1,12 @@
 import { Hono } from 'hono'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import type { DbProbe } from '../../infrastructure/observability/db-probe'
 import { handleRouteError } from './errors'
 import { createLogger } from '../../infrastructure/logger'
 
 const log = createLogger('Wishlist')
 
-export function wishlistRoutes(container: Container) {
+export function wishlistRoutes(container: Container, db: DbProbe) {
   const router = new Hono()
 
   // Get all wishlisted item IDs

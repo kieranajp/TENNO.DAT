@@ -1,12 +1,13 @@
 import { Hono } from 'hono'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import { calculateMR, intrinsicsToXP } from '../../domain/entities/mastery'
+import type { DbProbe } from '../../infrastructure/observability/db-probe'
 import { createLogger } from '../../infrastructure/logger'
 import { handleRouteError } from './errors'
 
 const log = createLogger('Mastery')
 
-export function masteryRoutes(container: Container) {
+export function masteryRoutes(container: Container, db: DbProbe) {
   const router = new Hono()
 
   // Get mastery progress summary
@@ -14,12 +15,14 @@ export function masteryRoutes(container: Container) {
     const settings = c.get('playerSettings')
 
     try {
+      const endSummary = db.startQuery('masteryRepo.getSummary')
       const [categories, loadout, equipmentXP, starChartXP] = await Promise.all([
         container.masteryRepo.getSummary(settings.playerId!),
         container.loadoutRepo.getWithItems(settings.playerId!),
         container.masteryRepo.getEquipmentMasteryXP(settings.playerId!),
         container.nodeRepo.getStarChartMasteryXP(settings.playerId!),
       ])
+      endSummary()
 
       const totals = categories.reduce(
         (acc, cat) => ({
@@ -63,6 +66,7 @@ export function masteryRoutes(container: Container) {
     const settings = c.get('playerSettings')
 
     try {
+      const endItems = db.startQuery('masteryRepo.getItemsWithMastery')
       const [items, wishlistedIds, ownedComponentCounts] = await Promise.all([
         container.masteryRepo.getItemsWithMastery(settings.playerId!, {
           category: c.req.query('category') || undefined,
@@ -72,6 +76,7 @@ export function masteryRoutes(container: Container) {
         container.wishlistRepo.getWishlistedItemIds(settings.playerId!),
         container.primePartsRepo.getOwnedCounts(settings.playerId!),
       ])
+      endItems()
 
       const wishlistedSet = new Set(wishlistedIds)
 

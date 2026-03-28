@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { Hono } from 'hono'
 import { authRoutes } from './auth'
-import { createMockContainer } from '../../test-utils'
+import { createMockContainer, createMockAuthProbe } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import type { AuthProbe } from '../../infrastructure/observability/auth-probe'
 
 // Mock the SteamOpenIDService
 vi.mock('../../infrastructure/external/steam-openid', () => ({
@@ -19,6 +20,7 @@ vi.mock('../../infrastructure/external/steam-openid', () => ({
 
 describe('Auth Routes', () => {
   let container: Container
+  let authProbe: AuthProbe
   let app: Hono
 
   beforeEach(() => {
@@ -28,8 +30,9 @@ describe('Auth Routes', () => {
     delete process.env.BASE_URL
 
     container = createMockContainer()
+    authProbe = createMockAuthProbe()
     app = new Hono()
-    app.route('/auth', authRoutes(container))
+    app.route('/auth', authRoutes(container, authProbe))
   })
 
   afterEach(() => {

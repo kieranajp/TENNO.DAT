@@ -1,18 +1,21 @@
 import { Hono } from 'hono'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import type { DbProbe } from '../../infrastructure/observability/db-probe'
 import { createLogger } from '../../infrastructure/logger'
 import { handleRouteError } from './errors'
 
 const log = createLogger('Items')
 
-export function itemsRoutes(container: Container) {
+export function itemsRoutes(container: Container, db: DbProbe) {
   const router = new Hono()
 
   // Get all items with optional category filter
   router.get('/', async (c) => {
     try {
       const category = c.req.query('category') || undefined
+      const endQuery = db.startQuery('itemRepo.findAll')
       const items = await container.itemRepo.findAll(category)
+      endQuery()
       return c.json(items)
     } catch (error) {
       return handleRouteError(c, log, error, 'Failed to fetch items')
@@ -39,7 +42,9 @@ export function itemsRoutes(container: Container) {
       const settings = await container.playerRepo.getSettings(auth.userId)
       const playerId = settings?.playerId ?? undefined
 
+      const endQuery = db.startQuery('itemRepo.findByIdWithAcquisitionData')
       const item = await container.itemRepo.findByIdWithAcquisitionData(id, playerId)
+      endQuery()
 
       if (!item) {
         return c.json({ error: 'Item not found' }, 404)

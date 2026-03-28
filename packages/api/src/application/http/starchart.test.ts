@@ -1,18 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Hono } from 'hono'
 import { starchartRoutes } from './starchart'
-import { createMockContainer, createMockOnboardedMiddleware, mockAuth, mockSettings } from '../../test-utils'
+import { createMockContainer, createMockOnboardedMiddleware, createMockDbProbe, mockAuth, mockSettings } from '../../test-utils'
 import type { Container } from '../../infrastructure/bootstrap/container'
+import type { DbProbe } from '../../infrastructure/observability/db-probe'
 
 describe('Starchart Routes', () => {
   let container: Container
+  let dbProbe: DbProbe
   let app: Hono
 
   beforeEach(() => {
     container = createMockContainer()
+    dbProbe = createMockDbProbe()
     app = new Hono()
     app.use('*', createMockOnboardedMiddleware(mockAuth, mockSettings))
-    app.route('/starchart', starchartRoutes(container))
+    app.route('/starchart', starchartRoutes(container, dbProbe))
   })
 
   describe('GET /starchart/nodes', () => {
