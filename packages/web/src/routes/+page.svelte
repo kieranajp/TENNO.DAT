@@ -172,7 +172,7 @@
 		<!-- Privacy -->
 		<footer class="privacy-note">
 			<span class="material-icons">lock</span>
-			<p>No Warframe credentials required. We read your public profile via the DE API. Nothing is stored beyond what you see here.</p>
+			<p>No Warframe credentials required. We read your public profile via the DE API. Nothing is stored beyond what you see here. <a href="/privacy">Privacy policy</a>.</p>
 		</footer>
 
 		<SupportFooter />
@@ -496,5 +496,12 @@
 			color: $gray-500
 			margin: 0
 			line-height: 1.5
+
+			a
+				color: $gray-500
+				text-decoration: underline
+
+				&:hover
+					color: $kim-accent
 
 </style>
