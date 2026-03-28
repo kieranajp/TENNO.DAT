@@ -6,13 +6,13 @@ A 1999-themed Warframe mastery tracker. Sync your profile from DE, track mastery
 
 ## Screenshots
 
-![Dashboard](docs/screenshot-dashboard.png)
+![Dashboard](packages/web/static/screenshots/dashboard.webp)
 *Dashboard - mastery rank, intrinsics, loadout, and category progress*
 
-![Mastery Database](docs/screenshot-mastery.png)
+![Mastery Database](packages/web/static/screenshots/mastery.webp)
 *Mastery list - search, filter by category/state, toggle Primes, wishlist items*
 
-![Prime Tracker](docs/screenshot-primes.png)
+![Prime Tracker](packages/web/static/screenshots/primes.webp)
 *Prime parts list - track ownership of Prime parts and plan your farm*
 
 
@@ -67,6 +67,10 @@ pnpm test                     # Unit tests (Vitest)
 cd packages/web && pnpm test:e2e              # Visual regression (Playwright)
 pnpm test:e2e:update-snapshots                # Update baselines after CSS changes
 ```
+
+## Support
+
+If you find this useful, you can [buy me a forma](https://ko-fi.com/kieranajp).
 
 ## License
 

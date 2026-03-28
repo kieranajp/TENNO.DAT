@@ -30,7 +30,7 @@
 			});
 
 			// Navigate to dashboard
-			goto('/');
+			goto('/dashboard');
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to save settings';
 		} finally {

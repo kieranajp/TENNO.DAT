@@ -127,7 +127,7 @@ describe('Auth Routes', () => {
       const res = await app.request('/auth/steam/callback?openid.claimed_id=mock')
 
       expect(res.status).toBe(302)
-      expect(res.headers.get('Location')).toBe('http://localhost:5173')
+      expect(res.headers.get('Location')).toBe('http://localhost:5173/dashboard')
     })
 
     it('redirects to login with error on failure', async () => {

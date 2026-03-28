@@ -128,14 +128,14 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Dashboard - User Info', () => {
   test('displays user display name', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Should show TestTenno somewhere on the page
     await expect(page.locator('body')).toContainText('TestTenno')
   })
 
   test('displays mastery rank', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Should show MR 32 (from mock data)
     await expect(page.locator('body')).toContainText('32')
@@ -144,14 +144,14 @@ test.describe('Dashboard - User Info', () => {
 
 test.describe('Dashboard - Sync Button', () => {
   test('sync button is visible', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     const syncButton = page.locator('button', { hasText: /sync/i })
     await expect(syncButton).toBeVisible()
   })
 
   test('sync button triggers profile sync', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     const syncButton = page.locator('button', { hasText: /sync/i })
 
@@ -175,7 +175,7 @@ test.describe('Dashboard - Sync Button', () => {
 
 test.describe('Dashboard - Loadout Display', () => {
   test('displays current loadout', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Should show loadout items from mockMasterySummary
     // Wisp Prime is the equipped warframe
@@ -183,7 +183,7 @@ test.describe('Dashboard - Loadout Display', () => {
   })
 
   test('displays focus school if shown', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Focus school may be shown in loadout section - check if visible
     // The loadout data has focusSchool: 'Madurai'
@@ -195,14 +195,14 @@ test.describe('Dashboard - Loadout Display', () => {
 
 test.describe('Dashboard - Category Progress', () => {
   test('displays category cards', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Should show category progress
     await expect(page.locator('body')).toContainText(/Warframes|Primary|Secondary|Melee/i)
   })
 
   test('shows mastered counts', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Should show mastered/total like 72/89 for Warframes
     await expect(page.locator('body')).toContainText('72')
@@ -211,7 +211,7 @@ test.describe('Dashboard - Category Progress', () => {
 
 test.describe('Dashboard - Navigation', () => {
   test('navigates to mastery page', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Find link to mastery page
     const masteryLink = page.locator('a[href*="mastery"], button', { hasText: /mastery|database|items/i }).first()
@@ -222,7 +222,7 @@ test.describe('Dashboard - Navigation', () => {
   })
 
   test('navigates to star chart page', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Find link to star chart page
     const starchartLink = page.locator('a[href*="starchart"], button', { hasText: /star chart|nodes/i }).first()
@@ -235,7 +235,7 @@ test.describe('Dashboard - Navigation', () => {
 
 test.describe('Dashboard - Last Sync', () => {
   test('displays last sync time', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Should show some indication of last sync
     // The mock data has lastSyncAt: '2025-01-15T10:30:00Z'

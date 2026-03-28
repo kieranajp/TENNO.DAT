@@ -4,7 +4,7 @@
 
 	// Settings page has been replaced by a dialog - redirect to dashboard
 	onMount(() => {
-		goto('/');
+		goto('/dashboard');
 	});
 </script>
 

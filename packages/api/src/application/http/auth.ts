@@ -87,8 +87,8 @@ export function authRoutes(container: Container) {
 
       log.info('User logged in', { userId: user.id, steamId, rememberMe })
 
-      // Redirect to frontend
-      return c.redirect(frontendUrl)
+      // Redirect to frontend dashboard
+      return c.redirect(`${frontendUrl}/dashboard`)
     } catch (error) {
       log.error('Steam callback failed', error instanceof Error ? error : undefined)
       return c.redirect(`${frontendUrl}/login?error=auth_failed`)
