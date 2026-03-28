@@ -15,7 +15,7 @@
     "@warframe-tracker/shared": "workspace:*",
     "@wfcd/items": "latest",
     "dotenv": "^17.2.3",
-    "drizzle-orm": "^0.30.0",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.12.9",
     "openid": "^2.0.14",
     "postgres": "^3.4.0",
