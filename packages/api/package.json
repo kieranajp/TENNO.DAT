@@ -11,7 +11,7 @@
     "db:seed-nodes": "tsx src/infrastructure/persistence/drizzle/seed-nodes.ts"
   },
   "dependencies": {
-    "@hono/node-server": "^1.8.0",
+    "@hono/node-server": "^1.19.11",
     "@warframe-tracker/shared": "workspace:*",
     "@wfcd/items": "latest",
     "dotenv": "^17.2.3",
