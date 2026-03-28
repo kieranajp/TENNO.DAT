@@ -125,6 +125,49 @@ test.beforeEach(async ({ page }) => {
 })
 
 test.describe('Visual Regression', () => {
+  test.describe('Homepage (Public)', () => {
+    test('full page screenshot - unauthenticated', async ({ page }) => {
+      // Override auth mock to return no user
+      await page.route('**/auth/me', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ user: null }),
+        })
+      })
+      await page.goto('/', { waitUntil: 'networkidle' })
+      await page.waitForTimeout(300)
+      await expect(page).toHaveScreenshot('homepage-unauthenticated.png', {
+        fullPage: true,
+      })
+    })
+
+    test('full page screenshot - authenticated', async ({ page }) => {
+      await page.goto('/', { waitUntil: 'networkidle' })
+      await page.waitForTimeout(300)
+      await expect(page).toHaveScreenshot('homepage-authenticated.png', {
+        fullPage: true,
+      })
+    })
+
+    test('mobile viewport', async ({ page }) => {
+      await page.route('**/auth/me', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ user: null }),
+        })
+      })
+      await page.setViewportSize({ width: 375, height: 667 })
+      await page.goto('/', { waitUntil: 'networkidle' })
+      await page.waitForTimeout(500)
+      await expect(page).toHaveScreenshot('homepage-mobile.png', {
+        fullPage: true,
+        maxDiffPixelRatio: 0.02,
+      })
+    })
+  })
+
   test.describe('Dashboard (Home)', () => {
     test('full page screenshot', async ({ page }) => {
       await page.goto('/dashboard', { waitUntil: 'networkidle' })
