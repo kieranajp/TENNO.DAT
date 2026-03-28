@@ -308,7 +308,12 @@
 					<span class="status-dot"></span>
 					<span>SYSTEM: ONLINE</span>
 				</div>
-				<div class="status-info">MEM: 64KB OK</div>
+				<div class="status-right">
+					<a href="https://ko-fi.com/kieranajp" target="_blank" rel="noopener noreferrer" class="kofi-link" title="Buy me a forma">
+						<span class="material-icons">local_cafe</span>
+					</a>
+					<span class="status-info">MEM: 64KB OK</span>
+				</div>
 			</footer>
 		</main>
 	</div>

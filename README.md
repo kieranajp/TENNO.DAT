@@ -68,6 +68,10 @@ cd packages/web && pnpm test:e2e              # Visual regression (Playwright)
 pnpm test:e2e:update-snapshots                # Update baselines after CSS changes
 ```
 
+## Support
+
+If you find this useful, you can [buy me a forma](https://ko-fi.com/kieranajp).
+
 ## License
 
 MIT

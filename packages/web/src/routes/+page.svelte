@@ -168,6 +168,14 @@
 			<span class="material-icons">lock</span>
 			<p>No Warframe credentials required. We read your public profile via the DE API. Nothing is stored beyond what you see here.</p>
 		</footer>
+
+		<!-- Support -->
+		<div class="support-link">
+			<a href="https://ko-fi.com/kieranajp" target="_blank" rel="noopener noreferrer">
+				<span class="material-icons">local_cafe</span>
+				<span>Buy me a forma</span>
+			</a>
+		</div>
 	</div>
 </div>
 
@@ -447,4 +455,26 @@
 			color: $gray-500
 			margin: 0
 			line-height: 1.5
+
+	// ========================
+	// Support
+	// ========================
+	.support-link
+		text-align: center
+
+		a
+			display: inline-flex
+			align-items: center
+			gap: 0.4rem
+			font-family: $font-family-monospace
+			font-size: $font-size-xs
+			color: $gray-500
+			text-decoration: none
+			transition: color $transition-fast
+
+			.material-icons
+				font-size: 0.9rem
+
+			&:hover
+				color: $kim-accent
 </style>
