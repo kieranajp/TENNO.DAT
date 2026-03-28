@@ -26,10 +26,13 @@ export class DrizzleSessionRepository implements SessionRepository {
       ? new Date(Date.now() + SESSION_TTL_LONG * 1000)
       : new Date(Date.now() + SESSION_TTL_SHORT * 1000)
 
-    const result = await this.db
-      .insert(sessions)
-      .values({ id, userId, rememberMe, expiresAt })
-      .returning()
+    const [_, result] = await Promise.all([
+      this.db.delete(sessions).where(lt(sessions.expiresAt, new Date())),
+      this.db
+        .insert(sessions)
+        .values({ id, userId, rememberMe, expiresAt })
+        .returning(),
+    ])
     return result[0]
   }
 
