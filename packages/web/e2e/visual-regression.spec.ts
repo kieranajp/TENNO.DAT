@@ -127,7 +127,7 @@ test.beforeEach(async ({ page }) => {
 test.describe('Visual Regression', () => {
   test.describe('Dashboard (Home)', () => {
     test('full page screenshot', async ({ page }) => {
-      await page.goto('/', { waitUntil: 'networkidle' })
+      await page.goto('/dashboard', { waitUntil: 'networkidle' })
       // Extra wait for any CSS transitions
       await page.waitForTimeout(300)
       await expect(page).toHaveScreenshot('dashboard-full.png', {
@@ -136,7 +136,7 @@ test.describe('Visual Regression', () => {
     })
 
     test('header and navigation', async ({ page }) => {
-      await page.goto('/', { waitUntil: 'networkidle' })
+      await page.goto('/dashboard', { waitUntil: 'networkidle' })
       const header = page.locator('header, nav, .navbar').first()
       if (await header.isVisible()) {
         await expect(header).toHaveScreenshot('dashboard-header.png')
@@ -176,7 +176,7 @@ test.describe('Visual Regression', () => {
   test.describe('Responsive Design', () => {
     test('dashboard on mobile viewport', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 })
-      await page.goto('/', { waitUntil: 'networkidle' })
+      await page.goto('/dashboard', { waitUntil: 'networkidle' })
       await page.waitForTimeout(500) // Longer wait for mobile layout
       await expect(page).toHaveScreenshot('dashboard-mobile.png', {
         fullPage: true,
@@ -198,7 +198,7 @@ test.describe('Visual Regression', () => {
 test.describe('Component Screenshots', () => {
   test.describe('Buttons and Controls', () => {
     test('primary buttons', async ({ page }) => {
-      await page.goto('/', { waitUntil: 'networkidle' })
+      await page.goto('/dashboard', { waitUntil: 'networkidle' })
       await page.waitForTimeout(300)
       const button = page.locator('button.btn-primary, button[type="submit"]').first()
       if (await button.isVisible()) {

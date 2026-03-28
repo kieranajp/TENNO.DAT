@@ -87,7 +87,7 @@
 			console.error('Logout failed:', e);
 		}
 		auth.clear();
-		goto('/login');
+		goto('/');
 	}
 
 	$effect(() => {
@@ -112,11 +112,12 @@
 		const path = $page.url.pathname;
 		const isLoginPage = path.startsWith('/login');
 		const isOnboardingPage = path.startsWith('/onboarding');
+		const isHomepage = path === '/';
 
 		if (!authUser) {
-			// Not logged in - redirect to login (unless already there)
-			if (!isLoginPage) {
-				goto('/login');
+			// Not logged in - allow homepage and login, redirect everything else
+			if (!isLoginPage && !isHomepage) {
+				goto('/');
 			}
 			return;
 		}
@@ -129,7 +130,7 @@
 
 		// Logged in and onboarded - redirect away from login/onboarding
 		if (authUser.onboardingComplete && (isLoginPage || isOnboardingPage)) {
-			goto('/');
+			goto('/dashboard');
 		}
 	});
 
@@ -139,7 +140,7 @@
 			if (event.reason instanceof ApiError && event.reason.isUnauthorized) {
 				event.preventDefault();
 				auth.clear();
-				goto('/login');
+				goto('/');
 			}
 		};
 
@@ -159,15 +160,17 @@
 	});
 
 	const navItems = [
-		{ href: '/', label: 'Dashboard' },
+		{ href: '/dashboard', label: 'Dashboard' },
 		{ href: '/mastery', label: 'Mastery' },
 		{ href: '/primes', label: 'Primes' },
 		{ href: '/starchart', label: 'Star Chart' }
 	];
 
-	// Auth pages (login/onboarding) render without the app chrome
+	// Public/auth pages render without the app chrome
 	let isAuthPage = $derived(
-		$page.url.pathname.startsWith('/login') || $page.url.pathname.startsWith('/onboarding')
+		$page.url.pathname === '/' ||
+		$page.url.pathname.startsWith('/login') ||
+		$page.url.pathname.startsWith('/onboarding')
 	);
 </script>
 
@@ -248,7 +251,7 @@
 				<div class="d-flex align-items-center gap-2">
 					<div class="title-icon"></div>
 					<span class="title-text">
-						{#if $page.url.pathname === '/'}
+						{#if $page.url.pathname === '/dashboard'}
 							MASTERY_DASHBOARD.EXE
 						{:else if $page.url.pathname === '/starchart'}
 							STAR_CHART.EXE

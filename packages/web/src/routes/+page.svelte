@@ -1,433 +1,318 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, getItemDetails, sanitiseDisplayName, type MasterySummary, type ItemDetails } from '$lib/api';
-	import { sortByCategory } from '$lib/categories';
-	import { CATEGORIES } from '@warframe-tracker/shared';
-	import ItemModal from '$lib/components/ItemModal.svelte';
+	import { auth } from '$lib/stores/auth';
+	import type { AuthUser } from '$lib/api';
 
-	let summary: MasterySummary | null = $state(null);
-	let sortedCategories = $derived(summary ? sortByCategory(summary.categories) : []);
-	let syncing = $state(false);
-	let syncCooldown = $state(false);
-	let error: string | null = $state(null);
-	let selectedItem: ItemDetails | null = $state(null);
-	let loadingItem = $state(false);
+	let authUser = $state<AuthUser | null>(null);
+	let authChecked = $state(false);
 
-	// Build category metadata from shared config
-	const categoryMeta: Record<string, { icon: string; subtitle: string }> = Object.fromEntries(
-		Object.entries(CATEGORIES).map(([key, config]) => [
-			key,
-			{ icon: config.icon, subtitle: config.subtitle }
-		])
-	);
-
-	onMount(async () => {
-		try {
-			summary = await getMasterySummary();
-		} catch {
-			error = 'Failed to load mastery data. Check settings.';
-		}
+	$effect(() => {
+		const unsubscribe = auth.subscribe((state) => {
+			authUser = state.user;
+			authChecked = state.checked;
+		});
+		return unsubscribe;
 	});
-
-	async function handleSync() {
-		if (syncCooldown) return;
-		syncing = true;
-		error = null;
-		try {
-			const result = await syncProfile();
-			if (!result.success) {
-				error = result.error ?? 'Sync failed';
-				return;
-			}
-			summary = await getMasterySummary();
-		} catch {
-			error = 'Sync failed. Check your Account ID.';
-		} finally {
-			syncing = false;
-			syncCooldown = true;
-			setTimeout(() => syncCooldown = false, 30_000);
-		}
-	}
-
-	function percent(mastered: number, total: number): number {
-		return total > 0 ? Math.round((mastered / total) * 100) : 0;
-	}
-
-	async function openItemModal(itemId: number) {
-		loadingItem = true;
-		try {
-			selectedItem = await getItemDetails(itemId);
-		} catch (e) {
-			console.error('Failed to load item details:', e);
-		} finally {
-			loadingItem = false;
-		}
-	}
-
-	function closeItemModal() {
-		selectedItem = null;
-	}
 </script>
 
-{#if error}
-	<div class="error-panel mb-3">
-		<span class="material-icons">error</span>
-		{error}
-	</div>
-{/if}
+<div class="homepage">
+	<div class="homepage-backdrop"></div>
 
-{#if summary}
-	<div class="dashboard-grid">
-		<!-- Left Column: Operator Status & Loadout -->
-		<div class="left-column">
-			<!-- Operator Status Panel -->
-			<div class="kim-panel">
-				<div class="panel-header">
-					<h3>Operator Status</h3>
-				</div>
-				<div class="panel-body">
-					<div class="operator-info">
-						<div class="operator-avatar">
-							{#if summary.masteryRank}
-								<img
-									src={getMasteryRankIconUrl(summary.masteryRank.rank)}
-									alt="Mastery Rank {summary.masteryRank.rank}"
-									class="mastery-rank-icon"
-								/>
-							{:else}
-								<span class="material-icons">person</span>
-							{/if}
-						</div>
-						<div class="mastery-rank">
-							MR {summary.masteryRank?.rank ?? '??'}
-							{#if summary.displayName}
-								<span class="rank-title">{sanitiseDisplayName(summary.displayName)}</span>
-							{/if}
-						</div>
-					</div>
-
-					{#if summary.masteryRank}
-						<div class="xp-section">
-							<div class="xp-label">
-								<span>MR {summary.masteryRank.rank} → {summary.masteryRank.rank + 1}</span>
-								<span>{summary.masteryRank.totalXP.toLocaleString()} / {summary.masteryRank.nextThreshold.toLocaleString()}</span>
-							</div>
-							<div class="progress-retro progress-accent">
-								<div
-									class="progress-bar"
-									style="width: {summary.masteryRank.progress.toFixed(1)}%"
-								></div>
-							</div>
-							<div class="xp-subtext">
-								{(summary.masteryRank.nextThreshold - summary.masteryRank.totalXP).toLocaleString()} XP to next rank
-							</div>
-						</div>
-					{/if}
-
-					<div class="xp-section">
-						<div class="xp-label">
-							<span>ITEMS MASTERED</span>
-							<span>{summary.totals.mastered.toLocaleString()} / {summary.totals.total.toLocaleString()}</span>
-						</div>
-						<div class="progress-retro progress-accent">
-							<div
-								class="progress-bar"
-								style="width: {percent(summary.totals.mastered, summary.totals.total)}%"
-							></div>
-						</div>
-					</div>
-
-					<button class="btn-retro sync-btn" onclick={handleSync} disabled={syncing || syncCooldown}>
-						{#if syncing}
-							<span class="spinner"></span>
-						{:else}
-							<span class="material-icons">sync</span>
-						{/if}
-						Sync Profile
-					</button>
-
-					{#if summary.lastSyncAt}
-						<div class="last-sync">
-							Last sync: {new Date(summary.lastSyncAt).toLocaleString()}
-						</div>
-					{/if}
-				</div>
+	<div class="homepage-content">
+		<!-- Hero -->
+		<header class="hero">
+			<div class="hero-icon">
+				<span class="material-icons">computer</span>
 			</div>
-
-			<!-- Current Loadout Panel -->
-			{#if summary.loadout}
-				<div class="kim-panel">
-					<div class="panel-header">
-						<h3>Current Loadout</h3>
-					</div>
-					<div class="panel-body loadout-body">
-						{#each [
-							{ label: 'Warframe', item: summary.loadout.warframe },
-							{ label: 'Primary', item: summary.loadout.primary },
-							{ label: 'Secondary', item: summary.loadout.secondary },
-							{ label: 'Melee', item: summary.loadout.melee }
-						] as slot}
-							<!-- svelte-ignore a11y_click_events_have_key_events -->
-							<!-- svelte-ignore a11y_no_static_element_interactions -->
-							<div class="loadout-item" class:clickable={slot.item} onclick={() => slot.item && openItemModal(slot.item.id)}>
-								<div class="loadout-image">
-									{#if slot.item}
-										{@const imgUrl = getImageUrl(slot.item.imageName)}
-										{#if imgUrl}
-											<img src={imgUrl} alt={slot.item.name} />
-										{:else}
-											<span class="material-icons">help_outline</span>
-										{/if}
-									{:else}
-										<span class="material-icons">remove</span>
-									{/if}
-								</div>
-								<div class="loadout-info">
-									<div class="loadout-type">{slot.label}</div>
-									<div class="loadout-name">
-										{slot.item?.name ?? 'NONE EQUIPPED'}
-									</div>
-									{#if slot.item}
-										<div class="loadout-status" class:mastered={slot.item.masteryState !== 'unmastered'} class:mastered-full={slot.item.masteryState === 'mastered_40'}>
-											{#if slot.item.masteryState === 'mastered_40'}
-												<span class="status-dot status-gold"></span>
-												<span class="rank-display">{slot.item.rank}/{slot.item.maxRank}</span>
-											{:else if slot.item.masteryState === 'mastered_30'}
-												<span class="status-dot"></span>
-												{#if slot.item.maxRank > 30}
-													<span class="rank-display">{slot.item.rank}/{slot.item.maxRank}</span>
-												{:else}
-													MASTERED
-												{/if}
-											{:else}
-												<span class="status-dot status-incomplete"></span>
-												<span class="rank-display rank-incomplete">{slot.item.rank ?? 0}/{slot.item.maxRank}</span>
-											{/if}
-										</div>
-									{/if}
-								</div>
-								<span class="material-icons loadout-chevron">chevron_right</span>
-							</div>
-						{/each}
-					</div>
-				</div>
-			{/if}
-		</div>
-
-		<!-- Right Column: Category Cards -->
-		<div class="right-column">
-			<div class="categories-grid">
-				{#each sortedCategories as cat}
-					{@const meta = categoryMeta[cat.category] ?? { icon: 'category', subtitle: 'ITEMS' }}
-					{@const pct = percent(cat.mastered, cat.total)}
-					<a href="/mastery?category={encodeURIComponent(cat.category)}" class="category-card">
-						<div class="category-header">
-							<div class="category-info">
-								<span class="material-icons category-icon">{meta.icon}</span>
-								<div>
-									<div class="category-title">{cat.category}</div>
-									<div class="category-subtitle">{meta.subtitle}</div>
-								</div>
-							</div>
-							<span class="category-percent">{pct}%</span>
-						</div>
-						<div class="progress-retro">
-							<div class="progress-bar" style="width: {pct}%"></div>
-						</div>
-						<div class="category-stats">
-							<span>{cat.mastered} / {cat.total} MASTERED</span>
-							<span>{cat.total - cat.mastered} REMAINING</span>
-						</div>
+			<h1 class="hero-title">TENNO.DAT</h1>
+			<p class="hero-tagline">MASTERY TRACKING SYSTEM ONLYNE.</p>
+			<p class="hero-description">
+				Track your mastery rank progress, prime parts, and star chart completion across every item in Warframe.
+			</p>
+			<div class="hero-cta">
+				{#if authChecked && authUser}
+					<a href="/dashboard" class="btn-retro cta-btn">
+						<span class="material-icons">arrow_forward</span>
+						Go to Dashboard
 					</a>
-				{/each}
+				{:else}
+					<a href="/login" class="btn-retro cta-btn">
+						<svg class="steam-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 259" fill="currentColor">
+							<path d="M127.78 0C60.95 0 5.48 52.02 0 117.5l68.69 28.4c5.84-4 12.87-6.35 20.47-6.35.68 0 1.35.02 2.02.06l30.63-44.4v-.62c0-27.52 22.39-49.93 49.91-49.93 27.53 0 49.93 22.4 49.93 49.93 0 27.53-22.4 49.93-49.93 49.93h-1.16l-43.7 31.21c0 .52.03 1.04.03 1.56 0 20.67-16.8 37.48-37.47 37.48-18.27 0-33.56-13.12-36.87-30.45L3.25 161.9C21.35 215.85 71.65 254.8 131.47 254.8c72.7 0 131.67-58.96 131.67-131.67C263.15 50.83 200.48 0 127.78 0z"/>
+							<path d="M80.75 196.78l-15.58-6.45c2.77 5.76 7.35 10.65 13.51 13.54 13.38 6.28 29.32.55 35.6-12.82 3.05-6.5 3.1-13.7.14-20.24-2.96-6.54-8.31-11.34-15.06-13.52-.67-.22-1.34-.4-2.02-.56l16.1 6.67c9.87 4.1 14.55 15.39 10.44 25.25-4.1 9.87-15.38 14.55-25.25 10.44-6.58-2.73-11.27-8.09-13.51-14.31h-.37zM221.6 94.6c0-18.37-14.94-33.3-33.32-33.3-18.38 0-33.31 14.93-33.31 33.3 0 18.38 14.93 33.32 33.31 33.32 18.38 0 33.32-14.94 33.32-33.32zm-58.14-.01c0-13.72 11.14-24.86 24.85-24.86 13.72 0 24.86 11.14 24.86 24.86 0 13.72-11.14 24.86-24.86 24.86-13.71 0-24.85-11.14-24.85-24.86z"/>
+						</svg>
+						Log in with Steam
+					</a>
+				{/if}
 			</div>
-		</div>
-	</div>
-{:else if !error}
-	<div class="loading-state">
-		<div class="spinner"></div>
-		<p>LOADING DATABASE...</p>
-	</div>
-{/if}
+		</header>
 
-<!-- Item Detail Modal -->
-<ItemModal item={selectedItem} onClose={closeItemModal} />
+		<!-- Feature Panels -->
+		<section class="features">
+			<div class="feature-card window-frame">
+				<div class="title-bar">
+					<div class="d-flex align-items-center gap-2">
+						<div class="title-icon"></div>
+						<span class="title-text">MASTERY_DATABASE.EXE</span>
+					</div>
+				</div>
+				<div class="feature-body">
+					<span class="material-icons feature-icon">military_tech</span>
+					<p>Every weapon, frame, and companion. See what you've ranked and what's left.</p>
+				</div>
+			</div>
 
-{#if loadingItem}
-	<div class="loading-overlay">
-		<div class="spinner"></div>
+			<div class="feature-card window-frame">
+				<div class="title-bar">
+					<div class="d-flex align-items-center gap-2">
+						<div class="title-icon"></div>
+						<span class="title-text">PRIME_TRACKER.EXE</span>
+					</div>
+				</div>
+				<div class="feature-body">
+					<span class="material-icons feature-icon">diamond</span>
+					<p>Track which prime parts you own and which you still need to farm.</p>
+				</div>
+			</div>
+
+			<div class="feature-card window-frame">
+				<div class="title-bar">
+					<div class="d-flex align-items-center gap-2">
+						<div class="title-icon"></div>
+						<span class="title-text">STAR_CHART.EXE</span>
+					</div>
+				</div>
+				<div class="feature-body">
+					<span class="material-icons feature-icon">public</span>
+					<p>Normal and Steel Path completion, node by node.</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- How it Works -->
+		<section class="how-it-works window-frame">
+			<div class="title-bar">
+				<div class="d-flex align-items-center gap-2">
+					<div class="title-icon"></div>
+					<span class="title-text">SETUP.TXT</span>
+				</div>
+			</div>
+			<div class="steps-body">
+				<div class="step">
+					<span class="step-number">1</span>
+					<span>Log in with Steam</span>
+				</div>
+				<div class="step-divider">
+					<span class="material-icons">chevron_right</span>
+				</div>
+				<div class="step">
+					<span class="step-number">2</span>
+					<span>Enter your Warframe account ID</span>
+				</div>
+				<div class="step-divider">
+					<span class="material-icons">chevron_right</span>
+				</div>
+				<div class="step">
+					<span class="step-number">3</span>
+					<span>Your profile syncs automatically</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- Privacy -->
+		<footer class="privacy-note">
+			<span class="material-icons">lock</span>
+			<p>No Warframe credentials required. We read your public profile via the DE API. Nothing is stored beyond what you see here.</p>
+		</footer>
 	</div>
-{/if}
+</div>
 
 <style lang="sass">
-	.error-panel
-		background: $danger-bg
-		border: $border-width solid $kim-accent
-		padding: 0.75rem 1rem
-		display: flex
-		align-items: center
-		gap: 0.5rem
-		color: $kim-accent
-		font-family: $font-family-monospace
-		text-transform: uppercase
+	@import '../styles/variables'
 
-	.dashboard-grid
-		display: grid
-		grid-template-columns: 1fr
-		gap: 1.5rem
-
-		@media (min-width: 1024px)
-			grid-template-columns: 320px 1fr
-
-	.left-column
-		display: flex
-		flex-direction: column
-		gap: 1.5rem
-
-	.right-column
-		min-width: 0
-
-	// Operator Status
-	.operator-info
-		display: flex
-		flex-direction: column
-		align-items: center
-		margin-bottom: 1rem
-
-	.operator-avatar
-		width: 96px
-		height: 96px
-		background: $gray-800
-		border: 3px solid $gray-500
+	.homepage
+		min-height: 100vh
 		display: flex
 		align-items: center
 		justify-content: center
-		margin-bottom: 0.75rem
+		padding: 1rem
+		position: relative
+
+	.homepage-backdrop
+		position: fixed
+		inset: 0
+		background: url('/kim-background.jpeg') center center / cover no-repeat
+		z-index: -1
+
+	.homepage-content
+		width: 100%
+		max-width: 720px
+		display: flex
+		flex-direction: column
+		gap: 1.5rem
+		animation: page-appear 0.3s ease-out
+
+	@keyframes page-appear
+		from
+			opacity: 0
+			transform: translateY(-10px)
+		to
+			opacity: 1
+			transform: translateY(0)
+
+	// Hero
+	.hero
+		text-align: center
+		background: $kim-terminal-light
+		border: $border-width solid $kim-border-dark
+		padding: 2rem 1.5rem
+		box-shadow: $shadow-sm
+
+	.hero-icon
+		width: 64px
+		height: 64px
+		background: $kim-bg-dark
+		border: $border-width solid $kim-border
+		display: flex
+		align-items: center
+		justify-content: center
+		margin: 0 auto 1rem
 
 		.material-icons
-			font-size: $font-size-xxl
-			color: $gray-500
+			font-size: 32px
+			color: $kim-title
 
-		.mastery-rank-icon
-			width: 80px
-			height: 80px
-			object-fit: contain
-
-	.mastery-rank
-		font-size: $font-size-lg
+	.hero-title
 		font-family: $font-family-monospace
-		color: $kim-border
+		font-size: 2rem
+		letter-spacing: $letter-spacing-wider
+		color: $kim-border-dark
+		margin: 0 0 0.25rem
 
-		.rank-title
-			display: block
-			font-size: $font-size-sm
-			color: $kim-accent
-			text-transform: uppercase
-			margin-top: 0.25rem
-
-	.xp-section
-		margin-bottom: 1rem
-
-	.xp-label
-		display: flex
-		justify-content: space-between
+	.hero-tagline
 		font-family: $font-family-monospace
 		font-size: $font-size-sm
-		margin-bottom: 0.25rem
-
-	.xp-subtext
-		font-family: $font-family-monospace
-		font-size: $font-size-xs
-		color: $gray-500
-		margin-top: 0.25rem
-		text-align: right
-
-	.sync-btn
-		width: 100%
-		padding: 0.75rem
-		display: flex
-		align-items: center
-		justify-content: center
-		gap: 0.5rem
-		font-size: $font-size-base
-
-		&:disabled
-			opacity: 0.7
-			cursor: not-allowed
-
-	.last-sync
-		margin-top: 0.75rem
-		font-size: $font-size-xs
-		color: $gray-500
-		text-align: center
-		font-family: $font-family-monospace
-
-	// Loadout
-	.loadout-item.clickable
-		cursor: pointer
-
-	.loadout-chevron
-		color: $gray-400
-		transition: color $transition-base
-
-	.loadout-item.clickable:hover .loadout-chevron
 		color: $kim-accent
+		text-transform: uppercase
+		letter-spacing: $letter-spacing-wide
+		margin: 0 0 1rem
 
-	// Categories Grid
-	.categories-grid
+	.hero-description
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
+		color: $gray-700
+		margin: 0 0 1.5rem
+		line-height: 1.6
+
+	.hero-cta
+		display: flex
+		justify-content: center
+
+	.cta-btn
+		display: inline-flex
+		align-items: center
+		gap: 0.5rem
+		padding: 0.75rem 1.5rem
+		font-size: 1rem
+		text-decoration: none
+		color: white
+
+		.steam-icon
+			width: 20px
+			height: 20px
+
+	// Features
+	.features
 		display: grid
 		grid-template-columns: 1fr
 		gap: 1rem
 
 		@media (min-width: 640px)
-			grid-template-columns: repeat(2, minmax(0, 1fr))
+			grid-template-columns: repeat(3, 1fr)
 
-	.category-card
-		text-decoration: none
-		color: inherit
-		display: block
-
-	.category-header
+	.feature-card
 		display: flex
-		justify-content: space-between
-		align-items: flex-start
-		margin-bottom: 0.5rem
+		flex-direction: column
 
-	.category-info
+	.title-icon
+		width: $icon-size-sm
+		height: $icon-size-sm
+		background: $kim-accent
+		border: 1px solid black
+
+	.feature-body
+		background: $kim-terminal-light
+		padding: 1rem
+		flex: 1
+		text-align: center
+
+		p
+			font-family: $font-family-monospace
+			font-size: $font-size-sm
+			color: $gray-700
+			margin: 0.75rem 0 0
+			line-height: 1.5
+
+	.feature-icon
+		font-size: 1.5rem
+		color: $kim-border
+
+	// How it Works
+	.steps-body
+		background: $kim-terminal-light
+		padding: 1.25rem
+		display: flex
+		align-items: center
+		justify-content: center
+		gap: 0.75rem
+		flex-wrap: wrap
+
+	.step
 		display: flex
 		align-items: center
 		gap: 0.5rem
-
-	.category-stats
-		display: flex
-		justify-content: space-between
-		margin-top: 0.5rem
-
-	// Loading State
-	.loading-state
-		display: flex
-		flex-direction: column
-		align-items: center
-		justify-content: center
-		padding: 4rem
 		font-family: $font-family-monospace
-		text-transform: uppercase
-		color: $gray-500
+		font-size: $font-size-sm
+		color: $gray-700
 
-	.spinner
+	.step-number
 		width: 24px
 		height: 24px
-		border: 3px solid $gray-300
-		border-top-color: $kim-border
-		border-radius: 50%
-		animation: spin 1s linear infinite
-
-	.loading-overlay
-		position: fixed
-		inset: 0
-		background: rgba(0, 0, 0, 0.5)
+		background: $kim-border
+		color: white
 		display: flex
 		align-items: center
 		justify-content: center
-		z-index: $zindex-noise
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
+		flex-shrink: 0
+
+	.step-divider
+		color: $gray-400
+		display: flex
+		align-items: center
+
+		.material-icons
+			font-size: 1rem
+
+	// Privacy
+	.privacy-note
+		display: flex
+		align-items: flex-start
+		gap: 0.5rem
+		padding: 0.75rem 1rem
+		background: rgba($kim-terminal-light, 0.85)
+		border: 1px solid $kim-border
+		backdrop-filter: blur(4px)
+
+		.material-icons
+			font-size: 1rem
+			color: $kim-border
+			margin-top: 2px
+
+		p
+			font-family: $font-family-monospace
+			font-size: $font-size-xs
+			color: $gray-500
+			margin: 0
+			line-height: 1.5
 </style>
