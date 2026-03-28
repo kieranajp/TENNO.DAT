@@ -386,37 +386,4 @@
 		color: $kim-border
 		flex-shrink: 0
 
-	.loading-state
-		display: flex
-		flex-direction: column
-		align-items: center
-		justify-content: center
-		padding: 4rem
-		font-family: $font-family-monospace
-		text-transform: uppercase
-		color: $gray-500
-
-	.spinner
-		width: 24px
-		height: 24px
-		border: 3px solid $gray-300
-		border-top-color: $kim-border
-		border-radius: 50%
-		animation: spin 1s linear infinite
-		margin-bottom: 1rem
-
-	.empty-state
-		display: flex
-		flex-direction: column
-		align-items: center
-		justify-content: center
-		padding: 4rem
-		font-family: $font-family-monospace
-		text-transform: uppercase
-		color: $gray-500
-
-		.material-icons
-			font-size: $font-size-xxl
-			margin-bottom: 1rem
-			opacity: 0.5
 </style>

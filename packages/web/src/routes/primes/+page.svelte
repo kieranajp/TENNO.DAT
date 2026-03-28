@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getPrimes, getItemDetails, getImageUrl, toggleComponentOwned, type PrimeItem, type ItemDetails } from '$lib/api';
+	import { getPrimes, getImageUrl, toggleComponentOwned, type PrimeItem } from '$lib/api';
 	import { CATEGORY_ORDER } from '$lib/categories';
 	import ItemModal from '$lib/components/ItemModal.svelte';
 
 	let primes: PrimeItem[] = $state([]);
 	let loading = $state(true);
-	let selectedItem: ItemDetails | null = $state(null);
-	let loadingItem = $state(false);
+	let selectedItemId: number | null = $state(null);
 	let togglingComponent = $state<number | null>(null);
 
 	let category = $state('');
@@ -84,19 +83,12 @@
 		}
 	}
 
-	async function openItemModal(itemId: number) {
-		loadingItem = true;
-		try {
-			selectedItem = await getItemDetails(itemId);
-		} catch (e) {
-			console.error('Failed to load item details:', e);
-		} finally {
-			loadingItem = false;
-		}
+	function openItemModal(itemId: number) {
+		selectedItemId = itemId;
 	}
 
 	function closeItemModal() {
-		selectedItem = null;
+		selectedItemId = null;
 	}
 </script>
 
@@ -170,13 +162,7 @@
 	{/if}
 {/if}
 
-<ItemModal item={selectedItem} onClose={closeItemModal} />
-
-{#if loadingItem}
-	<div class="loading-overlay">
-		<div class="spinner"></div>
-	</div>
-{/if}
+<ItemModal itemId={selectedItemId} onClose={closeItemModal} />
 
 {#snippet primeCard(prime: PrimeItem)}
 	<div class="prime-card" class:vaulted={prime.vaulted} class:complete={prime.complete}>
@@ -243,64 +229,10 @@
 {/snippet}
 
 <style lang="sass">
-	.category-select
-		padding: 0.25rem 0.5rem
-		min-width: 160px
-
-	.sort-select
-		padding: 0.25rem 0.5rem
-		min-width: 130px
-
-	.checkbox-retro
-		display: flex
-		align-items: center
-		gap: 0.5rem
-		font-family: $font-family-monospace
-		font-size: $font-size-sm
-		cursor: pointer
-		user-select: none
-		text-transform: uppercase
-
-		input
-			display: none
-
-		.checkmark
-			width: 18px
-			height: 18px
-			border: $border-width solid $kim-border
-			background: white
-			display: flex
-			align-items: center
-			justify-content: center
-
-			&::after
-				content: ''
-				display: none
-				width: 10px
-				height: 10px
-				background: $kim-accent
-
-		input:checked + .checkmark::after
-			display: block
-
-		&:hover .checkmark
-			border-color: $kim-accent
-
 	.search-retro
 		flex: 1
 		min-width: 200px
 		max-width: 300px
-
-	.results-header
-		display: flex
-		justify-content: space-between
-		align-items: center
-		margin-bottom: 1rem
-		font-family: $font-family-monospace
-		font-size: $font-size-sm
-
-	.results-count
-		color: $kim-border
 
 	.primes-list
 		display: grid
@@ -461,46 +393,4 @@
 		color: $warning
 		margin-left: 0.25rem
 
-	.loading-state
-		display: flex
-		flex-direction: column
-		align-items: center
-		justify-content: center
-		padding: 4rem
-		font-family: $font-family-monospace
-		text-transform: uppercase
-		color: $gray-500
-
-	.spinner
-		width: 24px
-		height: 24px
-		border: 3px solid $gray-300
-		border-top-color: $kim-border
-		border-radius: 50%
-		animation: spin 1s linear infinite
-		margin-bottom: 1rem
-
-	.empty-state
-		display: flex
-		flex-direction: column
-		align-items: center
-		justify-content: center
-		padding: 4rem
-		font-family: $font-family-monospace
-		text-transform: uppercase
-		color: $gray-500
-
-		.material-icons
-			font-size: $font-size-xxl
-			margin-bottom: 1rem
-			opacity: 0.5
-
-	.loading-overlay
-		position: fixed
-		inset: 0
-		background: rgba(0, 0, 0, 0.5)
-		display: flex
-		align-items: center
-		justify-content: center
-		z-index: $zindex-noise
 </style>

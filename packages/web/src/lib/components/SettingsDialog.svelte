@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getSettings, saveSettings, type PlayerSettings } from '$lib/api';
+	import { handleKeydown, handleOverlayClick } from '$lib/modal';
 	import { Platform } from '@warframe-tracker/shared';
 	import { onMount } from 'svelte';
 
@@ -25,18 +26,6 @@
 		loading = false;
 	});
 
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			onClose();
-		}
-	}
-
-	function handleOverlayClick(event: MouseEvent) {
-		if (event.target === event.currentTarget) {
-			onClose();
-		}
-	}
-
 	async function handleSave() {
 		saving = true;
 		saved = false;
@@ -51,11 +40,11 @@
 	}
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window onkeydown={(e) => handleKeydown(e, onClose)} />
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="modal-overlay" onclick={handleOverlayClick}>
+<div class="modal-overlay" onclick={(e) => handleOverlayClick(e, onClose)}>
 	<div class="modal-content kim-panel">
 		<div class="panel-header">
 			<h3>Account Configuration</h3>
@@ -124,51 +113,8 @@
 </div>
 
 <style lang="sass">
-	.modal-overlay
-		position: fixed
-		inset: 0
-		background: rgba(0, 0, 0, 0.7)
-		display: flex
-		align-items: center
-		justify-content: center
-		z-index: $zindex-overlay
-		padding: 1rem
-
 	.modal-content
-		width: 100%
 		max-width: 400px
-
-	.panel-header
-		display: flex
-		justify-content: space-between
-		align-items: center
-
-		h3
-			flex: 1
-			margin: 0
-
-	.close-btn
-		background: transparent
-		border: none
-		cursor: pointer
-		padding: 0.25rem
-		color: $kim-border
-
-		&:hover
-			color: $kim-accent
-
-	.loading-state
-		display: flex
-		align-items: center
-		justify-content: center
-		gap: 0.75rem
-		padding: 2rem
-		font-family: $font-family-monospace
-		color: $gray-500
-		text-transform: uppercase
-
-		.spinning
-			animation: spin 1s linear infinite
 
 	.form-group
 		margin-bottom: 1.25rem
