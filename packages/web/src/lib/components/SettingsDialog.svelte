@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { getSettings, saveSettings, type PlayerSettings } from '$lib/api';
+	import { getSettings, saveSettings, deleteAccount, type PlayerSettings } from '$lib/api';
 	import { handleKeydown, handleOverlayClick } from '$lib/modal';
+	import { auth } from '$lib/stores/auth';
 	import { Platform } from '@warframe-tracker/shared';
+	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	let {
@@ -16,6 +18,8 @@
 	let saving = $state(false);
 	let saved = $state(false);
 	let loading = $state(true);
+	let confirming = $state(false);
+	let deleting = $state(false);
 
 	onMount(async () => {
 		settings = await getSettings();
@@ -36,6 +40,18 @@
 			setTimeout(() => (saved = false), 3000);
 		} finally {
 			saving = false;
+		}
+	}
+
+	async function handleDelete() {
+		deleting = true;
+		try {
+			await deleteAccount();
+			auth.clear();
+			onClose();
+			goto('/login');
+		} finally {
+			deleting = false;
 		}
 	}
 </script>
@@ -107,6 +123,37 @@
 						</span>
 					{/if}
 				</div>
+
+				<hr class="danger-divider" />
+
+				<div class="danger-zone">
+					<label class="form-label danger-label">
+						<span class="material-icons">warning</span>
+						DANGER ZONE
+					</label>
+
+					{#if !confirming}
+						<button class="btn-danger" onclick={() => (confirming = true)} disabled={deleting}>
+							<span class="material-icons">delete_forever</span>
+							DELETE ACCOUNT
+						</button>
+					{:else}
+						<p class="danger-warning">This is permanent. All your data will be deleted.</p>
+						<div class="danger-actions">
+							<button class="btn-danger" onclick={handleDelete} disabled={deleting}>
+								{#if deleting}
+									<span class="spinner"></span>
+								{:else}
+									<span class="material-icons">delete_forever</span>
+								{/if}
+								CONFIRM DELETE
+							</button>
+							<button class="btn-retro" onclick={() => (confirming = false)} disabled={deleting}>
+								CANCEL
+							</button>
+						</div>
+					{/if}
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -176,4 +223,50 @@
 
 		.material-icons
 			font-size: 1rem
+
+	.danger-divider
+		border: none
+		border-top: 1px solid $kim-border
+		margin: 1.5rem 0
+
+	.danger-zone
+		margin-top: 0
+
+	.danger-label
+		color: $danger
+
+		.material-icons
+			color: $danger
+
+	.btn-danger
+		display: flex
+		align-items: center
+		gap: 0.5rem
+		padding: 0.5rem 1rem
+		background: $danger
+		color: white
+		border: 1px solid $kim-accent-dark
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
+		text-transform: uppercase
+		cursor: pointer
+		letter-spacing: $letter-spacing-wide
+
+		&:hover:not(:disabled)
+			background: $kim-accent-dark
+
+		&:disabled
+			opacity: 0.6
+			cursor: not-allowed
+
+	.danger-warning
+		font-family: $font-family-monospace
+		font-size: $font-size-sm
+		color: $danger
+		margin-bottom: 0.75rem
+
+	.danger-actions
+		display: flex
+		align-items: center
+		gap: 0.75rem
 </style>

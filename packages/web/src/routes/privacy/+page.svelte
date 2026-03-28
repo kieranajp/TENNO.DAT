@@ -19,8 +19,9 @@
 				<p class="updated">Last updated: 28 March 2026</p>
 
 				<p>
-					TENNO.DAT is a personal project built and operated by an individual developer.
-					This policy explains what data the site handles and why.
+					TENNO.DAT (found at <a href="https://tenno.club">tenno.club</a>) is a personal
+					project built and operated by an individual developer. This policy explains
+					what data the site handles and why.
 				</p>
 
 				<h2>What we collect</h2>
@@ -70,16 +71,17 @@
 
 				<h2>Data storage</h2>
 				<p>
-					Your data is stored in a PostgreSQL database. It's used solely to make the
-					site work. There are no third-party data processors beyond Plausible (analytics)
-					and the hosting provider.
+					This site is built and operated from the EU, and all data is stored on
+					EU-based servers. Your data lives in a PostgreSQL database and is used
+					solely to make the site work. There are no third-party data processors
+					beyond Plausible (analytics) and the hosting provider.
 				</p>
 
 				<h2>Deleting your data</h2>
 				<p>
-					If you want your data removed, open an issue on
-					<a href="https://github.com/kieranajp/TENNO.DAT/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>
-					or get in touch and we'll sort it out.
+					You can delete your account and all associated data from the settings
+					page. This is immediate and permanent &mdash; your profile data, prime
+					parts ownership, and session will be removed.
 				</p>
 
 				<h2>Changes</h2>

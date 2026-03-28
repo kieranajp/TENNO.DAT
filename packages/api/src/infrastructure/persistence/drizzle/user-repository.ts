@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import type { DrizzleDb } from './connection'
-import { users, playerSettings } from './schema'
+import { users, playerSettings, playerMastery, playerLoadout, playerNodes, playerWishlist, playerPrimeParts } from './schema'
 import type { User, UserWithSettings } from '../../../domain/entities/user'
 import type { UserRepository } from '../../../domain/ports/user-repository'
 
@@ -66,5 +66,28 @@ export class DrizzleUserRepository implements UserRepository {
       .update(users)
       .set({ steamDisplayName: displayName, steamAvatarUrl: avatarUrl })
       .where(eq(users.id, id))
+  }
+
+  async delete(id: number): Promise<void> {
+    // Get playerId before deleting (may be null if onboarding incomplete)
+    const settings = await this.db
+      .select({ playerId: playerSettings.playerId })
+      .from(playerSettings)
+      .where(eq(playerSettings.userId, id))
+      .limit(1)
+
+    const playerId = settings[0]?.playerId
+
+    // Delete player data (not FK-cascaded — keyed by playerId, not userId)
+    if (playerId) {
+      await this.db.delete(playerMastery).where(eq(playerMastery.playerId, playerId))
+      await this.db.delete(playerLoadout).where(eq(playerLoadout.playerId, playerId))
+      await this.db.delete(playerNodes).where(eq(playerNodes.playerId, playerId))
+      await this.db.delete(playerWishlist).where(eq(playerWishlist.playerId, playerId))
+      await this.db.delete(playerPrimeParts).where(eq(playerPrimeParts.playerId, playerId))
+    }
+
+    // Delete user row (cascades sessions + playerSettings)
+    await this.db.delete(users).where(eq(users.id, id))
   }
 }

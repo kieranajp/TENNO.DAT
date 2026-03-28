@@ -7,4 +7,5 @@ export interface UserRepository {
   create(steamId: string, displayName: string | null, avatarUrl: string | null): Promise<User>
   updateLastLogin(id: number): Promise<void>
   updateSteamProfile(id: number, displayName: string | null, avatarUrl: string | null): Promise<void>
+  delete(id: number): Promise<void>
 }

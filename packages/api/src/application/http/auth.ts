@@ -95,6 +95,32 @@ export function authRoutes(container: Container) {
     }
   })
 
+  // DELETE /auth/account - Delete user account and all data
+  router.delete('/account', async (c) => {
+    try {
+      const sessionId = getCookie(c, SESSION_COOKIE)
+
+      if (!sessionId) {
+        return c.json({ error: 'Unauthorized' }, 401)
+      }
+
+      const sessionData = await container.sessionRepo.findByIdWithUser(sessionId)
+
+      if (!sessionData || sessionData.session.expiresAt < new Date()) {
+        return c.json({ error: 'Unauthorized' }, 401)
+      }
+
+      await container.userRepo.delete(sessionData.userId)
+
+      deleteCookie(c, SESSION_COOKIE, { path: '/' })
+      log.info('Account deleted', { userId: sessionData.userId })
+
+      return c.json({ success: true })
+    } catch (error) {
+      return handleRouteError(c, log, error, 'Failed to delete account')
+    }
+  })
+
   // POST /auth/logout - Clear session
   router.post('/logout', async (c) => {
     try {
