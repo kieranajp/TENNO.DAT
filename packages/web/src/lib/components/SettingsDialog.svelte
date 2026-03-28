@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getSettings, saveSettings, type PlayerSettings } from '$lib/api';
+	import { Platform } from '@warframe-tracker/shared';
 	import { onMount } from 'svelte';
 
 	let {
@@ -94,10 +95,9 @@
 						PLATFORM
 					</label>
 					<select class="input-retro" id="platform" bind:value={platform}>
-						<option value="pc">PC</option>
-						<option value="ps">PLAYSTATION</option>
-						<option value="xbox">XBOX</option>
-						<option value="switch">NINTENDO SWITCH</option>
+						{#each Platform.all() as p}
+							<option value={p.id}>{p.displayName.toUpperCase()}</option>
+						{/each}
 					</select>
 				</div>
 
@@ -169,12 +169,6 @@
 
 		.spinning
 			animation: spin 1s linear infinite
-
-	@keyframes spin
-		from
-			transform: rotate(0deg)
-		to
-			transform: rotate(360deg)
 
 	.form-group
 		margin-bottom: 1.25rem

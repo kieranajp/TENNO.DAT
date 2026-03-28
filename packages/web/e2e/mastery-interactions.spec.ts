@@ -75,20 +75,6 @@ test.beforeEach(async ({ page }) => {
     }
   })
 
-  // Mock isItemWishlisted endpoint
-  await page.route('**/wishlist/*', async (route) => {
-    if (route.request().method() === 'GET') {
-      const url = route.request().url()
-      const match = url.match(/\/wishlist\/(\d+)$/)
-      const itemId = match ? parseInt(match[1]) : 0
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ wishlisted: wishlistState.has(itemId) }),
-      })
-    }
-  })
-
   // Mock settings endpoint
   await page.route('**/sync/settings', async (route) => {
     await route.fulfill({

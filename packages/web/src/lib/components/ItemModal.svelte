@@ -1,14 +1,16 @@
 <script lang="ts">
-	import { getImageUrl, formatBuildTime, toggleWishlist, isItemWishlisted, getOwnedComponentCounts, toggleComponentOwned, type ItemDetails } from '$lib/api';
+	import { getImageUrl, formatBuildTime, toggleWishlist, getOwnedComponentCounts, toggleComponentOwned, type ItemDetails } from '$lib/api';
 
 	let {
 		item,
 		onClose,
-		onWishlistToggle
+		onWishlistToggle,
+		initialWishlisted = false
 	}: {
 		item: ItemDetails | null;
 		onClose: () => void;
 		onWishlistToggle?: (itemId: number, newState: boolean) => void;
+		initialWishlisted?: boolean;
 	} = $props();
 
 	let wishlisted = $state(false);
@@ -16,12 +18,10 @@
 	let ownedCounts = $state<Map<number, number>>(new Map());
 	let togglingComponent = $state<number | null>(null);
 
-	// Load wishlist state when item changes
+	// Sync wishlisted state from parent when item changes
 	$effect(() => {
 		if (item) {
-			isItemWishlisted(item.id).then((state) => {
-				wishlisted = state;
-			});
+			wishlisted = initialWishlisted;
 		}
 	});
 

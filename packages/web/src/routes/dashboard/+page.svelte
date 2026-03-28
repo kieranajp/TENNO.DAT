@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, getItemDetails, sanitiseDisplayName, type MasterySummary, type ItemDetails } from '$lib/api';
 	import { sortByCategory } from '$lib/categories';
-	import { CATEGORIES } from '@warframe-tracker/shared';
+	import { CATEGORIES, MasteryState } from '@warframe-tracker/shared';
 	import ItemModal from '$lib/components/ItemModal.svelte';
 
 	let summary: MasterySummary | null = $state(null);
@@ -188,11 +188,11 @@
 										{slot.item?.name ?? 'NONE EQUIPPED'}
 									</div>
 									{#if slot.item}
-										<div class="loadout-status" class:mastered={slot.item.masteryState !== 'unmastered'} class:mastered-full={slot.item.masteryState === 'mastered_40'}>
-											{#if slot.item.masteryState === 'mastered_40'}
+										<div class="loadout-status" class:mastered={slot.item.masteryState !== MasteryState.Unmastered.id} class:mastered-full={slot.item.masteryState === MasteryState.Mastered40.id}>
+											{#if slot.item.masteryState === MasteryState.Mastered40.id}
 												<span class="material-icons status-star">star</span>
 												<span class="rank-display">{slot.item.rank}/{slot.item.maxRank}</span>
-											{:else if slot.item.masteryState === 'mastered_30'}
+											{:else if slot.item.masteryState === MasteryState.Mastered30.id}
 												<span class="status-dot"></span>
 												{#if slot.item.maxRank > 30}
 													<span class="rank-display">{slot.item.rank}/{slot.item.maxRank}</span>

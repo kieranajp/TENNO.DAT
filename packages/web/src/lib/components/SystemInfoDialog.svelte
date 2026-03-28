@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getSettings, sanitiseDisplayName, type PlayerSettings } from '$lib/api';
+	import { Platform } from '@warframe-tracker/shared';
 	import { auth } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
 
@@ -100,7 +101,7 @@
 					{#if settings?.platform}
 						<div class="info-row">
 							<span class="info-label">PLATFORM</span>
-							<span class="info-value">{settings.platform.toUpperCase()}</span>
+							<span class="info-value">{(Platform.fromId(settings.platform)?.displayName ?? settings.platform).toUpperCase()}</span>
 						</div>
 					{/if}
 				</div>
@@ -155,12 +156,6 @@
 
 		.spinning
 			animation: spin 1s linear infinite
-
-	@keyframes spin
-		from
-			transform: rotate(0deg)
-		to
-			transform: rotate(360deg)
 
 	.user-section
 		display: flex

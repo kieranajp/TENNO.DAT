@@ -11,6 +11,7 @@
 	let items: MasteryItem[] = $state([]);
 	let loading = $state(true);
 	let selectedItem: ItemDetails | null = $state(null);
+	let selectedItemWishlisted = $state(false);
 	let loadingItem = $state(false);
 
 	let category = $state('');
@@ -99,6 +100,7 @@
 
 	async function openItemModal(itemId: number) {
 		loadingItem = true;
+		selectedItemWishlisted = items.find(i => i.id === itemId)?.wishlisted ?? false;
 		try {
 			selectedItem = await getItemDetails(itemId);
 		} catch (e) {
@@ -229,7 +231,7 @@
 {/if}
 
 <!-- Item Detail Modal -->
-<ItemModal item={selectedItem} onClose={closeItemModal} onWishlistToggle={handleModalWishlistToggle} />
+<ItemModal item={selectedItem} onClose={closeItemModal} onWishlistToggle={handleModalWishlistToggle} initialWishlisted={selectedItemWishlisted} />
 
 {#if loadingItem}
 	<div class="loading-overlay">

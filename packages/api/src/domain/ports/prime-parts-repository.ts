@@ -10,7 +10,4 @@ export interface PrimePartsRepository {
 
   /** Bulk mark components as fully owned (for auto-completing mastered Primes) */
   markOwned(playerId: string, componentIds: number[]): Promise<void>
-
-  /** Bulk mark components as unowned */
-  markUnowned(playerId: string, componentIds: number[]): Promise<void>
 }
