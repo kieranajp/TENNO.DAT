@@ -122,10 +122,11 @@
 		const isLoginPage = path.startsWith('/login');
 		const isOnboardingPage = path.startsWith('/onboarding');
 		const isHomepage = path === '/';
+		const isPublicPage = path.startsWith('/privacy');
 
 		if (!authUser) {
-			// Not logged in - allow homepage and login, redirect everything else
-			if (!isLoginPage && !isHomepage) {
+			// Not logged in - allow homepage, login, and public pages, redirect everything else
+			if (!isLoginPage && !isHomepage && !isPublicPage) {
 				goto('/');
 			}
 			return;
@@ -179,7 +180,8 @@
 	let isAuthPage = $derived(
 		$page.url.pathname === '/' ||
 		$page.url.pathname.startsWith('/login') ||
-		$page.url.pathname.startsWith('/onboarding')
+		$page.url.pathname.startsWith('/onboarding') ||
+		$page.url.pathname.startsWith('/privacy')
 	);
 </script>
 

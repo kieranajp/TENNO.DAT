@@ -52,6 +52,7 @@ export function createMockContainer(): Container {
       create: vi.fn(),
       updateLastLogin: vi.fn(),
       updateSteamProfile: vi.fn(),
+      delete: vi.fn(),
     },
     sessionRepo: {
       findByIdWithUser: vi.fn(),

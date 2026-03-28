@@ -15,6 +15,10 @@
 		<span class="material-icons">bug_report</span>
 		<span>Report a bug</span>
 	</a>
+	<a href="/privacy" class="btn-retro support-btn">
+		<span class="material-icons">lock</span>
+		<span>Privacy</span>
+	</a>
 </div>
 
 <style lang="sass">

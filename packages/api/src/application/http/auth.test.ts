@@ -167,6 +167,66 @@ describe('Auth Routes', () => {
     })
   })
 
+  describe('DELETE /auth/account', () => {
+    const mockSession = {
+      id: 'session-token-123',
+      userId: 1,
+      rememberMe: false,
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      createdAt: new Date(),
+    }
+
+    it('returns 401 when no session cookie', async () => {
+      const res = await app.request('/auth/account', { method: 'DELETE' })
+
+      expect(res.status).toBe(401)
+      const body = await res.json()
+      expect(body).toEqual({ error: 'Unauthorized' })
+    })
+
+    it('returns 401 when session is invalid', async () => {
+      vi.mocked(container.sessionRepo.findByIdWithUser).mockResolvedValue(null)
+
+      const res = await app.request('/auth/account', {
+        method: 'DELETE',
+        headers: { Cookie: 'tenno_session=invalid-session' },
+      })
+
+      expect(res.status).toBe(401)
+    })
+
+    it('returns 401 when session is expired', async () => {
+      vi.mocked(container.sessionRepo.findByIdWithUser).mockResolvedValue({
+        session: { ...mockSession, expiresAt: new Date(Date.now() - 1000) },
+        userId: 1,
+      })
+
+      const res = await app.request('/auth/account', {
+        method: 'DELETE',
+        headers: { Cookie: 'tenno_session=expired-session' },
+      })
+
+      expect(res.status).toBe(401)
+    })
+
+    it('deletes account and clears cookie on success', async () => {
+      vi.mocked(container.sessionRepo.findByIdWithUser).mockResolvedValue({
+        session: mockSession,
+        userId: 1,
+      })
+
+      const res = await app.request('/auth/account', {
+        method: 'DELETE',
+        headers: { Cookie: 'tenno_session=session-token-123' },
+      })
+
+      expect(res.status).toBe(200)
+      const body = await res.json()
+      expect(body).toEqual({ success: true })
+      expect(container.userRepo.delete).toHaveBeenCalledWith(1)
+    })
+  })
+
   describe('GET /auth/me', () => {
     const mockSession = {
       id: 'session-token-123',

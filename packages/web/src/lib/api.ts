@@ -58,6 +58,14 @@ export async function logout(): Promise<void> {
 	});
 }
 
+export async function deleteAccount(): Promise<void> {
+	const res = await fetch(`${API_BASE}/auth/account`, {
+		method: 'DELETE',
+		credentials: 'include'
+	});
+	await handleResponse(res);
+}
+
 export interface LoadoutItem {
 	id: number;
 	name: string;
