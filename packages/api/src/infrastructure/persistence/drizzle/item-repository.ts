@@ -16,6 +16,10 @@ function groupBy<T, K>(items: T[], keyFn: (item: T) => K): Map<K, T[]> {
   return map
 }
 
+function mapItem(row: typeof items.$inferSelect): Item {
+  return { ...row, acquisitionData: row.acquisitionData as ItemAcquisitionData | null }
+}
+
 export class DrizzleItemRepository implements ItemRepository {
   constructor(private db: DrizzleDb) {}
 
@@ -25,20 +29,14 @@ export class DrizzleItemRepository implements ItemRepository {
       query = query.where(eq(items.category, category)) as typeof query
     }
     const result = await query
-    return result.map(item => ({
-      ...item,
-      acquisitionData: item.acquisitionData as ItemAcquisitionData | null,
-    }))
+    return result.map(mapItem)
   }
 
   async findById(id: number): Promise<Item | null> {
     const result = await this.db.select().from(items).where(eq(items.id, id))
     const item = result[0]
     if (!item) return null
-    return {
-      ...item,
-      acquisitionData: item.acquisitionData as ItemAcquisitionData | null,
-    }
+    return mapItem(item)
   }
 
   /**
@@ -162,10 +160,7 @@ export class DrizzleItemRepository implements ItemRepository {
 
   async findAllAsMap(): Promise<Map<string, Item>> {
     const allItems = await this.db.select().from(items)
-    return new Map(allItems.map(item => [item.uniqueName, {
-      ...item,
-      acquisitionData: item.acquisitionData as ItemAcquisitionData | null,
-    }]))
+    return new Map(allItems.map(item => [item.uniqueName, mapItem(item)]))
   }
 
   async getCategories(): Promise<Array<{ category: string; count: number }>> {
@@ -219,8 +214,7 @@ export class DrizzleItemRepository implements ItemRepository {
     const compsMap = groupBy(comps, c => c.itemId)
 
     return primeItems.map(item => ({
-      ...item,
-      acquisitionData: item.acquisitionData as ItemAcquisitionData | null,
+      ...mapItem(item),
       components: (compsMap.get(item.id) ?? []).map(c => ({
         id: c.id,
         name: c.name,

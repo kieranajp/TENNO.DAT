@@ -1,27 +1,39 @@
 <script lang="ts">
-	import { getImageUrl, formatBuildTime, toggleWishlist, isItemWishlisted, getOwnedComponentCounts, toggleComponentOwned, type ItemDetails } from '$lib/api';
+	import { getImageUrl, formatBuildTime, getItemDetails, toggleWishlist, getOwnedComponentCounts, toggleComponentOwned, type ItemDetails } from '$lib/api';
+	import { handleKeydown, handleOverlayClick } from '$lib/modal';
 
 	let {
-		item,
+		itemId = null,
 		onClose,
-		onWishlistToggle
+		onWishlistToggle,
+		initialWishlisted = false
 	}: {
-		item: ItemDetails | null;
+		itemId?: number | null;
 		onClose: () => void;
 		onWishlistToggle?: (itemId: number, newState: boolean) => void;
+		initialWishlisted?: boolean;
 	} = $props();
 
+	let item: ItemDetails | null = $state(null);
+	let loading = $state(false);
 	let wishlisted = $state(false);
 	let togglingWishlist = $state(false);
 	let ownedCounts = $state<Map<number, number>>(new Map());
 	let togglingComponent = $state<number | null>(null);
 
-	// Load wishlist state when item changes
+	// Fetch item details when itemId changes
 	$effect(() => {
-		if (item) {
-			isItemWishlisted(item.id).then((state) => {
-				wishlisted = state;
-			});
+		if (itemId) {
+			loading = true;
+			wishlisted = initialWishlisted;
+			item = null;
+			getItemDetails(itemId)
+				.then((details) => { item = details; })
+				.catch((e) => { console.error('Failed to load item details:', e); })
+				.finally(() => { loading = false; });
+		} else {
+			item = null;
+			loading = false;
 		}
 	});
 
@@ -64,18 +76,6 @@
 		}
 	}
 
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			onClose();
-		}
-	}
-
-	function handleOverlayClick(event: MouseEvent) {
-		if (event.target === event.currentTarget) {
-			onClose();
-		}
-	}
-
 	function formatEquipTime(seconds: number): string {
 		const hours = Math.floor(seconds / 3600);
 		const minutes = Math.floor((seconds % 3600) / 60);
@@ -91,13 +91,26 @@
 	}
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window onkeydown={(e) => handleKeydown(e, onClose)} />
 
-{#if item}
+{#if itemId}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={handleOverlayClick}>
+	<div class="modal-overlay" onclick={(e) => handleOverlayClick(e, onClose)}>
 		<div class="modal-content kim-panel">
+			{#if loading || !item}
+				<div class="panel-header">
+					<h3>Loading...</h3>
+					<button class="close-btn" onclick={onClose}>
+						<span class="material-icons">close</span>
+					</button>
+				</div>
+				<div class="panel-body">
+					<div class="loading-state">
+						<div class="spinner"></div>
+					</div>
+				</div>
+			{:else}
 			<div class="panel-header">
 				<h3>{item.name}</h3>
 				<button class="close-btn" onclick={onClose}>
@@ -344,48 +357,21 @@
 					</div>
 				{/if}
 			</div>
+			{/if}
 		</div>
 	</div>
 {/if}
 
 <style lang="sass">
-	.modal-overlay
-		position: fixed
-		inset: 0
-		background: rgba(0, 0, 0, 0.7)
-		display: flex
-		align-items: center
-		justify-content: center
-		z-index: $zindex-overlay
-		padding: 1rem
-
 	.modal-content
-		width: 100%
 		max-width: 480px
 		max-height: 85vh
 		overflow-y: auto
 
-	.panel-header
-		display: flex
-		justify-content: space-between
-		align-items: center
-
-		h3
-			flex: 1
-			margin: 0
-			white-space: nowrap
-			overflow: hidden
-			text-overflow: ellipsis
-
-	.close-btn
-		background: transparent
-		border: none
-		cursor: pointer
-		padding: 0.25rem
-		color: $kim-border
-
-		&:hover
-			color: $kim-accent
+	.panel-header h3
+		white-space: nowrap
+		overflow: hidden
+		text-overflow: ellipsis
 
 	.item-preview
 		display: flex

@@ -313,14 +313,6 @@ export async function toggleWishlist(itemId: number): Promise<boolean> {
 	return data.wishlisted;
 }
 
-export async function isItemWishlisted(itemId: number): Promise<boolean> {
-	const response = await fetch(`${API_BASE}/wishlist/${itemId}`, {
-		credentials: 'include'
-	});
-	const data = await handleResponse<{ wishlisted: boolean }>(response);
-	return data.wishlisted;
-}
-
 // Prime parts API functions
 export async function getOwnedComponentCounts(itemId: number): Promise<Record<string, number>> {
 	const response = await fetch(`${API_BASE}/primes/items/${itemId}/components`, {

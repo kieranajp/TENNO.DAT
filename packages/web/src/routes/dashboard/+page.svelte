@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, getItemDetails, sanitiseDisplayName, type MasterySummary, type ItemDetails } from '$lib/api';
+	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, sanitiseDisplayName, type MasterySummary } from '$lib/api';
 	import { sortByCategory } from '$lib/categories';
-	import { CATEGORIES } from '@warframe-tracker/shared';
+	import { CATEGORIES, MasteryState } from '@warframe-tracker/shared';
 	import ItemModal from '$lib/components/ItemModal.svelte';
 
 	let summary: MasterySummary | null = $state(null);
@@ -10,8 +10,7 @@
 	let syncing = $state(false);
 	let syncCooldown = $state(false);
 	let error: string | null = $state(null);
-	let selectedItem: ItemDetails | null = $state(null);
-	let loadingItem = $state(false);
+	let selectedItemId: number | null = $state(null);
 
 	// Build category metadata from shared config
 	const categoryMeta: Record<string, { icon: string; subtitle: string }> = Object.fromEntries(
@@ -53,19 +52,12 @@
 		return total > 0 ? Math.round((mastered / total) * 100) : 0;
 	}
 
-	async function openItemModal(itemId: number) {
-		loadingItem = true;
-		try {
-			selectedItem = await getItemDetails(itemId);
-		} catch (e) {
-			console.error('Failed to load item details:', e);
-		} finally {
-			loadingItem = false;
-		}
+	function openItemModal(itemId: number) {
+		selectedItemId = itemId;
 	}
 
 	function closeItemModal() {
-		selectedItem = null;
+		selectedItemId = null;
 	}
 </script>
 
@@ -188,11 +180,11 @@
 										{slot.item?.name ?? 'NONE EQUIPPED'}
 									</div>
 									{#if slot.item}
-										<div class="loadout-status" class:mastered={slot.item.masteryState !== 'unmastered'} class:mastered-full={slot.item.masteryState === 'mastered_40'}>
-											{#if slot.item.masteryState === 'mastered_40'}
+										<div class="loadout-status" class:mastered={slot.item.masteryState !== MasteryState.Unmastered.id} class:mastered-full={slot.item.masteryState === MasteryState.Mastered40.id}>
+											{#if slot.item.masteryState === MasteryState.Mastered40.id}
 												<span class="material-icons status-star">star</span>
 												<span class="rank-display">{slot.item.rank}/{slot.item.maxRank}</span>
-											{:else if slot.item.masteryState === 'mastered_30'}
+											{:else if slot.item.masteryState === MasteryState.Mastered30.id}
 												<span class="status-dot"></span>
 												{#if slot.item.maxRank > 30}
 													<span class="rank-display">{slot.item.rank}/{slot.item.maxRank}</span>
@@ -251,13 +243,7 @@
 {/if}
 
 <!-- Item Detail Modal -->
-<ItemModal item={selectedItem} onClose={closeItemModal} />
-
-{#if loadingItem}
-	<div class="loading-overlay">
-		<div class="spinner"></div>
-	</div>
-{/if}
+<ItemModal itemId={selectedItemId} onClose={closeItemModal} />
 
 <style lang="sass">
 	.error-panel
@@ -403,31 +389,4 @@
 		justify-content: space-between
 		margin-top: 0.5rem
 
-	// Loading State
-	.loading-state
-		display: flex
-		flex-direction: column
-		align-items: center
-		justify-content: center
-		padding: 4rem
-		font-family: $font-family-monospace
-		text-transform: uppercase
-		color: $gray-500
-
-	.spinner
-		width: 24px
-		height: 24px
-		border: 3px solid $gray-300
-		border-top-color: $kim-border
-		border-radius: 50%
-		animation: spin 1s linear infinite
-
-	.loading-overlay
-		position: fixed
-		inset: 0
-		background: rgba(0, 0, 0, 0.5)
-		display: flex
-		align-items: center
-		justify-content: center
-		z-index: $zindex-noise
 </style>

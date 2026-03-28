@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getImageUrl, type MasteryItem } from '$lib/api';
+	import { MasteryState } from '@warframe-tracker/shared';
 
 	let {
 		item,
@@ -16,8 +17,8 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="item-card"
-	class:mastered={item.masteryState === 'mastered_30'}
-	class:mastered-full={item.masteryState === 'mastered_40'}
+	class:mastered={item.masteryState === MasteryState.Mastered30.id}
+	class:mastered-full={item.masteryState === MasteryState.Mastered40.id}
 	{onclick}
 >
 	<div class="item-image-container">
@@ -52,11 +53,11 @@
 		</div>
 	</div>
 	<div class="item-rank-display">
-		{#if item.masteryState === 'mastered_40'}
+		{#if item.masteryState === MasteryState.Mastered40.id}
 			<div class="item-mastered item-mastered-full">
 				<span class="material-icons">star</span>
 			</div>
-		{:else if item.masteryState === 'mastered_30'}
+		{:else if item.masteryState === MasteryState.Mastered30.id}
 			{#if item.maxRank > 30}
 				<span class="rank-progress">{item.rank ?? 0}/{item.maxRank}</span>
 			{/if}

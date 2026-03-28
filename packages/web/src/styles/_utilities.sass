@@ -20,7 +20,7 @@
   to
     transform: rotate(360deg)
 
-// Spinner (shared utility)
+// Spinner (shared utility — small, white-on-dark variant used in buttons/inline)
 .spinner
   width: $icon-size-sm
   height: $icon-size-sm
@@ -28,3 +28,159 @@
   border-top-color: white
   border-radius: 50%
   animation: spin 1s linear infinite
+
+// Page-level loading state
+.loading-state
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: 4rem
+  font-family: $font-family-monospace
+  text-transform: uppercase
+  color: $gray-500
+
+  .spinner
+    width: 24px
+    height: 24px
+    border: 3px solid $gray-300
+    border-top-color: $kim-border
+    border-radius: 50%
+    margin-bottom: 1rem
+
+// Empty state placeholder
+.empty-state
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: 4rem
+  font-family: $font-family-monospace
+  text-transform: uppercase
+  color: $gray-500
+
+  .material-icons
+    font-size: $font-size-xxl
+    margin-bottom: 1rem
+    opacity: 0.5
+
+// Full-screen loading overlay (for modal item fetches etc.)
+.loading-overlay
+  position: fixed
+  inset: 0
+  background: rgba(0, 0, 0, 0.5)
+  display: flex
+  align-items: center
+  justify-content: center
+  z-index: $zindex-noise
+
+  .spinner
+    width: 24px
+    height: 24px
+    border: 3px solid $gray-300
+    border-top-color: $kim-border
+    border-radius: 50%
+
+// Retro checkbox
+.checkbox-retro
+  display: flex
+  align-items: center
+  gap: 0.5rem
+  font-family: $font-family-monospace
+  font-size: $font-size-sm
+  cursor: pointer
+  user-select: none
+  text-transform: uppercase
+
+  input
+    display: none
+
+  .checkmark
+    width: 18px
+    height: 18px
+    border: $border-width solid $kim-border
+    background: white
+    display: flex
+    align-items: center
+    justify-content: center
+
+    &::after
+      content: ''
+      display: none
+      width: 10px
+      height: 10px
+      background: $kim-accent
+
+  input:checked + .checkmark::after
+    display: block
+
+  &:hover .checkmark
+    border-color: $kim-accent
+
+  &.checkbox-wishlist
+    .checkmark-star
+      border-color: $wishlist
+
+      &::after
+        background: $wishlist
+
+    &:hover .checkmark-star
+      border-color: $wishlist
+
+// Results header / count (mastery + primes listing pages)
+.results-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  margin-bottom: 1rem
+  font-family: $font-family-monospace
+  font-size: $font-size-sm
+
+.results-count
+  color: $kim-border
+
+// Category / sort selects used in filter bars
+.category-select
+  padding: 0.25rem 0.5rem
+  min-width: 160px
+
+.sort-select
+  padding: 0.25rem 0.5rem
+  min-width: 130px
+
+// Modal shared styles
+.modal-overlay
+  position: fixed
+  inset: 0
+  background: rgba(0, 0, 0, 0.7)
+  display: flex
+  align-items: center
+  justify-content: center
+  z-index: $zindex-overlay
+  padding: 1rem
+
+  .modal-content
+    width: 100%
+
+  .panel-header
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+    h3
+      flex: 1
+      margin: 0
+
+  .close-btn
+    background: transparent
+    border: none
+    cursor: pointer
+    padding: 0.25rem
+    color: $kim-border
+
+    &:hover
+      color: $kim-accent
+
+  .loading-state
+    .spinning
+      animation: spin 1s linear infinite

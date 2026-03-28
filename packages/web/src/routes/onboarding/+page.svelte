@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { saveSettings, getCurrentUser, syncProfile } from '$lib/api';
 	import { auth } from '$lib/stores/auth';
+	import { Platform } from '@warframe-tracker/shared';
 
 	let playerId = $state('');
 	let platform = $state('pc');
@@ -24,10 +25,8 @@
 			const user = await getCurrentUser();
 			auth.setUser(user);
 
-			// Auto-sync profile on first setup
-			syncProfile().catch(() => {
-				// Ignore sync errors on initial setup - user can retry from dashboard
-			});
+			// Auto-sync profile on first setup — user can retry from dashboard if this fails
+			syncProfile().catch((e) => console.warn('Initial sync failed:', e));
 
 			// Navigate to dashboard
 			goto('/dashboard');
@@ -95,10 +94,9 @@
 						PLATFORM
 					</label>
 					<select class="input-retro" id="platform" bind:value={platform}>
-						<option value="pc">PC</option>
-						<option value="ps">PLAYSTATION</option>
-						<option value="xbox">XBOX</option>
-						<option value="switch">NINTENDO SWITCH</option>
+						{#each Platform.all() as p}
+							<option value={p.id}>{p.displayName.toUpperCase()}</option>
+						{/each}
 					</select>
 				</div>
 

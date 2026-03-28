@@ -1,0 +1,19 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: 0%
+        informational: true
+
+comment:
+  layout: "reach, diff, files"
+  behavior: default
+  require_changes: true
+
+ignore:
+  - "packages/web/src/routes/**"
+  - "packages/web/src/lib/components/**"

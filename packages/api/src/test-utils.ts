@@ -12,7 +12,6 @@ export function createMockContainer(): Container {
   return {
     playerRepo: {
       getSettings: vi.fn(),
-      getSettingsByPlayerId: vi.fn(),
       createSettings: vi.fn(),
       saveSettings: vi.fn(),
       updateDisplayName: vi.fn(),
@@ -38,7 +37,6 @@ export function createMockContainer(): Container {
     },
     itemRepo: {
       findAll: vi.fn(),
-      findById: vi.fn(),
       findByIdWithAcquisitionData: vi.fn(),
       findAllAsMap: vi.fn(),
       getCategories: vi.fn(),
@@ -56,18 +54,13 @@ export function createMockContainer(): Container {
       updateSteamProfile: vi.fn(),
     },
     sessionRepo: {
-      findById: vi.fn(),
       findByIdWithUser: vi.fn(),
       create: vi.fn(),
       delete: vi.fn(),
-      deleteExpired: vi.fn(),
-      deleteAllForUser: vi.fn(),
     },
     wishlistRepo: {
       getWishlistedItemIds: vi.fn().mockResolvedValue([]),
       isWishlisted: vi.fn(),
-      add: vi.fn(),
-      remove: vi.fn(),
       toggle: vi.fn(),
     },
     primePartsRepo: {
@@ -75,7 +68,6 @@ export function createMockContainer(): Container {
       getOwnedCountsForItem: vi.fn().mockResolvedValue(new Map()),
       toggle: vi.fn(),
       markOwned: vi.fn(),
-      markUnowned: vi.fn(),
     },
     profileApi: {
       fetch: vi.fn(),

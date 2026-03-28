@@ -3,15 +3,15 @@
 	import { flip } from 'svelte/animate';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getMasteryItems, getItemDetails, toggleWishlist, type MasteryItem, type ItemDetails } from '$lib/api';
+	import { getMasteryItems, toggleWishlist, type MasteryItem } from '$lib/api';
 	import { CATEGORY_ORDER } from '$lib/categories';
 	import ItemModal from '$lib/components/ItemModal.svelte';
 	import ItemCard from '$lib/components/ItemCard.svelte';
 
 	let items: MasteryItem[] = $state([]);
 	let loading = $state(true);
-	let selectedItem: ItemDetails | null = $state(null);
-	let loadingItem = $state(false);
+	let selectedItemId: number | null = $state(null);
+	let selectedItemWishlisted = $state(false);
 
 	let category = $state('');
 	let filter: 'all' | 'mastered' | 'unmastered' = $state('all');
@@ -97,19 +97,13 @@
 		loadItems();
 	}
 
-	async function openItemModal(itemId: number) {
-		loadingItem = true;
-		try {
-			selectedItem = await getItemDetails(itemId);
-		} catch (e) {
-			console.error('Failed to load item details:', e);
-		} finally {
-			loadingItem = false;
-		}
+	function openItemModal(itemId: number) {
+		selectedItemWishlisted = items.find(i => i.id === itemId)?.wishlisted ?? false;
+		selectedItemId = itemId;
 	}
 
 	function closeItemModal() {
-		selectedItem = null;
+		selectedItemId = null;
 	}
 
 	async function handleWishlistToggle(event: MouseEvent, item: MasteryItem) {
@@ -229,83 +223,13 @@
 {/if}
 
 <!-- Item Detail Modal -->
-<ItemModal item={selectedItem} onClose={closeItemModal} onWishlistToggle={handleModalWishlistToggle} />
-
-{#if loadingItem}
-	<div class="loading-overlay">
-		<div class="spinner"></div>
-	</div>
-{/if}
+<ItemModal itemId={selectedItemId} onClose={closeItemModal} onWishlistToggle={handleModalWishlistToggle} initialWishlisted={selectedItemWishlisted} />
 
 <style lang="sass">
-	.category-select
-		padding: 0.25rem 0.5rem
-		min-width: 160px
-
-	.sort-select
-		padding: 0.25rem 0.5rem
-		min-width: 130px
-
-	.checkbox-retro
-		display: flex
-		align-items: center
-		gap: 0.5rem
-		font-family: $font-family-monospace
-		font-size: $font-size-sm
-		cursor: pointer
-		user-select: none
-		text-transform: uppercase
-
-		input
-			display: none
-
-		.checkmark
-			width: 18px
-			height: 18px
-			border: $border-width solid $kim-border
-			background: white
-			display: flex
-			align-items: center
-			justify-content: center
-
-			&::after
-				content: ''
-				display: none
-				width: 10px
-				height: 10px
-				background: $kim-accent
-
-		input:checked + .checkmark::after
-			display: block
-
-		&:hover .checkmark
-			border-color: $kim-accent
-
-		&.checkbox-wishlist
-			.checkmark-star
-				border-color: $wishlist
-
-				&::after
-					background: $wishlist
-
-			&:hover .checkmark-star
-				border-color: $wishlist
-
 	.search-retro
 		flex: 1
 		min-width: 200px
 		max-width: 300px
-
-	.results-header
-		display: flex
-		justify-content: space-between
-		align-items: center
-		margin-bottom: 1rem
-		font-family: $font-family-monospace
-		font-size: $font-size-sm
-
-	.results-count
-		color: $kim-border
 
 	.results-filter
 		color: $kim-accent
@@ -321,46 +245,4 @@
 		@media (min-width: 1024px)
 			grid-template-columns: repeat(4, minmax(0, 1fr))
 
-	.loading-state
-		display: flex
-		flex-direction: column
-		align-items: center
-		justify-content: center
-		padding: 4rem
-		font-family: $font-family-monospace
-		text-transform: uppercase
-		color: $gray-500
-
-	.spinner
-		width: 24px
-		height: 24px
-		border: 3px solid $gray-300
-		border-top-color: $kim-border
-		border-radius: 50%
-		animation: spin 1s linear infinite
-		margin-bottom: 1rem
-
-	.empty-state
-		display: flex
-		flex-direction: column
-		align-items: center
-		justify-content: center
-		padding: 4rem
-		font-family: $font-family-monospace
-		text-transform: uppercase
-		color: $gray-500
-
-		.material-icons
-			font-size: $font-size-xxl
-			margin-bottom: 1rem
-			opacity: 0.5
-
-	.loading-overlay
-		position: fixed
-		inset: 0
-		background: rgba(0, 0, 0, 0.5)
-		display: flex
-		align-items: center
-		justify-content: center
-		z-index: $zindex-noise
 </style>

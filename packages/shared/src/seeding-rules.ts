@@ -65,6 +65,10 @@ export class SeedingRules {
    * Detect the appropriate category for an item using declarative rules.
    * Returns the category name or null if no category matches.
    */
+  private static isExcludedByCategory(item: any, config: CategoryConfig): boolean {
+    return !!(config.seeding?.exclude && this.matchesAny(item, config.seeding.exclude))
+  }
+
   static detectCategory(item: any): string | null {
     // Check global exclusions first
     if (this.isGloballyExcluded(item)) {
@@ -73,21 +77,10 @@ export class SeedingRules {
 
     // Try each category's detector and include rules
     for (const config of Object.values(CATEGORIES)) {
-      // Check if category has a custom detector
-      if (config.seeding?.detector && config.seeding.detector(item)) {
-        // Check category-specific exclusions
-        if (config.seeding.exclude && this.matchesAny(item, config.seeding.exclude)) {
-          continue
-        }
-        return config.name
-      }
+      const detected = config.seeding?.detector && config.seeding.detector(item)
+      const included = config.seeding?.include && this.matchesAny(item, config.seeding.include)
 
-      // Check explicit include rules
-      if (config.seeding?.include && this.matchesAny(item, config.seeding.include)) {
-        // Check category-specific exclusions
-        if (config.seeding.exclude && this.matchesAny(item, config.seeding.exclude)) {
-          continue
-        }
+      if ((detected || included) && !this.isExcludedByCategory(item, config)) {
         return config.name
       }
     }
@@ -95,11 +88,7 @@ export class SeedingRules {
     // Fallback: check if item's category/productCategory matches wfcdCategory
     for (const config of Object.values(CATEGORIES)) {
       const itemCategory = item.category || item.productCategory
-      if (itemCategory === config.wfcdCategory) {
-        // Check category-specific exclusions
-        if (config.seeding?.exclude && this.matchesAny(item, config.seeding.exclude)) {
-          continue
-        }
+      if (itemCategory === config.wfcdCategory && !this.isExcludedByCategory(item, config)) {
         return config.name
       }
     }

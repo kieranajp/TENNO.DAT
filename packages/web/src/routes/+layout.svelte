@@ -259,8 +259,6 @@
 							MASTERY_DATABASE.EXE
 						{:else if $page.url.pathname === '/primes'}
 							PRIME_TRACKER.EXE
-						{:else if $page.url.pathname === '/settings'}
-							SYSTEM_CONFIG.EXE
 						{:else}
 							TENNO.DAT
 						{/if}
@@ -348,12 +346,6 @@
 
 		.spinning
 			animation: spin 1s linear infinite
-
-	@keyframes spin
-		from
-			transform: rotate(0deg)
-		to
-			transform: rotate(360deg)
 
 	.app-container
 		min-height: 100vh

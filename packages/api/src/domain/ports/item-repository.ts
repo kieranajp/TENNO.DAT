@@ -12,7 +12,6 @@ export interface PersonalStats {
 
 export interface ItemRepository {
   findAll(category?: string): Promise<Item[]>
-  findById(id: number): Promise<Item | null>
   findByIdWithAcquisitionData(
     id: number,
     playerId?: string
