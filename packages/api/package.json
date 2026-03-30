@@ -15,7 +15,7 @@
     "@hono/prometheus": "^1.0.2",
     "@warframe-tracker/shared": "workspace:*",
     "@wfcd/items": "latest",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.9",
     "openid": "^2.0.14",
