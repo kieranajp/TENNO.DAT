@@ -77,7 +77,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - pg_isready -U {{ .Values.secrets.DB_USER }} -d {{ .Values.secrets.DB_NAME }}
+            - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -87,7 +87,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - pg_isready -U {{ .Values.secrets.DB_USER }} -d {{ .Values.secrets.DB_NAME }}
+            - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
           initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 3
