@@ -69,7 +69,7 @@ ingress:
     - from: "tenno.kieranajp.uk"
       to: "https://tenno.club"
 
-secretName: warframe-secrets
+secretName: tenno-secrets
 
 onepassword:
   vault: Homelab
