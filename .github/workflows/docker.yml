@@ -89,6 +89,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             VITE_API_URL=https://api.tenno.club
+            VITE_IMAGE_BASE_URL=https://cdn.tenno.club
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
           platforms: linux/amd64,linux/arm64

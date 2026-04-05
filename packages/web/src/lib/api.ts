@@ -3,6 +3,7 @@ import { MasteryState, type ItemAcquisitionData } from '@warframe-tracker/shared
 export { MasteryState, type ItemAcquisitionData };
 
 export const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+const IMAGE_BASE = import.meta.env.VITE_IMAGE_BASE_URL ?? 'https://cdn.warframestat.us';
 
 // API Error class to distinguish error types
 export class ApiError extends Error {
@@ -232,7 +233,7 @@ export function sanitiseDisplayName(name: string | null): string | null {
 
 export function getImageUrl(imageName: string | null): string | null {
 	if (!imageName) return null;
-	return `https://cdn.warframestat.us/img/${imageName}`;
+	return `${IMAGE_BASE}/img/${imageName}`;
 }
 
 export function getMasteryRankIconUrl(rank: number): string {
