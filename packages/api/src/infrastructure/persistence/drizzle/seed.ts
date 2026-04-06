@@ -1,10 +1,11 @@
 import Items from '@wfcd/items'
 import { sql } from 'drizzle-orm'
 import { db, schema } from './connection'
-import { WFCD_CATEGORIES, SeedingRules } from '@warframe-tracker/shared'
+import { WFCD_CATEGORIES, SeedingRules, FocusSchool } from '@warframe-tracker/shared'
 import { createLogger } from '../../logger'
 import { seedResources, getResourceMaps } from './seed-resources'
 import { isCraftedPart, getMasteryReq, extractComponents, extractDrops } from './seed-utils'
+import { syncImages } from './seed-images'
 
 const log = createLogger('Seed')
 
@@ -298,6 +299,20 @@ async function seed() {
 
     log.debug(`Processed relational data ${Math.min(i + BATCH_SIZE, itemsToInsert.length)}/${itemsToInsert.length}`)
   }
+
+  // Sync images to R2
+  const imageNames = new Set<string>()
+  for (const item of itemsToInsert) {
+    if (item.imageName) imageNames.add(item.imageName)
+  }
+  const allResources = await db.select({ imageName: schema.resources.imageName }).from(schema.resources)
+  for (const { imageName } of allResources) {
+    if (imageName) imageNames.add(imageName)
+  }
+  for (const school of FocusSchool.all()) {
+    imageNames.add(school.imageName)
+  }
+  await syncImages(imageNames)
 
   log.info('Seed complete!')
   process.exit(0)
