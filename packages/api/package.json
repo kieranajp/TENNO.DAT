@@ -18,7 +18,7 @@
     "@wfcd/items": "latest",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.2",
-    "hono": "^4.12.9",
+    "hono": "^4.12.11",
     "openid": "^2.0.14",
     "postgres": "^3.4.0",
     "prom-client": "^15.1.3",
