@@ -234,12 +234,12 @@
 		position: relative
 		overflow: hidden
 
-		// Follie background art
+		// Gemini promo background art
 		&::before
 			content: ''
 			position: absolute
 			inset: 0
-			background: url('/follie.webp') center center / cover no-repeat
+			background: url('/gemini-promo.jpg') center center / cover no-repeat
 			opacity: 0.3
 			pointer-events: none
 
