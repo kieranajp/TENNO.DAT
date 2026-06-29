@@ -30,7 +30,7 @@ export function authRoutes(container: Container, probe: AuthProbe) {
       setCookie(c, REMEMBER_COOKIE, rememberMe ? '1' : '0', {
         httpOnly: true,
         secure: true,
-        sameSite: 'None',
+        sameSite: 'Lax',
         maxAge: AUTH_FLOW_TTL,
         path: '/',
       })
@@ -83,7 +83,7 @@ export function authRoutes(container: Container, probe: AuthProbe) {
       setCookie(c, SESSION_COOKIE, session.id, {
         httpOnly: true,
         secure: true,
-        sameSite: 'None',
+        sameSite: 'Lax',
         maxAge,
         path: '/',
       })
