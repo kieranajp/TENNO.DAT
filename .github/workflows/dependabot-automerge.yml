@@ -18,8 +18,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Auto-merge warframe-items updates
-        if: contains(steps.metadata.outputs.dependency-names, 'warframe-items') || contains(steps.metadata.outputs.dependency-names, '@wfcd/')
+      # Auto-merge all patch releases, plus warframe-items at any level
+      # (@wfcd ships new game content as MINOR bumps, so patch-only would
+      # miss the items we actually care about).
+      - name: Auto-merge patch updates and warframe-items
+        if: >-
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          contains(steps.metadata.outputs.dependency-names, 'warframe-items') ||
+          contains(steps.metadata.outputs.dependency-names, '@wfcd/')
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}

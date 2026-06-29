@@ -11,4 +11,11 @@ updates:
         patterns:
           - "warframe-items"
           - "@wfcd/*"
+    # Park breaking majors that otherwise squat PR slots and starve the
+    # warframe-items group (see #52, #54). Bump these deliberately by hand.
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@sveltejs/vite-plugin-svelte"
+        update-types: ["version-update:semver-major"]
     open-pull-requests-limit: 5
