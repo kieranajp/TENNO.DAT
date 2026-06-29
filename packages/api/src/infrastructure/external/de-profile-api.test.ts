@@ -96,6 +96,16 @@ describe('DeProfileApi', () => {
 
       await expect(api.fetch('TestPlayer', Platform.PC)).rejects.toThrow('Profile is private')
     })
+
+    it('throws an invalid-ID message on 409 when the account ID is unrecognised', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 409,
+        text: () => Promise.resolve('No account or guild ID specified'),
+      })
+
+      await expect(api.fetch('bad-guid', Platform.PC)).rejects.toThrow("Couldn't find an account")
+    })
   })
 
   describe('XP data extraction', () => {

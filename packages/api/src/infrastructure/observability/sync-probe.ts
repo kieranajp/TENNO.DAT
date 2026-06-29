@@ -57,7 +57,7 @@ export class SyncProbe {
     this.profilePayloadBytes.observe(payloadBytes)
   }
 
-  profileFetchFailed(errorType: 'rate_limited' | 'private_profile' | 'http_error' | 'network_error') {
+  profileFetchFailed(errorType: 'rate_limited' | 'private_profile' | 'invalid_id' | 'http_error' | 'network_error') {
     this.profileFetchErrors.inc({ error_type: errorType })
   }
 

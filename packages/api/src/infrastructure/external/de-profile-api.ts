@@ -34,6 +34,14 @@ export class DeProfileApi implements ProfileApi {
         throw new Error('Access denied - you may be rate limited. Try again in a few minutes.')
       }
       if (response.status === 409) {
+        // DE returns 409 for two distinct cases: a private profile, and an
+        // unrecognised/malformed account ID (body: "No account or guild ID specified").
+        // Tell them apart so we don't send a typo'd GUID chasing the privacy setting.
+        if (/no account or guild id/i.test(body)) {
+          this.probe.profileFetchFailed('invalid_id')
+          endTimer()
+          throw new Error("Couldn't find an account for that ID. Double-check your GUID from EE.log.")
+        }
         this.probe.profileFetchFailed('private_profile')
         endTimer()
         throw new Error('Profile is private. Enable public profile in Warframe settings.')
