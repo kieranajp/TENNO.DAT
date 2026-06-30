@@ -30,8 +30,8 @@ importers:
         specifier: ^1.19.13
         version: 1.19.13(hono@4.12.11)
       '@hono/prometheus':
-        specifier: ^1.0.2
-        version: 1.0.2(hono@4.12.11)(prom-client@15.1.3)
+        specifier: ^1.0.3
+        version: 1.0.3(hono@4.12.11)(prom-client@15.1.3)
       '@warframe-tracker/shared':
         specifier: workspace:*
         version: link:../shared
@@ -760,10 +760,10 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@hono/prometheus@1.0.2':
-    resolution: {integrity: sha512-7z2nBMaiHEaAFfNWfIV2H5/HRezv9kLH0jDY6ZotQQAr3QR7cIYAd6FGiyTIng4GUAw6ZWeX3C0Y4QS36SLRjg==}
+  '@hono/prometheus@1.0.3':
+    resolution: {integrity: sha512-oOBMk2yJL62l6unLkFrAct5IJejSac0yYjomxZuPqDTGKWPcmPD94zQGkLQNdzPRCOW9jEUN3QfxL0Rh5kiNOA==}
     peerDependencies:
-      hono: '>=3.*'
+      hono: '>=3.0.0'
       prom-client: ^15.0.0
 
   '@isaacs/cliui@8.0.2':
@@ -3097,7 +3097,7 @@ snapshots:
     dependencies:
       hono: 4.12.11
 
-  '@hono/prometheus@1.0.2(hono@4.12.11)(prom-client@15.1.3)':
+  '@hono/prometheus@1.0.3(hono@4.12.11)(prom-client@15.1.3)':
     dependencies:
       hono: 4.12.11
       prom-client: 15.1.3

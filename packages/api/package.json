@@ -13,7 +13,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1024.0",
     "@hono/node-server": "^1.19.13",
-    "@hono/prometheus": "^1.0.2",
+    "@hono/prometheus": "^1.0.3",
     "@warframe-tracker/shared": "workspace:*",
     "@wfcd/items": "latest",
     "dotenv": "^17.3.1",
