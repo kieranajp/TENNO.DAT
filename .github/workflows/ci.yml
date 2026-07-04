@@ -36,6 +36,53 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  seed-check:
+    runs-on: ubuntu-latest
+
+    # Throwaway Postgres, mirroring the api pod's init containers (migrate +
+    # seed). Catches data in a @wfcd/items bump that the schema rejects — e.g.
+    # a "0000-00-00" introduced date, or a >99.99999999 drop chance — before
+    # auto-merge ships it into a CrashLoopBackOff.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: warframe
+          POSTGRES_PASSWORD: warframe
+          POSTGRES_DB: warframe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U warframe"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Migrate and seed against throwaway Postgres
+        run: |
+          pnpm --filter api db:migrate
+          pnpm --filter api db:seed-items
+        env:
+          DATABASE_URL: postgresql://warframe:warframe@localhost:5432/warframe
+
   e2e-tests:
     runs-on: ubuntu-latest
     needs: unit-tests
