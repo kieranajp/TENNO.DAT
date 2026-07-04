@@ -7,15 +7,18 @@ import type { AuthProbe } from '../../infrastructure/observability/auth-probe'
 
 // Mock the SteamOpenIDService
 vi.mock('../../infrastructure/external/steam-openid', () => ({
-  SteamOpenIDService: vi.fn().mockImplementation(() => ({
-    getAuthUrl: vi.fn().mockResolvedValue('https://steamcommunity.com/openid/login?mock=true'),
-    verifyAssertion: vi.fn().mockResolvedValue('76561198012345678'),
-    fetchProfile: vi.fn().mockResolvedValue({
-      steamId: '76561198012345678',
-      displayName: 'TestPlayer',
-      avatarUrl: 'https://example.com/avatar.jpg',
-    }),
-  })),
+  // vitest 4: class-constructor mocks must use `function`/`class`, not an arrow
+  SteamOpenIDService: vi.fn(function () {
+    return {
+      getAuthUrl: vi.fn().mockResolvedValue('https://steamcommunity.com/openid/login?mock=true'),
+      verifyAssertion: vi.fn().mockResolvedValue('76561198012345678'),
+      fetchProfile: vi.fn().mockResolvedValue({
+        steamId: '76561198012345678',
+        displayName: 'TestPlayer',
+        avatarUrl: 'https://example.com/avatar.jpg',
+      }),
+    }
+  }),
 }))
 
 describe('Auth Routes', () => {
