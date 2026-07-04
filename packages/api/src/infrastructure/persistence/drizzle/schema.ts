@@ -79,7 +79,7 @@ export const itemDrops = pgTable('item_drops', {
   id: serial('id').primaryKey(),
   itemId: integer('item_id').notNull().references(() => items.id, { onDelete: 'cascade' }),
   location: varchar('location', { length: 255 }).notNull(),
-  chance: decimal('chance', { precision: 10, scale: 8 }).notNull(),
+  chance: decimal('chance', { precision: 12, scale: 8 }).notNull(),
   rarity: varchar('rarity', { length: 20 }),
 }, (table) => [
   index('item_drops_item_id_idx').on(table.itemId),
@@ -97,7 +97,7 @@ export const componentDrops = pgTable('component_drops', {
   id: serial('id').primaryKey(),
   componentId: integer('component_id').notNull().references(() => itemComponents.id, { onDelete: 'cascade' }),
   location: varchar('location', { length: 255 }).notNull(),
-  chance: decimal('chance', { precision: 10, scale: 8 }).notNull(),
+  chance: decimal('chance', { precision: 12, scale: 8 }).notNull(),
   rarity: varchar('rarity', { length: 20 }),
 }, (table) => [
   index('component_drops_component_id_idx').on(table.componentId),
@@ -243,7 +243,7 @@ export const resourceDrops = pgTable('resource_drops', {
   id: serial('id').primaryKey(),
   resourceId: integer('resource_id').notNull().references(() => resources.id, { onDelete: 'cascade' }),
   location: varchar('location', { length: 255 }).notNull(),
-  chance: decimal('chance', { precision: 10, scale: 8 }).notNull(),
+  chance: decimal('chance', { precision: 12, scale: 8 }).notNull(),
   rarity: varchar('rarity', { length: 20 }),
   dropQuantity: varchar('drop_quantity', { length: 50 }), // e.g., "10X Plastids"
 }, (table) => [

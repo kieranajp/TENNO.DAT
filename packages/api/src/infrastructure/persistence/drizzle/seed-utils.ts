@@ -146,6 +146,35 @@ export function getMasteryReq(item: { masteryReq?: number | MasteryReqValue }): 
   return 0
 }
 
+/**
+ * Normalize an introduced date into a Postgres-safe ISO date string, or null.
+ *
+ * @wfcd/items ships placeholder dates for unreleased ("TBA") content — e.g. the
+ * Haalvu weapon arrived with introduced.date "0000-00-00", which Postgres rejects
+ * as "date/time field value out of range" and takes the whole seed batch down with
+ * it. Anything that isn't a real YYYY-MM-DD calendar date becomes null.
+ */
+export function normalizeIntroducedDate(date: unknown): string | null {
+  if (typeof date !== 'string') return null
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date)
+  if (!match) return null
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  if (year < 1 || month < 1 || month > 12 || day < 1 || day > 31) return null
+  // Reject impossible dates (e.g. 2025-02-30) via a UTC round-trip.
+  const parsed = new Date(`${date}T00:00:00Z`)
+  if (
+    Number.isNaN(parsed.getTime()) ||
+    parsed.getUTCFullYear() !== year ||
+    parsed.getUTCMonth() + 1 !== month ||
+    parsed.getUTCDate() !== day
+  ) {
+    return null
+  }
+  return date
+}
+
 export interface RawComponent {
   name?: string
   itemCount?: number
