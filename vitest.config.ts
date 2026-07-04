@@ -16,8 +16,4 @@ export default defineConfig({
       ],
     },
   },
-  esbuild: {
-    // Don't require tsconfig for transformation
-    tsconfigRaw: '{}',
-  },
 })
