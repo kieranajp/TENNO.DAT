@@ -54,11 +54,36 @@ export class Logger {
 
   error(message: string, error?: Error | Record<string, unknown>) {
     if (error instanceof Error) {
-      this.log('error', message, { error: error.message, stack: error.stack })
+      this.log('error', message, { error: error.message, stack: error.stack, cause: describeCause(error) })
     } else {
       this.log('error', message, error)
     }
   }
+}
+
+/**
+ * Walk an error's `.cause` chain and pull out the useful diagnostics.
+ *
+ * Driver/ORM errors (e.g. Drizzle) set their top-level message to the full
+ * parametrised query and hang the actual failure — with Postgres fields like
+ * code/detail/constraint — off `.cause`. Without this, the real reason (e.g.
+ * "date/time field value out of range") never reaches the logs.
+ */
+function describeCause(error: Error): Record<string, unknown>[] | undefined {
+  const chain: Record<string, unknown>[] = []
+  const seen = new Set<unknown>()
+  let current: unknown = (error as { cause?: unknown }).cause
+  while (current instanceof Error && !seen.has(current)) {
+    seen.add(current)
+    const pg = current as unknown as Record<string, unknown>
+    const entry: Record<string, unknown> = { message: current.message }
+    for (const field of ['code', 'detail', 'column', 'table', 'constraint', 'severity', 'routine']) {
+      if (pg[field] != null) entry[field] = pg[field]
+    }
+    chain.push(entry)
+    current = pg.cause
+  }
+  return chain.length ? chain : undefined
 }
 
 export function createLogger(context: string): Logger {

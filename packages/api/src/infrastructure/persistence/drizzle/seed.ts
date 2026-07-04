@@ -4,7 +4,7 @@ import { db, schema } from './connection'
 import { WFCD_CATEGORIES, SeedingRules, FocusSchool } from '@warframe-tracker/shared'
 import { createLogger } from '../../logger'
 import { seedResources, getResourceMaps } from './seed-resources'
-import { isCraftedPart, getMasteryReq, extractComponents, extractDrops } from './seed-utils'
+import { isCraftedPart, getMasteryReq, extractComponents, extractDrops, normalizeIntroducedDate } from './seed-utils'
 import { syncImages } from './seed-images'
 
 const log = createLogger('Seed')
@@ -87,16 +87,17 @@ async function seed() {
         bpCost: typeof item.bpCost === 'number' ? item.bpCost : null,
         buildPrice: typeof item.buildPrice === 'number' ? item.buildPrice : null,
         buildTime: typeof item.buildTime === 'number' ? item.buildTime : null,
-        // Introduced info (normalized)
+        // Introduced info (normalized). Placeholder dates like "0000-00-00" for
+        // unreleased content are coerced to null so they don't break the date column.
         introducedName: item.introduced?.name ?? null,
-        introducedDate: item.introduced?.date ?? null,
+        introducedDate: normalizeIntroducedDate(item.introduced?.date),
         // Legacy JSONB field (kept for rollback safety)
         acquisitionData: {
           drops,
           components,
           introduced: item.introduced ? {
             name: item.introduced.name ?? null,
-            date: item.introduced.date ?? null,
+            date: normalizeIntroducedDate(item.introduced.date),
           } : null,
         },
         // Raw data for relational tables

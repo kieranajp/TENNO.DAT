@@ -6,6 +6,7 @@ import {
   CRAFTED_PART_NAMES,
   CRAFTED_SUFFIXES,
   getMasteryReq,
+  normalizeIntroducedDate,
   extractComponents,
   extractDrops,
   JUNCTION_XP,
@@ -163,6 +164,34 @@ describe('seed-utils', () => {
 
     it('returns 0 when masteryReq object has no value or mr', () => {
       expect(getMasteryReq({ masteryReq: {} })).toBe(0)
+    })
+  })
+
+  describe('normalizeIntroducedDate', () => {
+    it('passes through valid ISO calendar dates', () => {
+      expect(normalizeIntroducedDate('2013-09-27')).toBe('2013-09-27')
+      expect(normalizeIntroducedDate('2025-12-10')).toBe('2025-12-10')
+      expect(normalizeIntroducedDate('2024-02-29')).toBe('2024-02-29') // leap day
+    })
+
+    it('rejects the "0000-00-00" placeholder used for unreleased (TBA) content', () => {
+      expect(normalizeIntroducedDate('0000-00-00')).toBeNull()
+    })
+
+    it('rejects impossible calendar dates', () => {
+      expect(normalizeIntroducedDate('2025-02-30')).toBeNull()
+      expect(normalizeIntroducedDate('2025-13-01')).toBeNull()
+      expect(normalizeIntroducedDate('2025-00-10')).toBeNull()
+      expect(normalizeIntroducedDate('2023-02-29')).toBeNull() // not a leap year
+    })
+
+    it('rejects malformed or non-string values', () => {
+      expect(normalizeIntroducedDate('TBA')).toBeNull()
+      expect(normalizeIntroducedDate('2025-1-1')).toBeNull()
+      expect(normalizeIntroducedDate('')).toBeNull()
+      expect(normalizeIntroducedDate(undefined)).toBeNull()
+      expect(normalizeIntroducedDate(null)).toBeNull()
+      expect(normalizeIntroducedDate(20250101)).toBeNull()
     })
   })
 

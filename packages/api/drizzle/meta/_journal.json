@@ -99,6 +99,13 @@
       "when": 1770100000000,
       "tag": "0013_prime_parts_owned_count",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1770200000000,
+      "tag": "0014_widen_drop_chance",
+      "breakpoints": true
     }
   ]
 }
