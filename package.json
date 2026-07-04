@@ -8,9 +8,10 @@
     "db:generate": "pnpm --filter api db:generate",
     "db:migrate": "pnpm --filter api db:migrate",
     "db:seed": "pnpm --filter api db:seed",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:sync": "pnpm --filter web exec svelte-kit sync",
+    "test": "pnpm test:sync && vitest run",
+    "test:watch": "pnpm test:sync && vitest",
+    "test:coverage": "pnpm test:sync && vitest run --coverage"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.4",
