@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:25-alpine
+FROM node:26-alpine
 
 # Install pnpm via npm (corepack not reliable in alpine)
 RUN npm install -g pnpm@10
