@@ -15,6 +15,11 @@ Requires the namespace to allow NET_ADMIN + hostPath (pod-security: privileged).
 - name: gluetun
   image: {{ .Values.vpn.image | default "qmcgaw/gluetun:v3.41.1" }}
   securityContext:
+    # gluetun needs root to write its iptables kill-switch; the pod-level
+    # runAsUser 1001 (for the API) would otherwise force it non-root and it
+    # can't open /run/xtables.lock. Container context overrides pod context.
+    runAsUser: 0
+    runAsNonRoot: false
     capabilities:
       add:
         - NET_ADMIN
