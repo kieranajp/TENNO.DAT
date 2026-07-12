@@ -101,7 +101,8 @@ export async function seedResources() {
       return drops.slice(0, 10).map((drop: any) => ({
         resourceId,
         location: String(drop.location ?? drop.place ?? 'Unknown'),
-        chance: String(typeof drop.chance === 'number' ? drop.chance : 0),
+        // @wfcd/items gives chance as a percentage (e.g. 11 = 11%); store as a 0-1 fraction.
+        chance: String(typeof drop.chance === 'number' ? drop.chance / 100 : 0),
         rarity: drop.rarity ?? null,
         dropQuantity: drop.type ?? null, // e.g., "10X Plastids"
       }))
