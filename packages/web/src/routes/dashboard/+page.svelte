@@ -168,6 +168,18 @@
 						{/if}
 					</button>
 
+					{#if syncCooldown}
+						<details class="sync-why">
+							<summary>Why do I need to wait?</summary>
+							<p>
+								Every sync downloads your full profile from Warframe's servers.
+								Ask too often and they treat it as abuse and block this server's
+								IP address. The short wait keeps us under their limit so syncing
+								keeps working.
+							</p>
+						</details>
+					{/if}
+
 					{#if summary.lastSyncAt}
 						<div class="last-sync">
 							Last sync: {new Date(summary.lastSyncAt).toLocaleString()}
@@ -370,6 +382,29 @@
 		&:disabled
 			opacity: 0.7
 			cursor: not-allowed
+
+	.sync-why
+		margin-top: 0.75rem
+		font-size: $font-size-xs
+		text-align: center
+
+		summary
+			cursor: pointer
+			color: $gray-500
+			text-decoration: underline
+			list-style: none
+
+			&::-webkit-details-marker
+				display: none
+
+			&:hover
+				color: $kim-accent
+
+		p
+			margin-top: 0.5rem
+			text-align: left
+			color: $gray-500
+			line-height: 1.5
 
 	.last-sync
 		margin-top: 0.75rem
