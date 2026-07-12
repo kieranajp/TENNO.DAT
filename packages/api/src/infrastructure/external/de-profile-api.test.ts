@@ -84,7 +84,7 @@ describe('DeProfileApi', () => {
         text: () => Promise.resolve('Forbidden'),
       })
 
-      await expect(api.fetch('TestPlayer', Platform.PC)).rejects.toThrow('rate limited')
+      await expect(api.fetch('TestPlayer', Platform.PC)).rejects.toThrow('rate-limiting this IP')
     })
 
     it('throws on 409 response with private profile message', async () => {
