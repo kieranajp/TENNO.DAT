@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Build stage
-FROM node:25-alpine AS builder
+FROM node:26-alpine AS builder
 
 # Install pnpm via npm (corepack not reliable in alpine)
 RUN npm install -g pnpm@10
@@ -30,7 +30,7 @@ ENV VITE_IMAGE_BASE_URL=${VITE_IMAGE_BASE_URL}
 RUN pnpm --filter web build
 
 # Production stage
-FROM node:25-alpine
+FROM node:26-alpine
 
 # Install pnpm via npm (corepack not reliable in alpine)
 RUN npm install -g pnpm@10
