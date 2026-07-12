@@ -17,7 +17,11 @@ groups:
             relativeTimeRange:
               from: 3600
               to: 0
-            datasourceUid: victoriametrics
+            # Existing (auto-generated) uid of the victoriametrics datasource in
+            # Grafana. Stable while that datasource isn't deleted/recreated. If
+            # Grafana's DB is ever wiped this must be refreshed (or pin the uid
+            # in seldon via deleteDatasources and set it to `victoriametrics`).
+            datasourceUid: PABDA7AB1AD2A1489
             model:
               refId: A
               editorMode: code
