@@ -1,0 +1,18 @@
+# Grafana alert rule for the tenno API, discovered by Grafana's alerts sidecar
+# (searchNamespace: ALL) via the grafana_alert label — same "service owns its
+# config" pattern as the dashboard. Fires to the default email contact point.
+# Needs seldon's grafana sidecar.alerts enabled + the victoriametrics datasource
+# uid pinned (both done in values/grafana.yaml).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-alerts
+  namespace: {{ .Release.Namespace }}
+  labels:
+    grafana_alert: "1"
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  de-403.yaml: |-
+{{ .Files.Get "alerts/de-403.yaml" | indent 4 }}

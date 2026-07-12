@@ -34,7 +34,7 @@ app.use('*', cors({
   credentials: true,
 }))
 
-const { printMetrics, registerMetrics } = prometheus({ registry, collectDefaultMetrics: false })
+const { printMetrics, registerMetrics } = prometheus({ registry, collectDefaultMetrics: true })
 app.use('*', registerMetrics)
 app.get('/metrics', printMetrics)
 

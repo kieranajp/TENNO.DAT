@@ -195,7 +195,7 @@
       },
       "targets": [
         {
-          "expr": "increase(tenno_sync_completed_total{app=\"tenno-api\"}[$__rate_interval])",
+          "expr": "sum(increase(tenno_sync_completed_total{app=\"tenno-api\"}[$__rate_interval]))",
           "legendFormat": "syncs"
         }
       ],
@@ -235,7 +235,7 @@
       },
       "targets": [
         {
-          "expr": "increase(tenno_steam_auth_attempts_total{app=\"tenno-api\"}[$__rate_interval])",
+          "expr": "sum(increase(tenno_steam_auth_attempts_total{app=\"tenno-api\"}[$__rate_interval]))",
           "legendFormat": "attempts"
         }
       ],
@@ -521,11 +521,11 @@
       },
       "targets": [
         {
-          "expr": "tenno_sync_items_matched{app=\"tenno-api\"}",
+          "expr": "sum(tenno_sync_items_matched{app=\"tenno-api\"})",
           "legendFormat": "matched"
         },
         {
-          "expr": "tenno_sync_items_unmatched{app=\"tenno-api\"}",
+          "expr": "sum(tenno_sync_items_unmatched{app=\"tenno-api\"})",
           "legendFormat": "unmatched"
         }
       ],
@@ -553,7 +553,7 @@
       },
       "targets": [
         {
-          "expr": "rate(tenno_sync_completed_total{app=\"tenno-api\"}[$__rate_interval])",
+          "expr": "sum(rate(tenno_sync_completed_total{app=\"tenno-api\"}[$__rate_interval]))",
           "legendFormat": "syncs/s"
         }
       ],
@@ -594,7 +594,7 @@
       },
       "targets": [
         {
-          "expr": "tenno_mastery_rank_bucket{app=\"tenno-api\"} - ignoring(le) tenno_mastery_rank_bucket{app=\"tenno-api\",le=\"0\"}",
+          "expr": "sum by (le) (tenno_mastery_rank_bucket{app=\"tenno-api\"})",
           "instant": true,
           "legendFormat": "MR ≤{{le}}"
         }
@@ -638,15 +638,15 @@
       },
       "targets": [
         {
-          "expr": "increase(tenno_steam_auth_successes_total{app=\"tenno-api\", user_type=\"new\"}[$__rate_interval])",
+          "expr": "sum(increase(tenno_steam_auth_successes_total{app=\"tenno-api\", user_type=\"new\"}[$__rate_interval]))",
           "legendFormat": "new users"
         },
         {
-          "expr": "increase(tenno_steam_auth_successes_total{app=\"tenno-api\", user_type=\"returning\"}[$__rate_interval])",
+          "expr": "sum(increase(tenno_steam_auth_successes_total{app=\"tenno-api\", user_type=\"returning\"}[$__rate_interval]))",
           "legendFormat": "returning users"
         },
         {
-          "expr": "increase(tenno_steam_auth_failures_total{app=\"tenno-api\"}[$__rate_interval])",
+          "expr": "sum(increase(tenno_steam_auth_failures_total{app=\"tenno-api\"}[$__rate_interval]))",
           "legendFormat": "failures"
         }
       ],
@@ -687,7 +687,7 @@
       },
       "targets": [
         {
-          "expr": "tenno_steam_auth_successes_total{app=\"tenno-api\", user_type=\"new\"} - tenno_account_deletions_total{app=\"tenno-api\"}",
+          "expr": "sum(tenno_steam_auth_successes_total{app=\"tenno-api\", user_type=\"new\"}) - sum(tenno_account_deletions_total{app=\"tenno-api\"})",
           "legendFormat": "accounts"
         }
       ],
@@ -728,7 +728,7 @@
       },
       "targets": [
         {
-          "expr": "tenno_account_deletions_total{app=\"tenno-api\"}",
+          "expr": "sum(tenno_account_deletions_total{app=\"tenno-api\"})",
           "legendFormat": "deletions"
         }
       ],
@@ -760,7 +760,7 @@
       },
       "targets": [
         {
-          "expr": "rate(tenno_prime_parts_toggles_total{app=\"tenno-api\"}[$__rate_interval])",
+          "expr": "sum(rate(tenno_prime_parts_toggles_total{app=\"tenno-api\"}[$__rate_interval]))",
           "legendFormat": "toggles/s"
         }
       ],
