@@ -34,7 +34,9 @@ app.use('*', cors({
   credentials: true,
 }))
 
-const { printMetrics, registerMetrics } = prometheus({ registry, collectDefaultMetrics: true })
+// Default metrics are already collected in registry.ts; enabling here too
+// double-registers and crashes prom-client on boot.
+const { printMetrics, registerMetrics } = prometheus({ registry, collectDefaultMetrics: false })
 app.use('*', registerMetrics)
 app.get('/metrics', printMetrics)
 
