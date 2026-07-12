@@ -28,6 +28,10 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-api
   namespace: {{ .Release.Namespace }}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "{{ .Values.api.service.port }}"
   labels:
     app: {{ .Release.Name }}-api
     app.kubernetes.io/name: {{ .Chart.Name }}-api
