@@ -121,6 +121,7 @@ export interface MasteryItem {
 	xp: number | null;
 	rank: number | null;
 	masteryState: MasteryState;
+	introducedDate: string | null;
 	wishlisted: boolean;
 	primeProgress: { owned: number; total: number } | null;
 }

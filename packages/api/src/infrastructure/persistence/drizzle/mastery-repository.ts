@@ -70,6 +70,7 @@ export class DrizzleMasteryRepository implements MasteryRepository {
         maxRank: items.maxRank,
         imageName: items.imageName,
         vaulted: items.vaulted,
+        introducedDate: items.introducedDate,
         xp: playerMastery.xp,
         rank: playerMastery.rank,
       })
