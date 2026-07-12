@@ -1,0 +1,18 @@
+# Grafana dashboard for the tenno API. Grafana's sidecar (searchNamespace: ALL)
+# discovers any ConfigMap carrying the grafana_dashboard label, cluster-wide, so
+# the service ships its own observability config rather than parking it in seldon.
+# JSON is loaded via .Files.Get (NOT inlined) so its Grafana legend-format
+# placeholders survive Helm rendering untouched.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-dashboard
+  namespace: {{ .Release.Namespace }}
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  tenno-api.json: |-
+{{ .Files.Get "dashboards/tenno-api.json" | indent 4 }}
