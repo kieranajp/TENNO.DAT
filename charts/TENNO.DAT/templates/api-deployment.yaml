@@ -72,6 +72,9 @@ spec:
         - secretRef:
             name: {{ .Values.secretName }}
       containers:
+      {{- if .Values.vpn.enabled }}
+      {{- include "vpn.container" . | nindent 6 }}
+      {{- end }}
       - name: api
         image: {{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}
         securityContext:
@@ -118,3 +121,7 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 12
+      {{- if .Values.vpn.enabled }}
+      volumes:
+      {{- include "vpn.volumes" . | nindent 6 }}
+      {{- end }}
