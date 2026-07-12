@@ -236,8 +236,8 @@ describe('seed-utils', () => {
             name: 'Prime Blueprint',
             itemCount: 1,
             drops: [
-              { location: 'Lith A1 Relic', chance: 0.11, rarity: 'Uncommon' },
-              { place: 'Meso B2 Relic', chance: 0.25 },
+              { location: 'Lith A1 Relic', chance: 11, rarity: 'Uncommon' },
+              { place: 'Meso B2 Relic', chance: 25 },
             ],
           },
         ],
@@ -309,7 +309,7 @@ describe('seed-utils', () => {
     it('extracts basic drop info', () => {
       const item = {
         drops: [
-          { location: 'Earth/E Prime', chance: 0.05, rarity: 'Rare' },
+          { location: 'Earth/E Prime', chance: 5, rarity: 'Rare' },
         ],
       }
 

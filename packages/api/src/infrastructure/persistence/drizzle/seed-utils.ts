@@ -195,7 +195,8 @@ export function extractComponents(item: { components?: RawComponent[] }) {
     tradable: typeof c.tradable === 'boolean' ? c.tradable : undefined,
     drops: (c.drops ?? []).slice(0, 5).map((d) => ({
       location: d.location ?? d.place ?? 'Unknown',
-      chance: typeof d.chance === 'number' ? d.chance : 0,
+      // @wfcd/items gives chance as a percentage (e.g. 11 = 11%); store as a 0-1 fraction.
+      chance: typeof d.chance === 'number' ? d.chance / 100 : 0,
       rarity: d.rarity ?? undefined,
     })),
   }))
@@ -215,7 +216,8 @@ export interface RawDrop {
 export function extractDrops(item: { drops?: RawDrop[] }) {
   return (item.drops ?? []).slice(0, 10).map((d) => ({
     location: d.location ?? d.place ?? 'Unknown',
-    chance: typeof d.chance === 'number' ? d.chance : 0,
+    // @wfcd/items gives chance as a percentage (e.g. 11 = 11%); store as a 0-1 fraction.
+    chance: typeof d.chance === 'number' ? d.chance / 100 : 0,
     rarity: d.rarity ?? 'Common',
   }))
 }
