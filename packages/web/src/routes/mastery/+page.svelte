@@ -18,7 +18,7 @@
 	let search = $state('');
 	let showPrime = $state(true);
 	let showWishlistedOnly = $state(false);
-	let sortBy: 'name' | 'rank' | 'type' = $state('name');
+	let sortBy: 'name' | 'rank' | 'type' | 'newest' = $state('name');
 
 	function sortItems(itemList: MasteryItem[]): MasteryItem[] {
 		return [...itemList].sort((a, b) => {
@@ -31,6 +31,15 @@
 				const aRank = a.rank ?? -1;
 				const bRank = b.rank ?? -1;
 				if (aRank !== bRank) return aRank - bRank;
+				return a.name.localeCompare(b.name);
+			}
+
+			if (sortBy === 'newest') {
+				// Newest in-game release first; items with no known date sort last.
+				// ISO date strings compare chronologically, so a plain string compare works.
+				const aDate = a.introducedDate ?? '';
+				const bDate = b.introducedDate ?? '';
+				if (aDate !== bDate) return bDate.localeCompare(aDate);
 				return a.name.localeCompare(b.name);
 			}
 
@@ -175,6 +184,7 @@
 
 			<select class="sort-select input-retro" bind:value={sortBy}>
 				<option value="name">SORT: NAME</option>
+				<option value="newest">SORT: NEWEST</option>
 				<option value="rank">SORT: RANK</option>
 				{#if !category}
 					<option value="type">SORT: TYPE</option>

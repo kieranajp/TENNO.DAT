@@ -13,6 +13,7 @@ export interface MasteryWithItem {
   xp: number | null
   rank: number | null
   masteryState: MasteryState
+  introducedDate: string | null
 }
 
 export interface MasterySummary {
