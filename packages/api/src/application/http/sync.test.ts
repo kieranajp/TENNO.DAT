@@ -139,6 +139,19 @@ describe('Sync Routes', () => {
       )
     })
 
+    it('skips the DE fetch when synced within the minimum interval', async () => {
+      const recent = new Hono()
+      recent.use('*', createMockOnboardedMiddleware(mockAuth, { ...mockSettings, lastSyncAt: new Date() }))
+      recent.route('/sync', syncRoutes(container, syncProbe, dbProbe))
+      vi.mocked(container.profileApi.fetch).mockResolvedValue(createMockProfile())
+
+      const res = await recent.request('/sync/profile', { method: 'POST' })
+
+      expect(res.status).toBe(200)
+      expect(await res.json()).toMatchObject({ success: true, cached: true })
+      expect(container.profileApi.fetch).not.toHaveBeenCalled()
+    })
+
     it('updates display name from profile', async () => {
       vi.mocked(container.profileApi.fetch).mockResolvedValue(
         createMockProfile({ displayName: 'NewDisplayName' })

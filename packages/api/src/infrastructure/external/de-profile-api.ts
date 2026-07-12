@@ -31,7 +31,9 @@ export class DeProfileApi implements ProfileApi {
       if (response.status === 403) {
         this.probe.profileFetchFailed('rate_limited')
         endTimer()
-        throw new Error('Access denied - you may be rate limited. Try again in a few minutes.')
+        // Don't nudge a retry — repeated hits extend the block and can get the
+        // whole IP locked out of the game. Wait it out.
+        throw new Error('Warframe is rate-limiting this IP. Stop syncing and wait at least half an hour — retrying now only makes the lockout longer.')
       }
       if (response.status === 409) {
         // DE returns 409 for two distinct cases: a private profile, and an

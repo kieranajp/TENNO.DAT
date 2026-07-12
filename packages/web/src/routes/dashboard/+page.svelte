@@ -2,15 +2,32 @@
 	import { onMount } from 'svelte';
 	import { getMasterySummary, syncProfile, getImageUrl, getMasteryRankIconUrl, sanitiseDisplayName, type MasterySummary } from '$lib/api';
 	import { sortByCategory } from '$lib/categories';
-	import { CATEGORIES, MasteryState } from '@warframe-tracker/shared';
+	import { CATEGORIES, MasteryState, MIN_SYNC_INTERVAL_MS } from '@warframe-tracker/shared';
 	import ItemModal from '$lib/components/ItemModal.svelte';
+
+	const LAST_SYNC_KEY = 'tenno:lastSync';
 
 	let summary: MasterySummary | null = $state(null);
 	let sortedCategories = $derived(summary ? sortByCategory(summary.categories) : []);
 	let syncing = $state(false);
-	let syncCooldown = $state(false);
 	let error: string | null = $state(null);
 	let selectedItemId: number | null = $state(null);
+
+	// Client-side sync cooldown, derived from the last sync time. The server
+	// enforces the real floor (MIN_SYNC_INTERVAL_MS); this just keeps the button
+	// honest. Seeded from both the DB (summary.lastSyncAt) and localStorage so it
+	// survives reloads. Ticks via `now`.
+	let now = $state(Date.now());
+	let storedLastSync = $state(0);
+	let summaryLastSync = $derived(summary?.lastSyncAt ? new Date(summary.lastSyncAt).getTime() : 0);
+	let lastSync = $derived(Math.max(summaryLastSync, storedLastSync));
+	let cooldownRemaining = $derived(Math.max(0, lastSync + MIN_SYNC_INTERVAL_MS - now));
+	let syncCooldown = $derived(cooldownRemaining > 0);
+
+	function formatCountdown(ms: number): string {
+		const total = Math.ceil(ms / 1000);
+		return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+	}
 
 	// Build category metadata from shared config
 	const categoryMeta: Record<string, { icon: string; subtitle: string }> = Object.fromEntries(
@@ -21,11 +38,18 @@
 	);
 
 	onMount(async () => {
+		storedLastSync = Number(localStorage.getItem(LAST_SYNC_KEY)) || 0;
 		try {
 			summary = await getMasterySummary();
 		} catch {
 			error = 'Failed to load mastery data. Check settings.';
 		}
+	});
+
+	// Tick once a second so the countdown updates; runs while mounted only.
+	$effect(() => {
+		const id = setInterval(() => (now = Date.now()), 1000);
+		return () => clearInterval(id);
 	});
 
 	async function handleSync() {
@@ -43,8 +67,10 @@
 			error = 'Sync failed. Check your Account ID.';
 		} finally {
 			syncing = false;
-			syncCooldown = true;
-			setTimeout(() => syncCooldown = false, 30_000);
+			// Start the cooldown after any completed attempt — a cached/rejected
+			// sync should back off too, not just a successful one.
+			storedLastSync = Date.now();
+			localStorage.setItem(LAST_SYNC_KEY, String(storedLastSync));
 		}
 	}
 
@@ -132,10 +158,14 @@
 					<button class="btn-retro sync-btn" onclick={handleSync} disabled={syncing || syncCooldown}>
 						{#if syncing}
 							<span class="spinner"></span>
+							Syncing…
+						{:else if syncCooldown}
+							<span class="material-icons">schedule</span>
+							Wait {formatCountdown(cooldownRemaining)}
 						{:else}
 							<span class="material-icons">sync</span>
+							Sync Profile
 						{/if}
-						Sync Profile
 					</button>
 
 					{#if summary.lastSyncAt}

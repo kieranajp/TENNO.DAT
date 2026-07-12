@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { Platform } from '@warframe-tracker/shared'
+import { Platform, MIN_SYNC_INTERVAL_MS } from '@warframe-tracker/shared'
 import type { Container } from '../../infrastructure/bootstrap/container'
 import { getRankFromXp } from '../../domain/entities/mastery'
 import { createLogger } from '../../infrastructure/logger'
@@ -56,6 +56,11 @@ export function syncRoutes(container: Container, probe: SyncProbe, db: DbProbe) 
       const platform = Platform.fromId(settings.platform ?? 'pc')
       if (!platform) {
         return c.json({ error: `Invalid platform in settings: ${settings.platform}` }, 400)
+      }
+
+      if (settings.lastSyncAt && Date.now() - settings.lastSyncAt.getTime() < MIN_SYNC_INTERVAL_MS) {
+        log.info('Sync skipped — synced recently', { userId: auth.userId, lastSyncAt: settings.lastSyncAt })
+        return c.json({ success: true, synced: 0, mastered: 0, cached: true })
       }
 
       log.info('Starting sync', { userId: auth.userId, playerId: settings.playerId, platform: platform.id })

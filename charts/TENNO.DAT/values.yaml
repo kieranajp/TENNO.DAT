@@ -69,6 +69,18 @@ ingress:
     - from: "tenno.kieranajp.uk"
       to: "https://tenno.club"
 
+# Route the API's public egress through Mullvad (DE blocks our home + Cloudflare IPs).
+# Requires: (1) the `apps` namespace labelled pod-security privileged in seldon,
+# (2) WIREGUARD_PRIVATE_KEY + WIREGUARD_ADDRESSES added to the tenno-secrets
+# 1Password item. Only public traffic uses the tunnel; cluster traffic goes direct.
+vpn:
+  enabled: true
+  provider: mullvad
+  serverCountries: "Netherlands"          # any non-blocked exit; tune for latency
+  outboundSubnets: "10.244.0.0/16,10.96.0.0/12"  # Talos pod + service CIDRs (Postgres, CoreDNS)
+  keepClusterDNS: true                    # keep CoreDNS so tenno-postgresql resolves
+  inputPorts: "3000"                      # let Traefik reach the API on the LAN side
+
 secretName: tenno-secrets
 
 onepassword:
