@@ -55,8 +55,8 @@
 
 				<h3>Analytics</h3>
 				<p>
-					We use <a href="https://plausible.io" target="_blank" rel="noopener noreferrer">Plausible Analytics</a>,
-					a privacy-focused analytics tool. Plausible does not use cookies, does not collect
+					We use <a href="https://umami.is" target="_blank" rel="noopener noreferrer">Umami Analytics</a>,
+					a privacy-focused analytics tool. Umami does not use cookies, does not collect
 					personal data, and does not track you across sites. All data is aggregated &mdash;
 					we see page view counts and referrer sources, not individual visitors.
 				</p>
@@ -74,7 +74,7 @@
 					This site is built and operated from the EU, and all data is stored on
 					EU-based servers. Your data lives in a PostgreSQL database and is used
 					solely to make the site work. There are no third-party data processors
-					beyond Plausible (analytics) and the hosting provider.
+					beyond Umami (analytics) and the hosting provider.
 				</p>
 
 				<h2>Deleting your data</h2>
