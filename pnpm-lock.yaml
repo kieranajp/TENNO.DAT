@@ -90,10 +90,10 @@ importers:
         version: 1.61.1
       '@sveltejs/adapter-node':
         specifier: ^5.5.7
-        version: 5.5.7(@sveltejs/kit@2.69.3(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))
+        version: 5.5.7(@sveltejs/kit@2.70.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))
       '@sveltejs/kit':
-        specifier: ^2.69.3
-        version: 2.69.3(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))
+        specifier: ^2.70.1
+        version: 2.70.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.2.0
         version: 7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))
@@ -1105,8 +1105,8 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.4.0
 
-  '@sveltejs/kit@2.69.3':
-    resolution: {integrity: sha512-cphwqMRcE19/9VkrIPr5qZhQ0SptSSDfDzRUpYHu9OJDFGuYBFyJzK+KQA27wB4YG32O/yF2QjBkDmTyo0vtCw==}
+  '@sveltejs/kit@2.70.1':
+    resolution: {integrity: sha512-nY9SPHGOZro3doud9vZXDBwl9tCZIouuJztjgSHs6PAIrv9M/z5O7eOhPV5xU7CgVHA976Jwu3BA1hIFvXztkA==}
     engines: {node: '>=18.13'}
     hasBin: true
     peerDependencies:
@@ -2731,16 +2731,16 @@ snapshots:
     dependencies:
       acorn: 8.17.0
 
-  '@sveltejs/adapter-node@5.5.7(@sveltejs/kit@2.69.3(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))':
+  '@sveltejs/adapter-node@5.5.7(@sveltejs/kit@2.70.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))':
     dependencies:
       '@rollup/plugin-commonjs': 29.0.3(rollup@4.62.2)
       '@rollup/plugin-json': 6.1.0(rollup@4.62.2)
       '@rollup/plugin-node-resolve': 16.0.3(rollup@4.62.2)
       '@rollup/plugin-replace': 6.0.3(rollup@4.62.2)
-      '@sveltejs/kit': 2.69.3(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))
+      '@sveltejs/kit': 2.70.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))
       rollup: 4.62.2
 
-  '@sveltejs/kit@2.69.3(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))':
+  '@sveltejs/kit@2.70.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.6)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1)))(svelte@5.56.6)(typescript@5.9.3)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(sass@1.101.0)(tsx@4.23.1))':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@sveltejs/acorn-typescript': 1.0.11(acorn@8.17.0)
