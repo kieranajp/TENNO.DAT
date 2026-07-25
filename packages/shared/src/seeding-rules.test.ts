@@ -201,6 +201,19 @@ describe('SeedingRules', () => {
     })
   })
 
+  describe('Sirius & Orion dual frame', () => {
+    // The pair occupies one Warframe slot; only the primary son awards mastery.
+    it('seeds the primary son', () => {
+      const sirius = { uniqueName: '/Lotus/Powersuits/SiriusOrion/SiriusSuit', name: 'Sirius & Orion', category: 'Warframes', productCategory: 'Suits' }
+      expect(SeedingRules.detectCategory(sirius)).toBe('Warframes')
+    })
+
+    it('excludes the secondary son', () => {
+      const orion = { uniqueName: '/Lotus/Powersuits/SiriusOrion/OrionSuit', name: 'Orion & Sirius', category: 'Warframes', productCategory: 'SpecialItems' }
+      expect(SeedingRules.detectCategory(orion)).toBeNull()
+    })
+  })
+
   describe('PvP Exclusions', () => {
     const pvpItems = [
       { uniqueName: '/Lotus/Weapons/Tenno/LongGuns/Rifle/PvPVariants/BratonPvP', name: 'Braton (Conclave)', category: 'Primary', productCategory: 'Primary' },

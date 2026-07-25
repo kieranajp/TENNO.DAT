@@ -344,6 +344,11 @@ export const GLOBAL_EXCLUSIONS: SeedingRule[] = [
         /\/Barrel\/|Barrel$/.test(item.uniqueName)), // Kitgun chambers & Amp prisms (incl Mote)
     reason: 'Non-primary modular parts (grips, links, braces)',
   },
+  {
+    matcher: '/Lotus/Powersuits/SiriusOrion/OrionSuit',
+    reason:
+      'Secondary son ("Orion & Sirius") shares one frame slot with "Sirius & Orion" (SiriusSuit) and awards no mastery',
+  },
 ]
 
 /**
