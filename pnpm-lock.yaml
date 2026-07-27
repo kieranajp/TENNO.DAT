@@ -27,8 +27,8 @@ importers:
         specifier: ^3.1094.0
         version: 3.1094.0
       '@hono/node-server':
-        specifier: ^2.0.11
-        version: 2.0.11(hono@4.12.31)
+        specifier: ^2.0.12
+        version: 2.0.12(hono@4.12.31)
       '@hono/prometheus':
         specifier: ^1.0.3
         version: 1.0.3(hono@4.12.31)(prom-client@15.1.3)
@@ -37,7 +37,7 @@ importers:
         version: link:../shared
       '@wfcd/items':
         specifier: latest
-        version: 1.1275.21(warframe-worldstate-data@3.1.19)
+        version: 1.1275.27(warframe-worldstate-data@3.1.19)
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
@@ -672,8 +672,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@hono/node-server@2.0.11':
-    resolution: {integrity: sha512-bjD221KPLoJTWUwso1J6fGKiTXEUFedG/s0visavY4zakFPkeGURMRNly+FhBHs7T8Dz4qHaZIMX9ZoJHSJtKA==}
+  '@hono/node-server@2.0.12':
+    resolution: {integrity: sha512-eWpQYr67tqJLeaSUl0Q+TquuYfUdTibpOJlUMV2FfUP7+KqCC5TufnwnlXL6mobZBJbGAYRd7ZvEBDCbLInjhg==}
     engines: {node: '>=20'}
     peerDependencies:
       hono: ^4
@@ -1187,8 +1187,8 @@ packages:
   '@vitest/utils@4.1.9':
     resolution: {integrity: sha512-A51o8ymO5PpqlWNnBP9ZHPXDIpuMtTLlGSjN7la4US+LJzoUMyhwjA5QXlm39JexgwHKW4Xjs8Z2d3dLCXOeuA==}
 
-  '@wfcd/items@1.1275.21':
-    resolution: {integrity: sha512-G51yEPMfg34JwiXiS2Q+xcOPj1++3zr3LVrJnucM3sFKzW0/djHGQSZbiV1UskuD0aAY+WZfaLGU6x/urFMvfA==}
+  '@wfcd/items@1.1275.27':
+    resolution: {integrity: sha512-bdp40stSUnG66sMc1kgaxxEvpV1TgXtv4AoXfKyNTpi0QvDlMr4vCiLWJwFLkXTA7/fuvkv4RiZw4ErRpscNxA==}
     peerDependencies:
       warframe-worldstate-data: ^3.0.0
 
@@ -2412,7 +2412,7 @@ snapshots:
   '@esbuild/win32-x64@0.28.1':
     optional: true
 
-  '@hono/node-server@2.0.11(hono@4.12.31)':
+  '@hono/node-server@2.0.12(hono@4.12.31)':
     dependencies:
       hono: 4.12.31
 
@@ -2844,7 +2844,7 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@wfcd/items@1.1275.21(warframe-worldstate-data@3.1.19)':
+  '@wfcd/items@1.1275.27(warframe-worldstate-data@3.1.19)':
     dependencies:
       warframe-worldstate-data: 3.1.19
 
