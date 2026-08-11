@@ -22,7 +22,7 @@
     "openid": "^2.0.17",
     "postgres": "^3.4.9",
     "prom-client": "^15.1.3",
-    "tsx": "^4.23.9"
+    "tsx": "^4.23.11"
   },
   "devDependencies": {
     "@types/openid": "^2.0.5",
