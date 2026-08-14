@@ -27,8 +27,8 @@ importers:
         specifier: ^3.1107.0
         version: 3.1107.0
       '@hono/node-server':
-        specifier: ^2.0.12
-        version: 2.0.12(hono@4.13.1)
+        specifier: ^2.1.0
+        version: 2.1.0(hono@4.13.1)
       '@hono/prometheus':
         specifier: ^1.0.3
         version: 1.0.3(hono@4.13.1)(prom-client@15.1.3)
@@ -663,8 +663,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@hono/node-server@2.0.12':
-    resolution: {integrity: sha512-eWpQYr67tqJLeaSUl0Q+TquuYfUdTibpOJlUMV2FfUP7+KqCC5TufnwnlXL6mobZBJbGAYRd7ZvEBDCbLInjhg==}
+  '@hono/node-server@2.1.0':
+    resolution: {integrity: sha512-XovyyCCnBzW+zKu+z/zq8hwNs4KOR5rEMAOxo2f40Q5xoOI37IMm6MIg2COOUtUApo0i6850MTBKH2u4QLGIqg==}
     engines: {node: '>=20'}
     peerDependencies:
       hono: ^4
@@ -2404,7 +2404,7 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
-  '@hono/node-server@2.0.12(hono@4.13.1)':
+  '@hono/node-server@2.1.0(hono@4.13.1)':
     dependencies:
       hono: 4.13.1
 
