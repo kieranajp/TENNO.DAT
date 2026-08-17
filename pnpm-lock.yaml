@@ -28,16 +28,16 @@ importers:
         version: 3.1107.0
       '@hono/node-server':
         specifier: ^2.0.12
-        version: 2.0.12(hono@4.13.1)
+        version: 2.0.12(hono@4.13.2)
       '@hono/prometheus':
         specifier: ^1.0.3
-        version: 1.0.3(hono@4.13.1)(prom-client@15.1.3)
+        version: 1.0.3(hono@4.13.2)(prom-client@15.1.3)
       '@warframe-tracker/shared':
         specifier: workspace:*
         version: link:../shared
       '@wfcd/items':
         specifier: latest
-        version: 1.1275.49(warframe-worldstate-data@3.1.19)
+        version: 1.1275.55(warframe-worldstate-data@3.1.19)
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
@@ -45,8 +45,8 @@ importers:
         specifier: ^0.45.2
         version: 0.45.2(@electric-sql/pglite@0.5.4)(@opentelemetry/api@1.9.1)(postgres@3.4.9)
       hono:
-        specifier: ^4.13.1
-        version: 4.13.1
+        specifier: ^4.13.2
+        version: 4.13.2
       openid:
         specifier: ^2.0.17
         version: 2.0.17
@@ -1189,8 +1189,8 @@ packages:
   '@vitest/utils@4.1.9':
     resolution: {integrity: sha512-A51o8ymO5PpqlWNnBP9ZHPXDIpuMtTLlGSjN7la4US+LJzoUMyhwjA5QXlm39JexgwHKW4Xjs8Z2d3dLCXOeuA==}
 
-  '@wfcd/items@1.1275.49':
-    resolution: {integrity: sha512-UkrdJRr10XHsQRF3RC3YS759xOmMrR1o69sw5MNgboDrbs+JV9UJk4vAFRgqAQ5djnO/AYNJZrvpk6XmqOqxCA==}
+  '@wfcd/items@1.1275.55':
+    resolution: {integrity: sha512-6ySXy+HR74a+QYpk4LTasG6TNbrr3fg7ZTCOy5jZ9XdaKC8myyE+Cc/bWmUOH5Iis70H5nutn02fkDyCmpXYkQ==}
     peerDependencies:
       warframe-worldstate-data: ^3.0.0
 
@@ -1526,8 +1526,8 @@ packages:
     resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
 
-  hono@4.13.1:
-    resolution: {integrity: sha512-kdJoFVv2xmayw6cY09H7AbMJMt8Jn5jdlEdXsP7AGBdF2DIptVlKlOLKXP41yPip4/a3yQPv9gVcJYI8YY04dw==}
+  hono@4.13.2:
+    resolution: {integrity: sha512-JydRilDRkYBQMt9qR9U92mXxmbGqsqSn/IKOrh4e7/gEbn+0zSr8igTu0obwJoNGN4sez28DIql7FBHWydoJpA==}
     engines: {node: '>=16.9.0'}
 
   html-escaper@2.0.2:
@@ -2404,13 +2404,13 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
-  '@hono/node-server@2.0.12(hono@4.13.1)':
+  '@hono/node-server@2.0.12(hono@4.13.2)':
     dependencies:
-      hono: 4.13.1
+      hono: 4.13.2
 
-  '@hono/prometheus@1.0.3(hono@4.13.1)(prom-client@15.1.3)':
+  '@hono/prometheus@1.0.3(hono@4.13.2)(prom-client@15.1.3)':
     dependencies:
-      hono: 4.13.1
+      hono: 4.13.2
       prom-client: 15.1.3
 
   '@jridgewell/gen-mapping@0.3.13':
@@ -2821,7 +2821,7 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@wfcd/items@1.1275.49(warframe-worldstate-data@3.1.19)':
+  '@wfcd/items@1.1275.55(warframe-worldstate-data@3.1.19)':
     dependencies:
       warframe-worldstate-data: 3.1.19
 
@@ -3102,7 +3102,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.13.1: {}
+  hono@4.13.2: {}
 
   html-escaper@2.0.2: {}
 
