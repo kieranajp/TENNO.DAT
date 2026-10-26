@@ -69,7 +69,7 @@ spec:
               key: DB_PORT
         volumeMounts:
         - name: postgresql-data
-          mountPath: /var/lib/postgresql/data
+          mountPath: /var/lib/postgresql
         resources:
           {{- toYaml .Values.postgresql.resources | nindent 10 }}
         livenessProbe:
