@@ -14,7 +14,7 @@
     "test:coverage": "pnpm test:sync && vitest run --coverage"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.11",
+    "@electric-sql/pglite": "^0.5.12",
     "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^4.0.0",
     "vitest": "^4.0.0"
