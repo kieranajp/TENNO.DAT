@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@electric-sql/pglite':
-        specifier: ^0.5.14
-        version: 0.5.14
+        specifier: ^0.5.15
+        version: 0.5.15
       '@types/node':
         specifier: ^26.6.6
         version: 26.6.6
@@ -37,13 +37,13 @@ importers:
         version: link:../shared
       '@wfcd/items':
         specifier: latest
-        version: 1.1276.47(warframe-worldstate-data@3.1.19)
+        version: 1.1276.48(warframe-worldstate-data@3.1.19)
       dotenv:
         specifier: ^18.0.9
         version: 18.0.9
       drizzle-orm:
         specifier: ^0.45.4
-        version: 0.45.4(@electric-sql/pglite@0.5.14)(@opentelemetry/api@1.9.1)(postgres@4.0.0)
+        version: 0.45.4(@electric-sql/pglite@0.5.15)(@opentelemetry/api@1.9.1)(postgres@4.0.0)
       hono:
         specifier: ^4.13.16
         version: 4.13.16
@@ -208,8 +208,8 @@ packages:
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
 
-  '@electric-sql/pglite@0.5.14':
-    resolution: {integrity: sha512-aAQe7iArcFB2w1xtx91l3l9trxhMzD6aZf+WnosSHNhwgp70EJz80Igw/bHnW14fUEFYWPBoQ1sGom8Xc0Jttg==}
+  '@electric-sql/pglite@0.5.15':
+    resolution: {integrity: sha512-ERZWgaRTxueGV4cvL1tfpAOzFCWTXoUtbCBqnf2FhHDVs/so9eAKaanvrwWF9Dntx7BYsmFQujVQ0/B4S8Mmiw==}
 
   '@esbuild-kit/core-utils@3.3.2':
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
@@ -1200,8 +1200,8 @@ packages:
   '@vitest/utils@4.1.9':
     resolution: {integrity: sha512-A51o8ymO5PpqlWNnBP9ZHPXDIpuMtTLlGSjN7la4US+LJzoUMyhwjA5QXlm39JexgwHKW4Xjs8Z2d3dLCXOeuA==}
 
-  '@wfcd/items@1.1276.47':
-    resolution: {integrity: sha512-3aY1hAb3YSzSHXfZ7mDDwWCYUj6J/vZqS1xjlA2ZuQRcI04ybCJAWNg/7j8BRTuQ6MRWjLzkMTyb+jGjDRecFQ==}
+  '@wfcd/items@1.1276.48':
+    resolution: {integrity: sha512-s/T5u2KqHFB3JSfofgOpGpfjKNT2eU6J1vVBFDzdoVlkbqmeFXRLdl2FfjC92s7PIjmBuKJmkK3RHCwnGJgQ3A==}
     peerDependencies:
       warframe-worldstate-data: ^3.0.0
 
@@ -2186,7 +2186,7 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
-  '@electric-sql/pglite@0.5.14': {}
+  '@electric-sql/pglite@0.5.15': {}
 
   '@esbuild-kit/core-utils@3.3.2':
     dependencies:
@@ -2841,7 +2841,7 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@wfcd/items@1.1276.47(warframe-worldstate-data@3.1.19)':
+  '@wfcd/items@1.1276.48(warframe-worldstate-data@3.1.19)':
     dependencies:
       warframe-worldstate-data: 3.1.19
 
@@ -2940,9 +2940,9 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.23.15
 
-  drizzle-orm@0.45.4(@electric-sql/pglite@0.5.14)(@opentelemetry/api@1.9.1)(postgres@4.0.0):
+  drizzle-orm@0.45.4(@electric-sql/pglite@0.5.15)(@opentelemetry/api@1.9.1)(postgres@4.0.0):
     optionalDependencies:
-      '@electric-sql/pglite': 0.5.14
+      '@electric-sql/pglite': 0.5.15
       '@opentelemetry/api': 1.9.1
       postgres: 4.0.0
 
