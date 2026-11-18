@@ -37,7 +37,7 @@ importers:
         version: link:../shared
       '@wfcd/items':
         specifier: latest
-        version: 1.1276.50(warframe-worldstate-data@3.1.19)
+        version: 1.1276.51(warframe-worldstate-data@3.1.19)
       dotenv:
         specifier: ^18.0.10
         version: 18.0.10
@@ -1203,8 +1203,8 @@ packages:
   '@vitest/utils@4.1.9':
     resolution: {integrity: sha512-A51o8ymO5PpqlWNnBP9ZHPXDIpuMtTLlGSjN7la4US+LJzoUMyhwjA5QXlm39JexgwHKW4Xjs8Z2d3dLCXOeuA==}
 
-  '@wfcd/items@1.1276.50':
-    resolution: {integrity: sha512-EKdOdIDuXRM7a1YhfwoeufObQXi0PC+SP2n+L9rcO/vpqGSuQW9t9lT1dM6HSp7JPlTGOqwWwMYitGM1qBzmhg==}
+  '@wfcd/items@1.1276.51':
+    resolution: {integrity: sha512-Lq8vIKaHhuEB2HDA9+6tYmbliNbNCUYHID9xPMqlzRQrYTnFx0dHMRbUmwUTRDHLllPhxtd5QJ0HScEU495bpg==}
     peerDependencies:
       warframe-worldstate-data: ^3.0.0
 
@@ -2848,7 +2848,7 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@wfcd/items@1.1276.50(warframe-worldstate-data@3.1.19)':
+  '@wfcd/items@1.1276.51(warframe-worldstate-data@3.1.19)':
     dependencies:
       warframe-worldstate-data: 3.1.19
 
